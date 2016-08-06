@@ -1,0 +1,266 @@
+.icon-save {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-Document-Save-32.png");
+background-repeat: no-repeat;
+width: 32px;
+height: 32px; 
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
+.icon-cancel {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-Process-Stop-32.png");
+background-repeat: no-repeat;
+width: 32px; /*or your image's width*/
+height: 32px; /*or your image's height*/
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
+.icon-add {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-List-Add-32.png");
+background-repeat: no-repeat;
+width: 32px; /*or your image's width*/
+height: 32px; /*or your image's height*/
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
+.icon-add-little {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-List-Add-32.png");
+background-repeat: no-repeat;
+background-size: 16px 16px;
+width: 16px; /*or your image's width*/
+height: 16px; /*or your image's height*/
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
+.icon-refresh {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-View-Refresh-32.png");
+background-repeat: no-repeat;
+width: 32px; /*or your image's width*/
+height: 32px; /*or your image's height*/
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
+.icon-restore {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-View-Restore-32.png");
+	background-repeat: no-repeat;
+	width: 32px; /*or your image's width*/
+	height: 32px; /*or your image's height*/
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-user-big {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-System-Users-64.png");
+background-repeat: no-repeat;
+width: 64px;
+height: 64px;
+margin: 0;
+padding: 0;
+}
+
+.icon-user-little {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-System-Users-16.png");
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin: 0;
+padding: 0;
+}
+
+.icon-warning{
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-Dialog-Warning-32.png");
+	background-repeat: no-repeat;
+	width: 32px; /*or your image's width*/
+	height: 32px; /*or your image's height*/
+	margin: 0;
+	padding: 0;	
+	cursor:pointer;
+}
+
+.icon-edit {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-Edit-Paste-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-edit-mid-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-Edit-Paste-32.png");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-edit-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-Edit-Paste-32.png");
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-preferences-big {
+	display:inline-block;
+background-image: url("gnome-icons/Gnome-Preferences-System-64.png");
+background-repeat: no-repeat;
+width: 64px;
+height: 64px;
+margin: 0;
+padding: 0;
+
+}
+
+.icon-edit-find-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-Edit-Find-16.png");
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-delete-little {
+	display:inline-block;
+	background-image: url("gnome-icons/edit-delete.png");
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-ok {
+	display:inline-block;
+	background-image: url("gnome-icons/emblem-default.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-ok-little {
+	display:inline-block;
+	background-image: url("gnome-icons/emblem-default.png");
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-call-start-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-call-start-16.png");
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-call-start-mid-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-call-start-22.png");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	width:24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-call-start {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-call-start-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-important-mid-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-important-32.png");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	width:24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-select {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-emblem-default-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-select-mid-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-emblem-default-32.png");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	width:24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-trash-full-mid-little {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-trash-full-32.png");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	width:24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+}
+

@@ -1,0 +1,2 @@
+INSERT INTO system_user 
+(id, status, name, password, email, last_login, last_logout, last_password_change, modifier, modified) VALUES (@UUID, 'AKTIV', @pname, '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', @pemail, NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP);

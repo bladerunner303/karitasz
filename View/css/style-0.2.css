@@ -1,0 +1,261 @@
+@CHARSET "UTF-8";
+
+body {
+	margin: 0px;
+}
+
+#header h1{
+	color: white;
+	padding-left: 15px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#header {
+	background-color: DarkOliveGreen;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0px;
+	height: 100px;
+}
+
+#infoLine{
+	background-color: black;
+	height: 20px;
+}
+
+#logout{
+	cursor:pointer;
+}
+
+.littleInfo{
+	color:white;
+	font-size: 80%;
+	padding-right: 5px;
+	padding-left: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;	
+}
+
+.left {
+	float:left
+}
+
+.right{
+	float:right
+}
+
+.errorText{
+	color: red;
+	display: block;
+	list-style-type: circle;
+	float: none;	
+}
+
+.mainArea{
+	margin-top: 1px; 
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.mainAreaTable {
+    margin: 0 auto; 
+    width: 400px;
+    padding-top: 20px;
+  }
+
+#header ul
+{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	padding-top:6px;
+	padding-bottom:6px;
+	float: right;
+}
+#header li
+{
+	display:inline;
+}
+#header a:link,a:visited
+{
+	font-weight:bold;
+	color:#FFFFFF;
+	background-color:#98bf21; 
+	text-align:center;
+	padding:6px;
+	text-decoration:none;
+	text-transform:uppercase;
+}
+#header a:hover, #header a:active
+{
+	background-color:#7A991A; 
+}
+
+.table_one
+{
+	border: 1px solid #98bf21;;
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	background-color: transparent;
+}
+
+.table_one th {
+
+	text-align: left;
+	padding-top: 5px;
+	padding-bottom: 4px;
+	background-color: #A7C942;
+	color: #fff;
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 1px solid #98bf21;
+	font-weight: bold;
+	display: table-cell;
+}
+
+.table_one tr {
+	display: table-row;
+	vertical-align: inherit;
+	border-color: inherit;
+	box-sizing: border-box;
+}
+
+.table_one td {
+	padding-left: 5px;
+	padding-right: 5px; 
+	text-align: center;
+}
+
+.description {
+	width: 500px;
+}
+
+.width250{
+	width: 250px;
+}
+
+.icons{
+	height: 16px;
+	width: 16px;
+	vertical-align: middle;
+}
+
+.titleIcon{
+	height: 96px;
+	width: 96px;
+}
+
+.title{
+	display:inline-block;
+	vertical-align: top;
+	padding-top: 30px;
+	
+}
+
+.normalFont{
+	font-weight: normal;
+}
+
+.tableHeader{
+	background-color: #dcdcdc;
+}
+
+.fieldSetSize{
+	display: inline-block;
+	padding: 10px;
+/*	float: left; */
+}
+
+.littleHeader{
+	display: inline;	
+}
+
+.microHeader{
+	text-decoration: underline;
+}
+
+.even{
+	background-color: #a6b3cd;
+	font-weight: normal;
+}
+.odd{
+	background-color: #f9f9f9;
+	font-weight: normal;
+}
+
+.rightOrder{
+	float: right;
+}
+
+.smallText{
+	font-size: small;
+}
+
+#histories{
+	font-size: 10pt;
+}
+
+.bold{
+	font-weight: bold;
+	color: black;
+}
+
+.cursor-link{
+	cursor: pointer;
+}
+
+button{
+	width: 175px;
+}
+
+#issueListTable thead tr:first-child th:first-child { border-top-left-radius: 10px; }
+#issueListTable thead tr:first-child th:last-child { border-top-right-radius: 10px; }
+
+.ui-autocomplete-loading {
+    background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
+}
+
+ul.ui-autocomplete {
+    z-index: 1100;
+}
+
+.short-margin {
+	margin-left: 10px;
+	margin-top: 5px;	
+}
+
+.find {
+	background: url(gnome-icons/Gnome-Edit-Find-16.png) no-repeat scroll 1px 1px;
+	padding-left:20px;
+}
+
+.icon-transport-mid {
+	display:inline-block;
+	background-image: url("../images/transport.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
+.mainWidth {
+	width: 1000px;
+}
+
+.width500 {
+	width: 500px;
+}
+
+.width100percent {
+	width: 100%;
+}
+.input-short {
+	width: 40px;
+}

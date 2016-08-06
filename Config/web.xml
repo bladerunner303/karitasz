@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+<!-- database/type Possible values: MYSQL -->
+
+ <!-- MySql  -->
+	<database>
+		<type>MYSQL</type> 
+		<serverAddress>localhost</serverAddress>
+		<port>3306</port> 
+		<user>root</user>
+		<password>root</password>
+		<schema>karitasz</schema>
+	</database>
+
+	<logger>
+		<logFileName>karitasz.alert</logFileName>
+	</logger>
+  	
+  	<contextParam>
+  		<paramName>PASSWORD_SALT</paramName>
+  		<paramValue>9145c3e1-8bfb-42db-843c-3b4946353454</paramValue>
+  	</contextParam>
+  
+   	<contextParam>
+  		<paramName>MIN_PASSWORD_LENGTH</paramName>
+  		<paramValue>5</paramValue><!-- 0-20 közötti egész számot kezel a rendszer -->
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>THE_NUMBER_OF_ENTRY_ATTEMPTS</paramName>
+  		<paramValue>5</paramValue><!-- Egy óra alatti sikertelen belépési próbálkozások száma -->
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>VALID_PHONE_NUMBER_REGEXP</paramName>
+  		<paramValue>/^((1|20|30|31|70)\d{7}|(?!(1|20|30|31|70))\d{2}\d{6})$/</paramValue><!-- Telefonszám formátumot ellenőrző regexp kifejezés -->
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>VALID_PHONE_NUMBER_REGEXP_JS</paramName>
+  		<paramValue>^((1|20|30|31|70)[0-9]{7}|(?!(1|20|30|31|70))[0-9]{2}[0-9]{6})$</paramValue><!-- Telefonszám formátumot ellenőrző regexp kifejezés klinsre (js értelmezi)-->
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>DEFAULT_RESULT_SIZE</paramName>
+  		<paramValue>200</paramValue>
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>OPERATON_MAX_REPEAT_MONTH</paramName>
+  		<paramValue>24</paramValue>
+  	</contextParam>
+
+</configuration>
