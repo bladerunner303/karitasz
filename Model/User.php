@@ -97,10 +97,20 @@ class User {
 	
 	public static function changePassword($oldPassword, $newPassword, $userName){
 		
-		if (strlen($newPassword) < 4) {
-			throw new InvalidArgumentException('Az új jelszónak minimum 4 karakter hosszúnak kell lennie!');
+		$minPasswordLength = (int)Config::getContextParam('MIN_PASSWORD_LENGTH');
+		$minPasswordLength =  $minPasswordLength < 4 ? 4 : ($minPasswordLength > 20 ? 20 : $minPasswordLength);
+		if (strlen($newPassword) < $minPasswordLength) {
+			throw new InvalidArgumentException("Az új jelszónak minimum $minPasswordLength karakter hosszúnak kell lennie!");
 		}
-						
+		
+		if (strtolower($newPassword) == strtolower($userName)){
+			throw new InvalidArgumentException('Az új jelszó nem egyezhet meg a felhasználó névvel');
+		}
+		
+		if (in_array(strtolower($newPassword), explode(';', Config::getContextParam('FORBIDDEN_PASSWORDS')))){
+			throw new InvalidArgumentException('Az új jelszó túl gyakran használt, emiatt könnyen törhető. Kérlek válassz másikat!');
+		}
+				
 		$user = self::get($userName);
 		if ((strlen($user->password) < 4) || ($user->password != self::encodePassword( $oldPassword))){
 			throw new InvalidArgumentException('Nem megfelelő a régi jelszó!');

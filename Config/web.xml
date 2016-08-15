@@ -24,22 +24,27 @@
   
    	<contextParam>
   		<paramName>MIN_PASSWORD_LENGTH</paramName>
-  		<paramValue>5</paramValue><!-- 0-20 közötti egész számot kezel a rendszer -->
+  		<paramValue>5</paramValue><!-- 4-20 közötti egész számot kezel a rendszer -->
+  	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>FORBIDDEN_PASSWORDS</paramName>
+  		<paramValue>01234;0123456;1234;12345;123456;1234567;12345678;123456789;654321;123123;password;password123;jelszo;jelszo123;qwertz;password;asdfgh;111111;000000;aaaaaa;asdasd;valami;szerelem;love;666666;almafa;cica;lofasz;nincs;titok;budapest;csillag;cicamica;nemtom;nemtudom;szeretet;tigris;killer;qwe123;qwerty;asdfghj;blabla;nyuszi;abc123;fradi;dragon;pussy;baseball;football;696969;monkey;superman;fuckme;fuckyou;test;pass;sunshine;</paramValue>
   	</contextParam>
   	
   	<contextParam>
   		<paramName>THE_NUMBER_OF_ENTRY_ATTEMPTS</paramName>
-  		<paramValue>5</paramValue><!-- Egy óra alatti sikertelen belépési próbálkozások száma -->
+  		<paramValue>5</paramValue>
   	</contextParam>
   	
   	<contextParam>
   		<paramName>VALID_PHONE_NUMBER_REGEXP</paramName>
-  		<paramValue>/^((1|20|30|31|70)\d{7}|(?!(1|20|30|31|70))\d{2}\d{6})$/</paramValue><!-- Telefonszám formátumot ellenőrző regexp kifejezés -->
+  		<paramValue>/^((1|20|30|31|70)\d{7}|(?!(1|20|30|31|70))\d{2}\d{6})$/</paramValue>
   	</contextParam>
   	
   	<contextParam>
   		<paramName>VALID_PHONE_NUMBER_REGEXP_JS</paramName>
-  		<paramValue>^((1|20|30|31|70)[0-9]{7}|(?!(1|20|30|31|70))[0-9]{2}[0-9]{6})$</paramValue><!-- Telefonszám formátumot ellenőrző regexp kifejezés klinsre (js értelmezi)-->
+  		<paramValue>^((1|20|30|31|70)[0-9]{7}|(?!(1|20|30|31|70))[0-9]{2}[0-9]{6})$</paramValue>
   	</contextParam>
   	
   	<contextParam>

@@ -36,7 +36,7 @@
 			
 		</div>	
 		<div id="javascript">
-			<script type="text/javascript" src="js/changePassword-0.1.js" defer="defer"></script>
+			<script type="text/javascript" src="js/changePassword-0.3.js" defer="defer"></script>
 		</div>
 	 </body>
 </html>
