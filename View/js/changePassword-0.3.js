@@ -17,6 +17,9 @@ $( document ).ready(function() {
 		else if (Util.isNullOrEmpty(minPasswordLength)){
 			minPasswordLength = 4;
 		}
+		else if (minPasswordLength > 20){
+			minPasswordLength = 20;
+		}
 		
 		if (newPassword < minPasswordLength){
 			result = "Az új jelszónak minimum "+ minPasswordLength + " karakter hosszúnak kell lennie!";
