@@ -86,6 +86,18 @@ class Operation implements JsonSerializable {
 		
 		if (empty($this->id)){
 			
+			$customerFinder = new Customer();
+			$customerFinder->setId($this->customer_id);
+			$customers = $customerFinder->find(null, 1);
+			if (count($customers) == 0){
+				throw new Exception("Nem található az ügyfél");
+			}
+			$customer = $customers[0];
+			Logger::info($customer->qualification);
+			if ($customer->qualification == 'TILTOTT'){
+				throw new Exception("Tiltott státuszú ügyfél részére kérvény vagy felajánlás nem rögzíthető!");
+			}
+			
 			$pre = $db->prepare("insert into operation 
 								( operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level,
 								  sender, income_type, income, others_income, creator, created, modifier, modified) 
