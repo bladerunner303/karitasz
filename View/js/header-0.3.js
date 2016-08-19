@@ -3,7 +3,7 @@ operationStatus = [];
 goodsTypes = [];
 senders = [];
 incomeTypes = [];
-needinesLevels = [];
+needinessLevels = [];
 customerQualifications = [];
 
 $( document ).ready(function() {

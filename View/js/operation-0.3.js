@@ -126,7 +126,7 @@ function getOperationSelectItems(){
 	    	goodsTypes = data.goods_type;
 	    	senders = data.sender;
 	    	incomeTypes = data.income_type;
-	    	needinesLevels = data.neediness_level;
+	    	needinessLevels = data.neediness_level;
 	    	initOperationSelectElements();
 	    },
 		error: function(response) {
@@ -176,13 +176,13 @@ function initOperationSelectElements(selectedValues) {
 	var selectOperationStatus = $('#operation-detail-status');
 	var selectOperationSender = $('#operation-detail-sender');
 	var selectOperationIncomeType = $('#operation-detail-income-type');
-	var selectOperationNeedinesLevel  = $('#operation-detail-neediness-level');
+	var selectOperationNeedinessLevel  = $('#operation-detail-neediness-level');
 	var selectGoodsType = $('#operation-detail-add-element-type');
 	
 	selectFinderStatus.append($('<option></option>').val('').html(' '));
 	selectOperationSender.append($('<option></option>').val('').html(' '));
 	selectOperationIncomeType.append($('<option></option>').val('').html(' '));
-	selectOperationNeedinesLevel.append($('<option></option>').val('').html(' '));
+	selectOperationNeedinessLevel.append($('<option></option>').val('').html(' '));
 	
 	for(var i=0; i< operationStatus.length; i++){
 		selectFinderStatus.append($('<option></option>').val(operationStatus[i].id).html(operationStatus[i].code_value));
@@ -201,21 +201,16 @@ function initOperationSelectElements(selectedValues) {
 		selectOperationIncomeType.append($('<option></option>').val(incomeTypes[i].id).html(incomeTypes[i].code_value));
 	}
 	
-	for(var i=0; i< needinesLevels.length; i++){
-		selectOperationNeedinesLevel.append($('<option></option>').val(needinesLevels[i].id).html(needinesLevels[i].code_value));
+	for(var i=0; i< needinessLevels.length; i++){
+		selectOperationNeedinessLevel.append($('<option></option>').val(needinessLevels[i].id).html(needinessLevels[i].code_value));
 	}
 	
 	if (typeof selectedValues != 'undefined'){
-		if (Util.isNullOrEmpty(selectedValues.selectedOpertaionStatus)){
-			selectOperationStatus.val('ROGZITETT');
-		}
-		else {
-			selectOperationStatus.val(selectedValues.selectedOpertaionStatus);
-		}
-		selectOperationSender.val(Util.isNullOrEmpty(selectedValues.selectedOperationStatus)?'':selectedValues.selectedOperationStatus);
+
+		selectOperationStatus.val(Util.isNullOrEmpty(selectedValues.selectedOperationStatus)?'ROGZITETT':selectedValues.selectedOperationStatus);
 		selectOperationSender.val(Util.isNullOrEmpty(selectedValues.selectedSender)?'':selectedValues.selectedSender);
 		selectOperationIncomeType.val(Util.isNullOrEmpty(selectedValues.selectedIncomeType)?'':selectedValues.selectedIncomeType);
-		selectOperationNeedinesLevel.val(Util.isNullOrEmpty(selectedValues.selectedNeedinesLevel)?'':selectedValues.selectedNeedinesLevel);
+		selectOperationNeedinessLevel.val(Util.isNullOrEmpty(selectedValues.selectedNeedinessLevel)?'':selectedValues.selectedNeedinessLevel);
 	}
 	else {
 		selectOperationStatus.val('ROGZITETT');
@@ -305,7 +300,7 @@ function openOpertaionDetail(id){
 					selectedOperationStatus: operationData.status,
 					selectedSender: operationData.sender,
 					selectedIncomeType: operationData.income_type,
-					selectedNeedinesLevel: operationData.needines_level
+					selectedNeedinessLevel: operationData.neediness_level
 				});
 		    	selectCustomer(operationData.customer_id, operationData.customer_format, operationData.full_address_format);
 		    	
