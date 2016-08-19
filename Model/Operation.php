@@ -84,27 +84,40 @@ class Operation implements JsonSerializable {
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
 		
+		$customerFinder = new Customer();
+		$customerFinder->setId($this->customer_id);
+		$customers = $customerFinder->find(null, 1);
+		if (count($customers) == 0){
+			throw new Exception("Nem található az ügyfél");
+		}
+		$customer = $customers[0];
+		
+		if (($customer->customer_type == 'KERVENYEZO') && ($this->getOperationType() != 'KERVENYEZES')){
+			throw new Exception("Kérvényező ügyfél csak kérvényt adhat be!");
+		}
+		if (($customer->customer_type == 'FELAJANLO') && ($this->getOperationType() == 'KERVENYEZES')){
+			throw new Exception("Felajánló ügyfél csak felajánlást adhat be!");
+		}
+		
+		$pre = $db->prepare ("	select 
+									count(*) cnt 
+								from 
+									operation 
+								where status != 'BEFEJEZETT' 
+								and customer_id = :customer_id
+								 and id != coalesce(:id, '') " );
+		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
+		$pre->bindValue(':customer_id', $this->customer_id, PDO::PARAM_STR);
+		$pre->execute();
+		if ($pre->fetch(PDO::FETCH_OBJ)->cnt != '0'){
+			throw new Exception("Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módosísd inkább azt!");	
+		}
+		
 		if (empty($this->id)){
 			
-			$customerFinder = new Customer();
-			$customerFinder->setId($this->customer_id);
-			$customers = $customerFinder->find(null, 1);
-			if (count($customers) == 0){
-				throw new Exception("Nem található az ügyfél");
-			}
-			$customer = $customers[0];
-			Logger::info($customer->qualification);
 			if ($customer->qualification == 'TILTOTT'){
 				throw new Exception("Tiltott státuszú ügyfél részére kérvény vagy felajánlás nem rögzíthető!");
 			}
-		
-			if (($customer->customer_type == 'KERVENYEZO') && ($this->getOperationType() != 'KERVENYEZES')){
-				throw new Exception("Kérvényező ügyfél csak kérvényt adhat be!");
-			}
-			if (($customer->customer_type == 'FELAJANLO') && ($this->getOperationType() == 'KERVENYEZES')){
-				throw new Exception("Felajánló ügyfél csak felajánlást adhat be!");
-			}
-			
 			
 			$pre = $db->prepare("insert into operation 
 								( operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level,

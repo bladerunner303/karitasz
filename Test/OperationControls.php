@@ -180,6 +180,16 @@ class OperationControls  extends UnitTestBase {
 		$this->checkNoRowInsert();
 	}
 	
+	function test_saveOperation_has_another_request(){
+		$db = Data::getInstance($this->unitDbSetting);
+		$db->exec ("update operation set status = 'FOLYAMATBAN' where id = '-1010'");
+		$operation =  $this::getOperationObject();
+		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módosísd inkább azt!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->checkNoRowInsert();
+	}
+	
 	private function checkNoRowInsert(){
 		$db = Data::getInstance($this->unitDbSetting);
 		$row = $db->query("select * from operation where id = (select max(id) from operation where id not in (-1000, -1005, -1010))")->fetch(PDO::FETCH_OBJ);
