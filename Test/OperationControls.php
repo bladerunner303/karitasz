@@ -154,12 +154,47 @@ class OperationControls  extends UnitTestBase {
 		$this->checkBadCookie(URL_SAVE_OPERATION);
 	}
 	
+	function test_saveOperation_bad_customer_qualification(){
+		$operation = $this::getOperationObject();
+		$operation->customer_id = 'K000246';
+		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Tiltott státuszú ügyfél részére kérvény vagy felajánlás nem rögzíthető!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->checkNoRowInsert();
+		
+	}
+	
+	function test_saveOperation_bad_customer_type(){
+		$operation = $this::getOperationObject();
+		$operation->operation_type = 'FELAJANLAS';
+		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Kérvényező ügyfél csak kérvényt adhat be!", "Nem megfelelő a hibaüzenet" . $response->content);
+		
+		$operation->operation_type = 'KERVENYEZES';
+		$operation->customer_id = 'F000027';
+		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Felajánló ügyfél csak felajánlást adhat be!", "Nem megfelelő a hibaüzenet" . $response->content);
+		
+		$this->checkNoRowInsert();
+	}
+	
+	private function checkNoRowInsert(){
+		$db = Data::getInstance($this->unitDbSetting);
+		$row = $db->query("select * from operation where id = (select max(id) from operation where id not in (-1000, -1005, -1010))")->fetch(PDO::FETCH_OBJ);
+		if ($row){
+			$this->fail('Insertált sort');
+			return;
+		}
+	}
+	
 	private static function getOperationObject(){
 		$operation = new stdClass();
 		$operation->operation_type = 'KERVENYEZES';
 		$operation->has_transport = 'Y';
 		$operation->is_wait_callback = 'N';
-		$operation->customer_id = 'K000246';
+		$operation->customer_id = 'K000221';
 		$operation->status = 'ROGZITETT';
 		$operation->operationDetails = array();
 		$operation->operationDetails[0] = new stdClass();

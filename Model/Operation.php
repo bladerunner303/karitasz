@@ -97,6 +97,14 @@ class Operation implements JsonSerializable {
 			if ($customer->qualification == 'TILTOTT'){
 				throw new Exception("Tiltott státuszú ügyfél részére kérvény vagy felajánlás nem rögzíthető!");
 			}
+		
+			if (($customer->customer_type == 'KERVENYEZO') && ($this->getOperationType() != 'KERVENYEZES')){
+				throw new Exception("Kérvényező ügyfél csak kérvényt adhat be!");
+			}
+			if (($customer->customer_type == 'FELAJANLO') && ($this->getOperationType() == 'KERVENYEZES')){
+				throw new Exception("Felajánló ügyfél csak felajánlást adhat be!");
+			}
+			
 			
 			$pre = $db->prepare("insert into operation 
 								( operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level,

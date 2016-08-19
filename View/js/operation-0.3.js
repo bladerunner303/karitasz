@@ -343,6 +343,17 @@ function initFormEditabled(){
 }
 
 function openCustomerDialog(){
+	
+	document.getElementById("find-customer-type-1").disabled = true;
+	document.getElementById("find-customer-type-2").disabled = true;
+	if (getSiteType() == "KERVENYEZES"){
+		document.getElementById("find-customer-type-2").checked = true;
+	}
+	else {
+		document.getElementById("find-customer-type-1").checked = true;
+	}
+	$('#refresh-customer-list').trigger('click');
+	
 	$('#dialog-customer').dialog('open');
 }
 
