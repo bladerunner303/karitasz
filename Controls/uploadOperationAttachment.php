@@ -11,11 +11,17 @@ if (!SessionUtil::validSession()){
 $operationId = $_GET['operation_id'];
 $fileName = $_FILES['userfile']['name'];
 $fileType = $_FILES['userfile']['type']; //The mime type of the file, if the browser provided this information. An example would be "image/gif".
-$fileSize = $_FILES['userfile']['size']; //The size, in bytes, of the uploaded file.
+$fileSize = (int)$_FILES['userfile']['size']; //The size, in bytes, of the uploaded file.
 $tempFileName = $_FILES['userfile']['tmp_name']; //The temporary filename of the file in which the uploaded file was stored on the server.
 $errorCode = $_FILES['userfile']['error']; //The error code associated with this file upload. ['error'] was added in PHP 4.2.0
 
 if (!empty($fileName)){
+	
+	$enabledFileSize = (int)Config::getContextParam("OPERATION_ATTACHMENT_MAX_SIZE_IN_BYTE");
+	if (($enabledFileSize != 0) && ($enabledFileSize < $fileSize)){
+		JsonParser::sendError(500, "A fájl mérete nagyobb mint az engedélyezett!");
+		return;
+	}
 	
 	$buffer = file_get_contents($tempFileName);
 	$length = filesize($tempFileName);

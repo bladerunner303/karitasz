@@ -132,7 +132,7 @@ function handleOperationDetailUploadclick(){
 	    url = Util.addUrlParameter(url, 'operation_id', operationData.id);
 	    $.ajax({
 	                url: url, 
-	                dataType: 'text',  // what to expect back from the PHP script, if anything
+	                dataType: 'text', 
 	                cache: false,
 	                contentType: false,
 	                processData: false,
@@ -140,10 +140,11 @@ function handleOperationDetailUploadclick(){
 	                type: 'post',
 	                success: function(){
 	                    refreshOperationDetailAttachment();
-	                    $('#operation-userfile').prop('files')[0] = null;
+	                    $('#operation-userfile').val('');
 	                },
 	        		error: function(response) {
-	        			Util.handleErrorToConsole();      
+	        			Util.handleErrorToConsole(response);
+	        			Util.showSaveResultDialog(false, response.responseText);
 	        	    }
 	     });
 	});
@@ -603,7 +604,6 @@ function removeOperationDetailAttachment(id){
 }
 
 function downloadOperationDetailAttachment(id){
-	//TODO: letöltő script
 	var url = OPERATION_URL_DOWNLOAD_ATTACHMENT;
 	url = Util.addUrlParameter(url, 'file_id', id);
 	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());

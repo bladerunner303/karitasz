@@ -56,5 +56,10 @@
   		<paramName>OPERATON_MAX_REPEAT_MONTH</paramName>
   		<paramValue>24</paramValue>
   	</contextParam>
+  	
+  	<contextParam>
+  		<paramName>OPERATION_ATTACHMENT_MAX_SIZE_IN_BYTE</paramName>
+  		<paramValue>1048576</paramValue><!-- Ez elvben egy mega -->
+  	</contextParam>
 
 </configuration>
