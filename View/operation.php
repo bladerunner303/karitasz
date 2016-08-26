@@ -1,6 +1,6 @@
 
     <?php
-   		$type = $_GET["type"];
+   		$type = empty($_GET['type'])? null : $_GET['type'];
     	$_GET["site"] = $type;
     	
 		require_once 'header.php';
@@ -64,10 +64,25 @@
 			<div id="operation-detail-tabs">
 			  <ul>
 			    <li><a href="#operation-detail-general">Alapadatok</a></li>
+			    <li><a href="#operation-detail-attachment" id="href-operation-detail-attachment">Mellékletek</a></li>
 			    <li><a href="#operation-detail-transport">Szállítások</a></li>
 			  </ul>
 			    <div id="operation-detail-general"></div>
 			    <div id="operation-detail-transport"></div>
+			    <div id="operation-detail-attachment">
+			    	<div id="operation-detail-attachement-div">
+						<input name="operation-userfile" type="file" id="operation-userfile">
+						<br>
+						<input name="operation-upload" type="submit" id="operation-upload" value="Feltöltés">
+					</div>
+					<br>
+					Már feltöltött mellékletek: 
+			    	<br>
+						<div id="operation-detail-attechments">
+						</div>	
+					<br>
+					
+			    </div>
 			</div>
 		
 		
@@ -172,7 +187,7 @@
 		<br>
 		<div id="operation-detail-elements">
 		</div>
-		<br>		
+		<br>			
 
 		<div class="icon-add" title="Új elem felvétele" id="operation-detail-new-element" style="display: none;"></div>
 		<div class="icon-save" title="Adatok mentése" id="operation-detail-save" style="display: none;"></div>
@@ -188,6 +203,36 @@
 			</table>
 				
 		</div>
+
+		</script>
+		
+		<script type="text/template" id="template-operation-detail-attachment-table">
+			&nbsp;
+			<table id="table-operation-attachment" class="pure-table">
+				<thead >
+					<td>Név</td>
+					<td>Típus</td>
+					<td>Létrehozás</td>
+					<td>Méret (mb)</td>
+					<td></td>
+				</thead>
+				<tbody>
+					
+					<% for(var row in rows) { %>
+					<tr>
+						<td><%-rows[row].name%></td>
+						<td><%-rows[row].extension%></td>
+						<td><%-rows[row].created_info%></td>
+						<td><%-rows[row].size_in_mb%></td>
+						<td>
+							<div class="icon-trash-full cursor-link" onclick="removeOperationDetailAttachment('<%-rows[row].id%>');" title="Törlés"></div>
+							<div class="icon-download cursor-link" onclick="downloadOperationDetailAttachment('<%-rows[row].id%>');" title="Letöltés"></div>
+						</td>
+					</tr>
+					 <% } %>
+				</tbody>
+			</table>
+		
 		</script>
 		
 		<script type="text/template" id="template-operation-detail-element-table">

@@ -2,6 +2,11 @@
 //global constans
 var OPERATION_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=operation_status;goods_type;neediness_level;sender;income_type&x=' + new Date().getTime().toString();
 var OPERATION_URL_LIST_REFRESH = '../Controls/listOperations.php';
+var OPERATION_URL_UPLOAD_ATTACHEMENT = '../Controls/uploadOperationAttachment.php';
+var OPERATION_URL_LIST_ATTACHMENT = '../Controls/listOperationFiles.php';
+var OPERATION_URL_REMOVE_ATTACHMENT = '../Controls/removeOperationAttachment.php';
+var OPERATION_URL_DOWNLOAD_ATTACHMENT = '../Controls/downloadFile.php';
+var OPERATION_URL_SAVE_OPERATION = "../Controls/saveOperation.php";
 
 //global variables
 var operationDataTable;
@@ -13,6 +18,7 @@ $( document ).ready(function() {
 	handleAddOperationClick();
 	handleOperationDetailAddElementSaveClick();
 	handleOperationDetailAddElementCancelClick();
+	handleOperationDetailUploadclick();
 	$('#refresh-operation-list').trigger('click');
 	initOperationDialogs();
 	getOperationSelectItems();
@@ -116,6 +122,32 @@ function handleOperationDetailAddElementCancelClick(){
 		$('#dialog-add-element').dialog('close');
 	});
 }
+
+function handleOperationDetailUploadclick(){
+	$("#operation-upload").click(function(){
+		var fileData = $('#operation-userfile').prop('files')[0];   
+	    var formData = new FormData();                  
+	    formData.append('userfile', fileData);               
+	    var url = OPERATION_URL_UPLOAD_ATTACHEMENT;
+	    url = Util.addUrlParameter(url, 'operation_id', operationData.id);
+	    $.ajax({
+	                url: url, 
+	                dataType: 'text',  // what to expect back from the PHP script, if anything
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+	                data: formData,                         
+	                type: 'post',
+	                success: function(){
+	                    refreshOperationDetailAttachment();
+	                    $('#operation-userfile').prop('files')[0] = null;
+	                },
+	        		error: function(response) {
+	        			Util.handleErrorToConsole();      
+	        	    }
+	     });
+	});
+} 
 
 function getOperationSelectItems(){
 	$.ajax({
@@ -275,7 +307,7 @@ function openOpertaionDetail(id){
 		$('#tr-operation-detail-customer-address').hide();
 		$('#tr-operation-detail-created').hide();
 		$('#tr-operation-detail-modified').hide();
-		
+		$('#href-operation-detail-attachment').hide();
 	}
 	else {
 		//Módosítás
@@ -309,8 +341,9 @@ function openOpertaionDetail(id){
 				$('#tr-operation-detail-customer-address').show();
 				$('#tr-operation-detail-created').show();
 				$('#tr-operation-detail-modified').show();
-				
-				
+				$('#href-operation-detail-attachment').show();
+				$('#operation-detail-attachement-div').show();
+				refreshOperationDetailAttachment(id);
 		    },
 			error: function(response) {
 				Util.handleErrorToConsole(response);
@@ -466,7 +499,7 @@ function saveOperation(){
 	var data = JSON.stringify(operationData);
 	
 	$.ajax({
-	    url: "../Controls/saveOperation.php",
+	    url: OPERATION_URL_SAVE_OPERATION,
 	    type: 'POST',
 	    data: data,
 	    success: function(data){ 
@@ -519,4 +552,60 @@ function statusChangeOperationDetailElement(orderIndicator){
 			}
 		}
 	}
+}
+
+function refreshOperationDetailAttachment(customerId){
+	var url = OPERATION_URL_LIST_ATTACHMENT;
+	url = Util.addUrlParameter(url, 'id', operationData.id);
+	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+	$.ajax({
+	    url: url,
+	    type: 'GET',
+	    success: function(data){
+	    	
+	    	if (data.length == 0){
+	    		$('#operation-detail-attechments').html('<p>Nem található melléklet!</p>');
+	    	}
+	    	else {
+	    		var operationDetailsAttachmentTemplate = _.template($('#template-operation-detail-attachment-table').html());
+		    	$('#operation-detail-attechments').html(operationDetailsAttachmentTemplate({rows:data}));
+	    		
+	    	}
+	    },
+		error: function(response) {
+			Util.handleErrorToConsole();      
+	    }
+	});
+	
+	var operationDetailsTemplate = _.template($('#template-operation-detail-element-table').html());
+	$('#operation-detail-elements').html(operationDetailsTemplate({rows: operationData.operationDetails}));
+}
+
+function removeOperationDetailAttachment(id){
+	
+	if (confirm('A művelet nem visszavonható! A fájl végleges törlésre kerül! Biztos folytassuk?')){
+		var data = JSON.stringify({id: id});
+		
+		$.ajax({
+		    url: OPERATION_URL_REMOVE_ATTACHMENT,
+		    type: 'POST',
+		    data: data,
+		    success: function(data){ 
+		    	Util.showSaveResultDialog(true, 'Sikeres melléklet törlés!');
+		    	refreshOperationDetailAttachment(operationData.id);
+		    },
+		    error: function(response) {
+		    	Util.handleErrorToConsole(response);
+		    	Util.showSaveResultDialog(false, '(' + response.status + ') ' + response.responseText);
+		    }
+		});
+	}
+}
+
+function downloadOperationDetailAttachment(id){
+	//TODO: letöltő script
+	var url = OPERATION_URL_DOWNLOAD_ATTACHMENT;
+	url = Util.addUrlParameter(url, 'file_id', id);
+	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+	window.location=url;
 }

@@ -55,14 +55,6 @@ class Operation implements JsonSerializable {
 				
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
-		$params = array(
-				':id' => $this->id,
-				':customer_id' => $this->customer_id,
-				':customer' => $customer,
-				':wait_call' => ($this->isWaitCallback())? 'Y':'N',
-				':status' => $this->status,
-				':operation_type' => $this->operation_type
-		);
 		$waitCallParam = ($this->isWaitCallback())? 'Y':'N';
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->bindValue(':customer_id', $this->customer_id, PDO::PARAM_STR);
@@ -110,7 +102,7 @@ class Operation implements JsonSerializable {
 		$pre->bindValue(':customer_id', $this->customer_id, PDO::PARAM_STR);
 		$pre->execute();
 		if ($pre->fetch(PDO::FETCH_OBJ)->cnt != '0'){
-			throw new Exception("Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módosísd inkább azt!");	
+			throw new Exception("Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módostsd inkább azt!");	
 		}
 		
 		if (empty($this->id)){
@@ -254,6 +246,41 @@ class Operation implements JsonSerializable {
 			$detail->setOrderIndicator($index);
 			$detail->save();
 		}
+	}
+	
+	/**
+	 * @param File $file
+	 */
+	public function addOperationAttachment($file){
+		
+		//TODO: database transaction
+		
+		$db = Data::getInstance();
+		$fileMetaDataId = $file->save();
+		$pre = $db->prepare ( "insert into operation_file (operation_id, file_meta_data_id) values (:operation_id, :file_meta_data_id)");
+		$pre->bindValue(':operation_id', $this->id, PDO::PARAM_STR);
+		$pre->bindValue(':file_meta_data_id', $file->getId(), PDO::PARAM_STR);
+		$pre->execute();
+		
+	}
+	
+	public function listOperationFiles(){
+		$sql = "select 
+						fmd.*,
+						round(fmd.size/1024/1024, 3) size_in_mb,
+						concat(fmd.created, ' (', fmd.creator, ')') created_info
+				from 
+					file_meta_data fmd,
+					operation_file of
+				where fmd.id = of.file_meta_data_id
+				and of.operation_id = :id
+				order by fmd.created";
+		
+		$db = Data::getInstance();
+		$pre = $db->prepare($sql);
+		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
+		$pre->execute();
+		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
 
 	private $id;

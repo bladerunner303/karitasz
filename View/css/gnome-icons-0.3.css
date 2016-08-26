@@ -253,6 +253,17 @@ padding: 0;
 	padding: 0;
 }
 
+.icon-trash-full {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-trash-full-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
 .icon-trash-full-mid-little {
 	display:inline-block;
 	background-image: url("gnome-icons/Gnome-trash-full-32.png");
@@ -264,3 +275,13 @@ padding: 0;
 	padding: 0;
 }
 
+.icon-download {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-downloads-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}

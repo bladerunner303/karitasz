@@ -186,7 +186,7 @@ class OperationControls  extends UnitTestBase {
 		$operation =  $this::getOperationObject();
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
-		$this->assertEqual($response->content, "Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módosísd inkább azt!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->assertEqual($response->content, "Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módostsd inkább azt!", "Nem megfelelő a hibaüzenet" . $response->content);
 		$this->checkNoRowInsert();
 	}
 	

@@ -1,6 +1,6 @@
 
     <?php
-    	$type = $_GET["type"];
+    	$type = empty($_GET["type"])?null:$_GET["type"];
     	$_GET["site"] = 'customer';
 		require_once 'header.php';
 	?>

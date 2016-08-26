@@ -76,18 +76,6 @@ CREATE TABLE session
 )
 engine innodb;
 
-create table file_content
-(
-	id 						varchar(36) 	not null,
-	head_id					varchar(36) 	not null,
-	head_table				varchar(35) 	not null,
-	file_name				varchar(255) 	not null,
-	content					varchar(65000) 	not null,
-	constraint pk_file_content primary key (id)
-)
-engine innodb;
-
-
 create table customer
 (
 	id 							varchar(8) not null,
@@ -207,28 +195,35 @@ create table transport_address
 )
 engine innodb;
 
-create table storehouse
-(
-	id							varchar(36) not null, 
-	put_in_operation_detail_id	integer		not null, 
-	put_in_date					date null,
-	put_out_operation_detail_id	integer		null,
-	put_out_date				date null,
-	name						varchar(50) not null, 
-	goods_type					varchar(20) not null,
-	constraint pk_storehouse primary key (id),
-	constraint fk_storehouse_operation_detail foreign key (put_in_operation_detail_id) references operation(id),
-	constraint fk_storehouse_operation_detail2 foreign key (put_out_operation_detail_id) references operation(id)
+create table file_content (
+	id 							varchar(36) not null,
+	content						longblob	not null,
+	constraint pk_file_content primary key (id)
 )
 engine innodb;
 
-create table picture 
-(
+create table file_meta_data (
 	id							varchar(36) not null,
-	extension					varchar(4)	not null,
-	constraint pk_picture primary key (id)
+	file_content_id				varchar(36) not null,
+	name						varchar(105) not null, 
+	extension					varchar(10) not null,
+	size						integer	not null,
+	creator 					varchar(20) not null,
+	created						timestamp not null default current_timestamp,
+	last_downloaded				timestamp null,
+	constraint pk_file_meta_data primary key(id),
+	constraint fk_file_md_content foreign key (file_content_id) references file_content(id)
 )
 engine innodb;
+
+create table operation_file (
+	operation_id				integer not null,
+	file_meta_data_id			varchar(36) not null,
+	constraint pk_operation_file primary key (operation_id, file_meta_data_id),
+	constraint fk_file_md_operation_file foreign key (file_meta_data_id) references file_meta_data(id)
+)
+engine innodb;
+
 
 INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
 ('a', 'AKTIV', 'LEVI', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
@@ -236,11 +231,3 @@ INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_lo
 ('b', 'AKTIV', 'JERNE', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
 INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
 ('c', 'AKTIV', 'MARTA', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
-
-
--- TODO: a picture összekötő tábla
--- customer, operation és esetleg transport azonosító (id? vagy legegyen ott is guid és képezzünk egy azonosítót? ) 
--- ügyfélröl megtartani ha megváltozik a telefon, cím, név (korábbiban is keresni, kapcsolatokat azonosítani) 
--- szállítás összeállítás
--- kérvénynél raktár lekérdezés
--- státuszok a felületre
