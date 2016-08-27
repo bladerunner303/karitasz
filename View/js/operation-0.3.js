@@ -356,6 +356,13 @@ function openOpertaionDetail(id){
 	$('#operation-detail-tabs').tabs();
 	$('#operation-detail').show();
 	
+	if (getSiteType() == 'KERVENYEZES'){
+		$('#tr-element-dialog-upload').hide();
+	}
+	else {
+		$('#tr-element-dialog-upload').show();
+	}
+	
 }
 
 function initFormEditabled(){

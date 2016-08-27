@@ -275,7 +275,7 @@
 						<td>Típus</td>
 						<td><select id="operation-detail-add-element-type" class="width500"></select></td>
 					</tr>
-					<tr>
+					<tr id="tr-element-dialog-upload">
 						<td><button id="operation-detail-add-element-upload">Kép feltöltés</button></td>
 						<td></td>
 					</tr>
