@@ -43,7 +43,8 @@ class UnitTestBase extends UnitTestCase {
 					('$this->currentSessionId' ,'127.0.0.1', '382b0f5185773fa0f67a8ed8056c7759',
 						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
-		//Prepare customers data
+		
+		$db->exec("delete from code where id = 'GT_ALMAFA'");
 		$db->exec("delete from operation_detail where id <> '0'");
 		$db->exec("delete from operation where id <> 0");
 		$db->exec("delete from customer_history where id <> '0'");
@@ -72,19 +73,19 @@ class UnitTestBase extends UnitTestCase {
 		$db->exec("INSERT INTO operation
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender,
 				income_type, income, others_income, creator, created, modifier, modified)
-				VALUES (-1005, 'KERVENYEZES', 'N', 'Y', 'K000246', 'FOLYAMATBAN', NULL, NULL, NULL,
+				VALUES (-1005, 'KERVENYEZES', 'N', 'Y', 'K000246', 'BEFEJEZETT', NULL, NULL, NULL,
 				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
 		$db->exec("INSERT INTO operation
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender,
 				income_type, income, others_income, creator, created, modifier, modified)
-				VALUES (-1010, 'KERVENYEZES', 'Y', 'N', 'K000221', 'ROGZITETT', NULL, NULL, NULL,
+				VALUES (-1010, 'KERVENYEZES', 'Y', 'N', 'K000221', 'BEFEJEZETT', NULL, NULL, NULL,
 				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
 		
 		$db->exec("INSERT INTO `operation_detail` (`id`, `operation_id`, `name`, `goods_type`, `storehouse_id`, `status`, `order_indicator`) 
 				VALUES ('c5af3004-5a23-11e6-99eb-0013f7cf157c', '-1000', 'Kis gyermek ágy pelenkázóval', 'GT_BABA_AGY', NULL, 'ROGZITETT', '1');");
 		$db->exec("INSERT INTO `operation_detail` (`id`, `operation_id`, `name`, `goods_type`, `storehouse_id`, `status`, `order_indicator`)
 				VALUES ('b28b2833-0d3b-43ac-80e7-5ff6452ed873', '-1000', 'Ruhás szekrény', 'GT_SZEKRENY', NULL, 'ROGZITETT', '2');");
-		
+
 	}
 	
 	function tearDown() { }

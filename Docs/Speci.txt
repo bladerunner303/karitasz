@@ -1,0 +1,45 @@
+Install: 
+- sql install scrpipt, linux alá .sh
+- web.xml beállítás
+
+
+Login: 
+1. 
+User password, sózott sha256, 
+x próbálkozás / óra => érték az web.xml-ből. 
+Első kialakítás => Mindenkinek mindenhez van joga, de csak scriptból menedzselhetőek a userek. 
+
+user management: 
+- script password reset
+- script user delete
+- script user add. 
+
+Oldalak: 
+Törzsadatok: 
+- Felajánlok
+- Kérvényezők
+- Raktár készlet
+
+Műveletek: 
+- Felajánlás
+(Felajánló rögzítés, => duplikátum védelem, kizáró minősítés figyelés)
+felajánlás adatai rögzítés, => operation sor, felajánló sor  
+szállítás felvitel funkció, => ha has_transport = Y akkor szállítást lehessen felvenni vagy meglévő szállítások között talózva egyhez hozzárendelni) 
+Szállítás nélküli lehetőség 
+
+- Kérvény rögzítés
+(Kérvényező rögzítés, => duplikátum védelem, kizáró minősítés figyelés)
+Kérvény adatai rögzítés => operation sor, felajánló sor, 
+szállítás felvitel funkció => ha has_transport = Y akkor szállítást lehessen felvenni vagy meglévő szállítások között talózva egyhez hozzárendelni) 
+Szállítás nélküli lehetőség 
+
+- Szállítás
+- Rögzítés , Címek alapján műveletek között tallozni 
+- pdf nyomtatás a szállítóknak.
+- Indulás, raktár kivét, 
+- Raktárba szállítás funkció
+(PDF mindkettő, illetve 
+
+Statisztikák, riportok
+- New Yorker riport => config web.xml
+(Általánosabb?) 

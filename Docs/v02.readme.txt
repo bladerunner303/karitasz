@@ -1,0 +1,81 @@
+Sziasztok!
+
+Felkerült egy új verzió a megbeszéltek szerint. Igyekszem pontokban összeszedni, a fontosabb infokat ezzel kapcsolatban. (Ha reflektáltók egy-egy témához akár a számára is hivatkozhattok a válasz levélben :) )
+
+1. Jelszavak
+
+Tekintve, hogy a teszt rendszerben - mint látni fogjátok - már ügyfél adatok is vannak jelszavakat egy kicsit módosítottam: 
+MARTA illetve JERNE felhasználókkal Kört3fa@ jelszóval tudtok most belépni. 
+
+Az elérési link ugyanaz maradt: https://94.177.160.23/karitasz
+
+2. Ügyfél kezelés
+Az ügyfél kezelés menüpontban megtörténtek a hiba javítások, így lényegesen stabilabb felületet tudtok használni. Ezenkívül a következő funkciók is kiteljesedtek: 
+- A keresési feltételek kiegészültek egy maximális találat számával. Tehát az első x szűrésnek megfelelő találatot rendezi táblázatba a rendszer. Ezt állíthatjátok bármennyire, viszont a kisseb számú maximum találat esetén gyorsabban jelenik meg a táblázat. (A default értéket tudjuk módosítani ha szeretnétek.)
+- Új ügyfél rögzítésnél már működik a hasonló ügyfelek keresése funkció. A rendszer tehát megpróbálja megtippelni adószám, taj szám, teloszám, név, vagy lakcím alapján, hogy az adott ügyfél előfordul-e már az adatbázisban és ha igen akkor azt feldobja. Itt dönthet a felhasználó úgyis, hogy kiválaszt egyet a listából, de úgyis, hogy tovább lép és új ügyfélként rögzíti a delikvenst. 
+- A rendszer piros ikonnal jelzi ha a felhasználónak van már két éven belüli igénylése (a két év paraméter, változtatható)
+- Adatváltozások, Felajánlások/kérvények fül is működik. Megjelennek a szükséges adatok. 
+
+3. Migráció
+Bár az adat migrációt későbbre beszéltük a hatékonyabb tesztek miatt elkezdtem annak első változatát a kapott tavalyi excel alapján. 
+Ennek köszönhetően közel 3000 ügyfelet migráltam, még számos hiba van benne, de első változatnak teszthez talán már megfelel.
+Ezzel kapcsolatos kérdéseket is összeszedtem: 
+
+3.1 Duplikált azonosítókal mi legyen? (pl. F-071, F-024 ezek többször fordulnak elő az excelben. Most az első alkalommal megtartja a következővel előfordulásnál új azonosítót generál. Így megfelelő lesz? Van nyilvántartásotok ahol ezekre az azonosítókra hivatkoztok?)
+3.2 Vannak anonim ügyfelek? pl: F-281;;;III., Boglár u. 2. II/11.; Ezek hogyan alakultak ki? (Kell migrálni? Ha igen milyen névvel?) 
+3.3 Aki kétszer van más címmel? PL. F-0007 F-0077. Az egyiket gondolom ki kell szűrni, de melyiket? Gondolom ajánlás dátuma? Vagy ezeket megpróbáljuk kézzel betöltés előtt kezelni? 
+3.4. Felajánló minősítés: Kell köztes minősítés a normál és a tiltott közé? Van ilyen világos szürke amely nem egyértelmű tiltott (mint pl. aki a étel maradékot adta volna) 
+3.5 Tudunk-e olyat csinálni, hogy mindenkinek a neve mellé írjuk az utolsó igénylés dátumát (vagy csak ahol a két éven belül vagyunk)?
+3.6 Tudunk-e olyat csinálni, hogy nem színnel, hanem egy külön oszlopba státusszal megjelöljük a tiltott ügyfeleket?
+
+A migrációban az látszik, hogy a két éven belüli igényléssel rendelkező ügyfelek esetében az utolsó igénylését is le kell tárolnunk. Ez még nem szerepel a mostani migrációban. (Csak ügyfél adat betöltés van)
+
+4. Kérvények, Felajánlások
+
+Lehet már felvenni, módosítani és lekérdezni ilyeneket. A rendszer ellenőrzi azt is, hogy kérvény felvitelnél az adott felhasználónak 
+van-e másik függő kérvénye. Amig az nem befejezett nem enged újabbat rögzíteni (ilyenkor célszerű lenne azt módosítani újabb elemekkel ha közben még x dologra szüksége van)
+Azt is megnézi a rendszer, hogy volt-e az elmúlt 24 hónapban kérvénye. Ha igen dob egy figyelmeztetést, de ha ezt a felhasználói megerősítésre figyelmen kívül hagyja. (eltudok képzelni olyan esetet amikor valamilyen rendkívüli esemény miatt valaki jogosan kér újabb segítséget 2 éven belül. pl. hiába kapott gyerek butort, az leéget/elvitte az árvíz/forgószél  stb...)
+
+A felület azért még nagyon első verziós, igy itt is jöhetnek bug-ok és megjelenítésen is csiszolható. 
+
+Ami most még nem került bele: 
+- A kérvényhez/fejajánláshoz lehet majd fájlokat feltölteni. Ez nem került bele.
+- Az egyes elemekhez is lehet majd képeket feltölteni (a felajánlott termékekről). Ez nem került bele. 
+- Az egyes elemek tipusát is lehet majd felhasználó által karbantartani. Erre sincs még lehetőség. 
+- A keresést is módosítani szeretném, hogy kérvény számmal is adjon vissza találatokat
+- Befejezett státusz csak olyan tételeken lehet majd állítani ahol már minden a kérvényhez/felajánláshoz tartozó elem státusza befejezett. (És majd egyszer befejezett státuszú kérvényhez nem is lehet újabb elemet felvenni)
+
+
+5. Raktár
+A raktár menüt átmenetileg kiszedtem. Ha egyetértetek vele ez nem lenne része az összel élesbe induló első verziónak. Ez egy új funkció lenne ami nélkül még néhány hónapot elvagyunk, inkább arra törekednék, hogy szeptemberben valóban eltudjunk kezdeni élesben használni a rendszert a többi funkcióval. Aztán ha elindultuk majd a következő verzióba már betehetjük. 
+
+6. github + doksi
+A rendszer ezen verziójának forrása felkerült a github-ra is. Ennek linkje: 
+
+
+Itt elkezdtem doksizni is a rendszert. Jelenleg még főleg az IT-s fejezetek kerültek fel és nem a funkciónális leírás, de majd ez is eljön. :) 
+A github-on a publikáláshoz licenc-et is kellett választani. A rendszer GPLv3 licence alatt lett publikálva, ami nyilt forrású program kódot és ingyenes felhasználást biztosít. Ha valaki egyszer megkérdezi, nektek ez a licenc a szoftver használat jogalapja. 
+
+
+Kérdéseim: 
+- Van ahol jónak lenni jó érték szerepel a felajánlás dátumánál. Ez egy akció volt? Adjunk helyet a felajánlásoknál az akciók megjelölésének? (Később lehet erre riportolni, így mérni az egyes akciók hatékonyságát) 
+- Cím megjegyzést szedjük-e külön az ügyfél megjegyzéstől? (Ennek akkor van értelme, ha mondjuk a szállítókra nem tartozik az ügyfél megjegyzés) 
+- Ezt talán már kérdeztem, de a 2 évet a kérvények esetében honnan számítjuk? Igénylés vagy teljesülés?
+
+A következő verzió várhatóan augusztus végére (26-29) körül készülhet el (korábban azt hiszem korábbra tettem, de az nagyon optimista volt :) ) . Az reményeim szerint tartalmazni fogja: 
+- kérvények/felajánlások hiányzó funkcióit. 
+- Szállítások első verzióját. 
+- Chrome-hoz ha szükséges javítások (jelenleg még csak Firefox alatt néztem én is, így Chrome-ban még lehetnek főleg megjelenítési problémák) 
+
+Illetve útána már a migrációra készülnék, tehát az lenne majd a kérésem, hogy az exceleket készítsük elő augusztus végére :)
+
+Ezenkívül nézzétek meg ti is a fentieket főként tervezési szemmel, hogyha adat hibát láttok (valami kimaradt, kétszer van, vagy más formátumú, tartalmú mint van a valóságban), vagy kérdésetek van azt jelezzétek. 
+
+
+Üdv, 
+Levi 
+
+Feladatok: 
+1. Jelszó generálás az új jelszóval
+2. Piros ikon a két éven belüli igénylés esetén - kész teszt
+3. pointer tisztázás, icon.css vagy kivül?

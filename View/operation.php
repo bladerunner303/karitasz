@@ -273,15 +273,17 @@
 					</tr>
 					<tr>
 						<td>Típus</td>
-						<td><select id="operation-detail-add-element-type" class="width500"></select></td>
+						<td>
+							<select id="operation-detail-add-element-type" class="width500"></select>
+							<div class="icon-add" title="Elem hozzáadása" id="operation-detail-new-element-type"></div>
+						</td>
 					</tr>
 					<tr id="tr-element-dialog-upload">
 						<td><button id="operation-detail-add-element-upload">Kép feltöltés</button></td>
 						<td></td>
 					</tr>
 					<tr>
-						<td></td>
-						<td></td>
+						<div></div>
 					</tr>
 					<tr>
 						<td></td>

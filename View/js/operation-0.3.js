@@ -1,12 +1,14 @@
 
 //global constans
-var OPERATION_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=operation_status;goods_type;neediness_level;sender;income_type&x=' + new Date().getTime().toString();
+var OPERATION_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=operation_status;neediness_level;sender;income_type&x=' + new Date().getTime().toString();
+var OPERATION_URL_LIST_CODE_GOOD_TYPES = '../Controls/listCodes.php?codeTypes=goods_type&x=' + new Date().getTime().toString();
 var OPERATION_URL_LIST_REFRESH = '../Controls/listOperations.php';
 var OPERATION_URL_UPLOAD_ATTACHEMENT = '../Controls/uploadOperationAttachment.php';
 var OPERATION_URL_LIST_ATTACHMENT = '../Controls/listOperationFiles.php';
 var OPERATION_URL_REMOVE_ATTACHMENT = '../Controls/removeOperationAttachment.php';
 var OPERATION_URL_DOWNLOAD_ATTACHMENT = '../Controls/downloadFile.php';
 var OPERATION_URL_SAVE_OPERATION = "../Controls/saveOperation.php";
+var OPERATION_URL_NEW_ELEMENT_TYPE = '../Controls/saveCode.php';
 
 //global variables
 var operationDataTable;
@@ -18,10 +20,12 @@ $( document ).ready(function() {
 	handleAddOperationClick();
 	handleOperationDetailAddElementSaveClick();
 	handleOperationDetailAddElementCancelClick();
+	handleOperationDetailNewElementTypeClick();
 	handleOperationDetailUploadclick();
 	$('#refresh-operation-list').trigger('click');
 	initOperationDialogs();
 	getOperationSelectItems();
+	initSelectGoodsType();
 });
 
 function handleRefreshOperationListClick(){
@@ -150,13 +154,44 @@ function handleOperationDetailUploadclick(){
 	});
 } 
 
+function handleOperationDetailNewElementTypeClick(){
+	$('#operation-detail-new-element-type').click(function(){
+		
+		///TODO: prompt ablak kicserélése
+		var newElement = prompt("Ad meg kérlek az új elemet");
+		if (newElement != null) {
+		    
+			if ((newElement.length < 2) || (newElement.length > 18)){
+				alert('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!');
+				return;
+			}
+			
+			var data = JSON.stringify({code_type: 'goods_type', code_value: newElement});
+			
+			$.ajax({
+			    url: OPERATION_URL_NEW_ELEMENT_TYPE,
+			    type: 'POST',
+			    data: data,
+			    success: function(data){ 
+			    	initSelectGoodsType(data);
+			    },
+				error: function(response) {
+					alert(response.responseText);
+					Util.handleErrorToConsole();      
+			    }
+			});
+			
+		}
+		
+	});
+}
+
 function getOperationSelectItems(){
 	$.ajax({
 	    url: OPERATION_URL_LIST_CODES,
 	    type: 'GET',
 	    success: function(data){ 
 	    	operationStatus = data.operation_status;
-	    	goodsTypes = data.goods_type;
 	    	senders = data.sender;
 	    	incomeTypes = data.income_type;
 	    	needinessLevels = data.neediness_level;
@@ -210,7 +245,6 @@ function initOperationSelectElements(selectedValues) {
 	var selectOperationSender = $('#operation-detail-sender');
 	var selectOperationIncomeType = $('#operation-detail-income-type');
 	var selectOperationNeedinessLevel  = $('#operation-detail-neediness-level');
-	var selectGoodsType = $('#operation-detail-add-element-type');
 	
 	selectFinderStatus.append($('<option></option>').val('').html(' '));
 	selectOperationSender.append($('<option></option>').val('').html(' '));
@@ -221,11 +255,7 @@ function initOperationSelectElements(selectedValues) {
 		selectFinderStatus.append($('<option></option>').val(operationStatus[i].id).html(operationStatus[i].code_value));
 		selectOperationStatus.append($('<option></option>').val(operationStatus[i].id).html(operationStatus[i].code_value));
 	}
-	
-	for(var i=0; i< goodsTypes.length; i++){
-		selectGoodsType.append($('<option></option>').val(goodsTypes[i].id).html(goodsTypes[i].code_value));
-	}
-	
+		
 	for(var i=0; i< senders.length; i++){
 		selectOperationSender.append($('<option></option>').val(senders[i].id).html(senders[i].code_value));
 	}
@@ -248,11 +278,29 @@ function initOperationSelectElements(selectedValues) {
 	else {
 		selectOperationStatus.val('ROGZITETT');
 	}
-	
+}
 
+function initSelectGoodsType(selectedValue){
+	$.ajax({
+	    url: OPERATION_URL_LIST_CODE_GOOD_TYPES,
+	    type: 'GET',
+	    success: function(data){
+	    	goodsTypes = data.goods_type;
+	    	var selectGoodsType = $('#operation-detail-add-element-type');
+	    	selectGoodsType.html('');
+	    	selectGoodsType.append($('<option></option>').val('').html(' '));
+	    	for(var i=0; i< goodsTypes.length; i++){
+	    		selectGoodsType.append($('<option></option>').val(goodsTypes[i].id).html(goodsTypes[i].code_value));
+	    	}
+	    	if (!Util.isNullOrEmpty(selectedValue)){
+		    	selectGoodsType.val(selectedValue);	
+	    	}
+	    },
+		error: function(response) {
+			Util.handleErrorToConsole();      
+	    }
+	});
 	
-	//selectCustomerStatus.val(selectedStatus);
-	//selectQualification.val(selectedQualification);
 }
 
 function setOperationTableFormat(){

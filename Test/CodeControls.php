@@ -1,6 +1,7 @@
 <?php
 
 define ('URL_LIST_CODES', 'listCodes.php');
+define ('URL_SAVE_CODE', 'saveCode.php');
 
 
 class CodeControls  extends UnitTestBase {
@@ -30,6 +31,69 @@ class CodeControls  extends UnitTestBase {
 	
 	function test_listCodes_bad_cookie(){
 		$this->checkBadCookie(URL_LIST_CODES);
+	}
+	
+	function test_saveCode_good_simple(){
+		$code = $this->getCodeObject();
+		
+		$response = $this->getResponse(URL_SAVE_CODE, $this->getPhpSessionCookie(), json_encode($code));
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+	/*	
+		$db = Data::getInstance($this->unitDbSetting);
+		$row = $db->query("select * from customer where surname = '" . $customer->surname . "'")->fetch(PDO::FETCH_OBJ);
+		if (!$row){
+			$this->fail('Nem insertált sort');
+			return;
+		}
+		$this->assertEqual($row->surname, $customer->surname, "surname mező nem egyezik " . $row->surname);
+		$this->assertEqual($row->forename, $customer->forename, "forename mező nem egyezik " . $row->forename);
+		*/
+	}
+	
+	function test_saveCode_bad_code_type(){
+		$code = $this->getCodeObject();
+		$code->code_type = 'barmi';
+		$response = $this->getResponse(URL_SAVE_CODE, $this->getPhpSessionCookie(), json_encode($code));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Nem engedélyezett kód típus mentése! Csak goods_type típus engedélyezett!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->checkNoRowInsert();
+		
+	}
+	
+	function test_saveCode_bad_code_value(){
+		$code = $this->getCodeObject();
+		$code->code_value = 'b';
+		$response = $this->getResponse(URL_SAVE_CODE, $this->getPhpSessionCookie(), json_encode($code));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->checkNoRowInsert();
+	
+		$code->code_value = '123456789a123456789';
+		$response = $this->getResponse(URL_SAVE_CODE, $this->getPhpSessionCookie(), json_encode($code));
+		$this->assertEqual(500, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		$this->assertEqual($response->content, "Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!", "Nem megfelelő a hibaüzenet" . $response->content);
+		$this->checkNoRowInsert();
+		
+	}
+	
+	function test_saveCode_bad_cookie(){
+		$this->checkBadCookie(URL_SAVE_CODE);
+	}
+	
+	private function getCodeObject(){
+		$code = new stdClass();
+		$code->code_type = 'goods_type';
+		$code->code_value = 'almafa';
+		return $code;
+	}
+	
+	private function checkNoRowInsert(){
+		$db = Data::getInstance($this->unitDbSetting);
+		$row = $db->query("select * from code where code_type = 'barmi'")->fetch(PDO::FETCH_OBJ);
+		if ($row){
+			$this->fail('Insertált sort');
+			return;
+		}
 	}
 
 }

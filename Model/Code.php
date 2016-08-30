@@ -20,9 +20,61 @@ class Code implements JsonSerializable {
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
 	
+	public function save(){
+		if ($this->code_type  != 'goods_type'){
+			throw new InvalidArgumentException('Nem engedélyezett kód típus mentése! Csak goods_type típus engedélyezett!');
+		}
+		
+		if ((strlen($this->code_value) < 2) || (strlen($this->code_value) > 18)){
+			throw new InvalidArgumentException('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!');
+		}
+		
+		//Szerkessze át a kulcs mezőt
+		$id = 'GT_' . str_replace(" ", "_", mb_strtoupper($this->code_value));
+		$id = str_replace("Á", "A", $id);
+		$id = str_replace("Ä", "A", $id);
+		$id = str_replace("É", "E", $id);
+		$id = str_replace("Í", "I", $id);
+		$id = str_replace("Ő", "O", $id);
+		$id = str_replace("Ö", "O", $id);
+		$id = str_replace("Ó", "O", $id);
+		$id = str_replace("Ú", "U", $id);
+		$id = str_replace("Ű", "U", $id);
+		$id = str_replace("Ü", "U", $id);
+		$this->id = $id;
+		
+		$db = Data::getInstance();
+		
+		//szöveg nem találahtó még a rögzítettek között
+		$pre = $db->prepare("select count(*) cnt from code where id=:id");
+		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
+		$pre->execute();
+		if ((int)$pre->fetch(PDO::FETCH_OBJ)->cnt == 1){
+			throw new InvalidArgumentException('Már létezik ez a kód');
+		}
+		
+		//Törölje a nem hozzárendelt goods_type-oakt
+		$db = Data::getInstance();
+		$db->exec("delete from code  where code_type = 'goods_type' and id not in (select goods_type from operation_detail) ");
+		
+		//Insertáljon
+		$t = SystemUtil::getCurrentTimestamp();
+		$sql = "insert into code (id, code_type, code_value, modifier, modified) values (:id, :code_type, :code_value, :modifier, :modified)";
+		$pre = $db->prepare($sql);
+		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
+		$pre->bindValue(':code_type', $this->code_type, PDO::PARAM_STR);
+		$pre->bindValue(':code_value', $this->code_value, PDO::PARAM_STR);
+		$pre->bindValue(':modifier', $this->modifier, PDO::PARAM_STR);
+		$pre->bindValue(':modified', $t, PDO::PARAM_STR);
+		
+		$pre->execute();
+		
+		return $this->id;
+	}
+	
 	private $id;
-	private $codeType;
-	private $codeValue ;
+	private $code_type;
+	private $code_value ;
 	private $modifier;
 	private $modified;
 
@@ -42,10 +94,7 @@ class Code implements JsonSerializable {
 	public function setId($id){
 		
 		if (!empty($id)){
-			if (!preg_match("/^[0-9]{0,6}$/", $id)){
-				throw new InvalidArgumentException("Customer Id hibás adattípus!");
-			}
-			$this->id = (integer)$id;
+			$this->id = $id;
 		}
 		return $this;
 	}
@@ -56,7 +105,12 @@ class Code implements JsonSerializable {
 	 */
 	public function getCodeType(){
 
-		return $this->codeType;
+		return $this->code_type;
+	}
+	
+	public function setCodeType($codeType){
+		
+		$this->code_type = substr(trim($codeType),0, 35);
 	}
 	
 	/**
@@ -65,7 +119,7 @@ class Code implements JsonSerializable {
 	 */
 	public function getCodeValue(){
 	
-		return $this->codeValue;
+		return $this->code_value;
 	}
 	
 	/**
@@ -74,7 +128,8 @@ class Code implements JsonSerializable {
 	 */
 	public function setCodeValue($codeValue){
 	
-		$this->codeValue = substr($codeValue,0, 50);
+		
+		$this->code_value = substr(trim($codeValue),0, 50);
 		return $this;
 	}
 	
