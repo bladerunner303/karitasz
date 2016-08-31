@@ -30,7 +30,7 @@
 		    	<table>
 		    		<tr>
 		    			<td>Státusz: </td><td><select id="find-operation-status" class="width500"></select></td>
-		    			<td>Ügyfél: </td><td><input type="text" id="find-operation-customer" class="width500 find"></input></td>
+		    			<td>Ügyfél/<?php echo ($type == 'request')?'kérvény':'felajánlás'; ?>: </td><td><input type="text" id="find-operation-text" class="width500 find"></input></td>
 		    		</tr>
 		    		<tr><td colspan="4">Visszahívást vár <input type="checkbox" id="find-operation-callback"></input></td></tr>
 		    	</table>

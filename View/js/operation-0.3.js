@@ -37,7 +37,7 @@ function handleRefreshOperationListClick(){
 			url = Util.addUrlParameter(url, 'customer_id', Util.nvl($('#customer-selected-id').val(), '')); //Beágyazó oldalról származó field
 		}
 		else {
-			url = Util.addUrlParameter(url, 'customer', $('#find-operation-customer').val());
+			url = Util.addUrlParameter(url, 'text', $('#find-operation-text').val());
 			url = Util.addUrlParameter(url, 'operation_type', getSiteType());	
 		}
 		

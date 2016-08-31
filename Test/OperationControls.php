@@ -30,6 +30,18 @@ class OperationControls  extends UnitTestBase {
 		$this->assertEqual($response->content[0]->status, "FOLYAMATBAN", "Nem jó a találat: " . $response->content[0]->status);
 		$this->assertEqual(count($response->content[0]->operationDetails), 2, "Nem jó a találat: " . count($response->content[0]->operationDetails));
 	}
+
+	function test_listOperations_good_simple_text(){
+		$response = $this->getResponse(URL_LIST_OPERATION . '?operation_type=FELAJANLAS&text=-1000', $this->getPhpSessionCookie());
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
+		if (count($response->content) != 1){
+			$this->fail('Nem 1 találatot kaptunk vissza, hanem ' . count($response->content));
+			return;
+		}
+	
+		$this->assertEqual($response->content[0]->customer_id, "F000027", "Nem jó a találat: " . $response->content[0]->customer_id);
+		$this->assertEqual($response->content[0]->status, "FOLYAMATBAN", "Nem jó a találat: " . $response->content[0]->status);
+	}
 	
 	function test_listOperations_bad_cookie(){
 		$this->checkBadCookie(URL_LIST_OPERATION);

@@ -11,7 +11,7 @@ class Operation implements JsonSerializable {
 	/**
 	 * @return array<Operation>
 	 */
-	public function find($customer, $limit){
+	public function find($text, $limit){
 		
 		if (($limit == null) || ($limit < 1)) {
 			$limit = 100000; //Primitiv de működő megoldás
@@ -43,9 +43,12 @@ class Operation implements JsonSerializable {
 					left join code neediness_codes on neediness_codes.id = o.neediness_level
 				where (:id is null or o.id = :id)
 				and (:customer_id is null or o.customer_id = :customer_id)
-				and (:customer is null 
-					or o.customer_id like concat(:customer, '%') 
-					or concat(c.surname, ' ' , coalesce(c.forename, '')) like concat('%', :customer , '%')) 
+				and (
+					   :text is null 
+					or o.customer_id like concat(:text, '%') 
+					or concat(c.surname, ' ' , coalesce(c.forename, '')) like concat('%', :text , '%')
+					or o.id = :text
+					) 
 				and (:wait_call = 'N' or o.is_wait_callback = :wait_call)
 				and (:status is null or o.status = :status)
 				and (:operation_type is null or o.operation_type = :operation_type)
@@ -58,7 +61,7 @@ class Operation implements JsonSerializable {
 		$waitCallParam = ($this->isWaitCallback())? 'Y':'N';
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->bindValue(':customer_id', $this->customer_id, PDO::PARAM_STR);
-		$pre->bindValue(':customer', $customer, PDO::PARAM_STR);
+		$pre->bindValue(':text', $text, PDO::PARAM_STR);
 		$pre->bindValue(':wait_call', $waitCallParam, PDO::PARAM_STR);
 		$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 		$pre->bindValue(':operation_type', $this->operation_type, PDO::PARAM_STR);

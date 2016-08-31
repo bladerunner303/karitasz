@@ -11,7 +11,7 @@ if (!SessionUtil::validSession()){
 
 $id = !empty($_GET['id']) ? $_GET['id'] : null ;
 $customerId = !empty($_GET['customer_id']) ? $_GET['customer_id'] : null ;
-$customer = !empty($_GET['customer']) ? $_GET['customer'] : null ;
+$text = !empty($_GET['text']) ? $_GET['text'] : null ;
 $status = !empty($_GET['status']) ? $_GET['status'] : null ;
 $isWaitCallback = !empty($_GET['wait_callback'])?$_GET['wait_callback']:null;
 $operationType = !empty($_GET['operation_type'])?$_GET['operation_type']:null;
@@ -24,7 +24,7 @@ $finder->setStatus($status);
 $finder->setIsWaitCallback($isWaitCallback);
 $finder->setOperationType($operationType);
 
-$ret = $finder->find($customer, $limit);
+$ret = $finder->find($text, $limit);
 
 if (($id != null) && (count($ret) == 1)){
 	$finderDetail = new OperationDetail();
