@@ -575,7 +575,7 @@ function reloadOperationDetailsTable(){
 		$('#operation-detail-elements').html(operationDetailsTemplate({rows: operationData.operationDetails}));
 	}
 	else {
-		$('#operation-detail-elements').html('Nincs még eleme a kérvénynek!');
+		$('#operation-detail-elements').html('<p>Nincs még mentett eleme a kérvénynek/felajánlásnak!</p>');
 	}
 	
 }
@@ -633,8 +633,6 @@ function refreshOperationDetailAttachment(customerId){
 	    }
 	});
 	
-	var operationDetailsTemplate = _.template($('#template-operation-detail-element-table').html());
-	$('#operation-detail-elements').html(operationDetailsTemplate({rows: operationData.operationDetails}));
 }
 
 function removeOperationDetailAttachment(id){
