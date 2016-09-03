@@ -7,6 +7,17 @@ define ( 'OPERATION_COUNT', 2);
 
 class OperationControls  extends UnitTestBase {
 	
+	function test_listOperations_good_simple_detail(){
+		$response = $this->getResponse(URL_LIST_OPERATION . '?detail=GT_SZEKRENY&operation_type=FELAJANLAS', $this->getPhpSessionCookie());
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
+		if (count($response->content) != 1){
+			$this->fail('Nem 1 találatot kaptunk vissza, hanem ' . count($response->content));
+			return;
+		}
+		
+		$this->assertEqual($response->content[0]->customer_id, "F000027", "Nem jó a találat" . $response->content[0]->customer_id);
+	}
+	
 	function test_listOperations_good_simple_customer_id(){
 		$response = $this->getResponse(URL_LIST_OPERATION . '?operation_type=KERVENYEZES&customer_id=K000221', $this->getPhpSessionCookie());
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));

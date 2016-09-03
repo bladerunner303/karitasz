@@ -243,7 +243,7 @@
 					<td>Név</td>
 					<td>Típus</td>
 					<td>Státusz</td>
-					<td></td>
+					<td>Műveletek</td>
 				</thead>
 				<tbody>
 					
@@ -257,6 +257,7 @@
 							<!-- <div class="icon-edit-little" onclick="openPictures(<%-rows[row].id%>);" title="Képek"></div> -->
 							<div class="icon-trash-full-mid-little" onclick="removeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Törlés"></div>
 							<div class="icon-select-mid-little" onclick="statusChangeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Szállítás készre állítás"></div>
+							<div class="icon-help-contents" onclick="showPotentialOperations('<%-rows[row].goods_type%>');" title="Lehetséges kérvény/felajánlás"></div>
 						</td>
 					</tr>
 					 <% } %>
@@ -264,6 +265,39 @@
 			</table>
 		</script>
 		
+		
+		<script type="text/template" id="template-operation-detail-potential-operations">
+			<br>
+			&nbsp;
+			Lehetséges felajánlások/kérvények: 
+			<table id="table-operation-potential-operations" class="pure-table">
+				<thead >
+					<td>Azonosító</td>
+					<td>Ügyfél</td>
+					<td>Prioritás</td>
+					<td>Megjegyzés</td>
+					<td>Cím</td>
+					<td>Létrehozás</td>
+					<td></td>
+				</thead>
+				<tbody>
+					
+					<% for(var row in rows) { %>
+					<tr>
+						<td><%-rows[row].id%></td>
+						<td><%-rows[row].customer_format%></td>
+						<td><%-rows[row].qualification_local%></td>
+						<td><%-rows[row].name%></td>
+						<td><%-rows[row].full_address_format%></td>
+						<td><%-rows[row].created_date%></td>
+						<td>
+							<div class="icon-select-mid-little" onclick="selectPotentialOperations(<%-rows[row].operation_detail_id%>);" title="Szállítás készre állítás"></div>
+						</td>
+					</tr>
+					 <% } %>
+				</tbody>
+			</table>
+		</script>
 		
 			<div id="dialog-add-element" title="Elem felvétele">
 				<table>
@@ -283,7 +317,9 @@
 						<td></td>
 					</tr>
 					<tr>
-						<div></div>
+						<td colspan="2">
+							<div id="operation-detail-add-element-potential-element"></div>
+						</td>					
 					</tr>
 					<tr>
 						<td></td>
@@ -304,7 +340,10 @@
 					 }
 				?>
 			</div>
-		
+
+			<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
+				<div id="operation-potential-operations"></div>
+			</div>
 		<script type="text/javascript" src="js/operation-0.3.js"></script>
 		
     </body>

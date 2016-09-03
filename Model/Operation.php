@@ -71,6 +71,42 @@ class Operation implements JsonSerializable {
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
 	
+	public function findByDetails($goodsType){
+		$sql = "select 
+            	o.id,
+                concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
+                concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format, 
+                c.qualification,
+                code_qualification_local.code_value qualification_local,
+                o.created,
+                date_format(o.created, '%Y-%m-%d') created_date,
+                od.id operation_detail_id,
+                od.name
+			   from 
+			   	operation o,
+			   	operation_detail od,
+                customer c,
+                code code_qualification_local
+			   where o.id = od.operation_id
+               and c.id = o.customer_id
+               and c.qualification = code_qualification_local.id
+               and c.status != 'TILTOTT'
+               and o.status != 'BEFEJEZETT'
+               and c.status = 'AKTIV'
+               and o.operation_type = :operation_type
+               and od.goods_type = :goods_type
+               order by c.qualification, o.created
+			   limit 10";
+		
+		$db = Data::getInstance();
+		$pre = $db->prepare($sql);
+		$pre->bindValue(':operation_type', $this->operation_type, PDO::PARAM_STR);
+		$pre->bindValue(':goods_type', $goodsType, PDO::PARAM_STR);
+		
+		$pre->execute();
+		return $pre->fetchAll(PDO::FETCH_OBJ);
+	}
+	
 	/**
 	 * @return string
 	 */

@@ -187,6 +187,17 @@ padding: 0;
 	padding: 0;
 }
 
+.icon-help-contents {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-help-contents-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
 .icon-call-start-little {
 	display:inline-block;
 	background-image: url("gnome-icons/Gnome-call-start-16.png");

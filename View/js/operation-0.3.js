@@ -22,6 +22,7 @@ $( document ).ready(function() {
 	handleOperationDetailAddElementCancelClick();
 	handleOperationDetailNewElementTypeClick();
 	handleOperationDetailUploadclick();
+	handleOperationDetailAddElementTypeSelectChange();
 	$('#refresh-operation-list').trigger('click');
 	initOperationDialogs();
 	getOperationSelectItems();
@@ -186,6 +187,19 @@ function handleOperationDetailNewElementTypeClick(){
 	});
 }
 
+function handleOperationDetailAddElementTypeSelectChange(){
+	$('#operation-detail-add-element-type').change(function(){
+		
+		if (Util.isNullOrEmpty($(this).val())){
+			$('#operation-detail-add-element-potential-element').html('');
+			return;
+		}
+		
+		listPotentionalOperations($(this).val(), $('#operation-detail-add-element-potential-element'));
+		
+	});
+}
+
 function getOperationSelectItems(){
 	$.ajax({
 	    url: OPERATION_URL_LIST_CODES,
@@ -212,6 +226,7 @@ function initNumericFields(){
 function initOperationDialogs(){
 	initAddElementDialog();
 	initCustomerDialog();
+	initPotentionalOperationsDialog();
 }
 
 function initAddElementDialog(){
@@ -224,6 +239,14 @@ function initAddElementDialog(){
 
 function initCustomerDialog(){
 	$('#dialog-customer').dialog({
+		 autoOpen: false, 
+		 modal: true,
+		 width: 'auto'
+	});
+}
+
+function initPotentionalOperationsDialog(){
+	$('#dialog-potentional-operations').dialog({
 		 autoOpen: false, 
 		 modal: true,
 		 width: 'auto'
@@ -661,4 +684,41 @@ function downloadOperationDetailAttachment(id){
 	url = Util.addUrlParameter(url, 'file_id', id);
 	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
 	window.location=url;
+}
+
+function selectPotentialOperations(operationDetailId){
+	//TODO: implementation here
+}
+
+function showPotentialOperations(goodsType){
+	//TODO: implementation here 
+	
+	listPotentionalOperations(goodsType, $('#operation-potential-operations'));
+	$('#dialog-potentional-operations').dialog('open');
+	
+}
+
+function listPotentionalOperations(detail, resultsDiv){
+	var url = OPERATION_URL_LIST_REFRESH;
+	url = Util.addUrlParameter(url, 'operation_type', getSiteType()=='KERVENYEZES'?'FELAJANLAS':'KERVENYEZES');	
+	url = Util.addUrlParameter(url, 'detail', detail);
+	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+	
+	$.ajax({
+	    url: url,
+	    type: 'GET',
+	    success: function(data){ 
+	    	if (data.length > 0){
+	    		var potentialOperationTableTemplate = _.template($('#template-operation-detail-potential-operations').html());
+		    	resultsDiv.html(	potentialOperationTableTemplate({rows: data}));
+	    	}
+	    	else {
+	    		resultsDiv.html('<p>Nem található javasolt kérvény/felajánlás</p>');
+	    	}
+	    	
+	    },
+		error: function(response) {
+			Util.handleErrorToConsole(response);
+	    }
+	});
 }
