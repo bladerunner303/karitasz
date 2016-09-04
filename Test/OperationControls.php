@@ -14,8 +14,8 @@ class OperationControls  extends UnitTestBase {
 			$this->fail('Nem 1 találatot kaptunk vissza, hanem ' . count($response->content));
 			return;
 		}
-		
-		$this->assertEqual($response->content[0]->customer_id, "F000027", "Nem jó a találat" . $response->content[0]->customer_id);
+
+		$this->assertEqual(substr($response->content[0]->customer_format, -9), "(F000027)", "Nem jó a találat:" . substr($response->content[0]->customer_format, -9));
 	}
 	
 	function test_listOperations_good_simple_customer_id(){
@@ -117,6 +117,7 @@ class OperationControls  extends UnitTestBase {
 		$operation->operationDetails[2]->name = 'Babaágy pelenkázóval';
 		$operation->operationDetails[2]->goods_type = 'GT_BABA_AGY';
 		$operation->operationDetails[2]->status = 'ROGZITETT';
+		$operation->operationDetails[2]->detail_id = null;
 		
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
@@ -234,10 +235,12 @@ class OperationControls  extends UnitTestBase {
 		$operation->operationDetails[0]->name = 'A Ruhás szekrény';
 		$operation->operationDetails[0]->goods_type = 'GT_SZEKRENY';
 		$operation->operationDetails[0]->status = 'ROGZITETT';
+		$operation->operationDetails[0]->detail_id = null;
 		$operation->operationDetails[1] = new stdClass();
 		$operation->operationDetails[1]->name = 'Nagy komod';
 		$operation->operationDetails[1]->goods_type = 'GT_KOMOD';
 		$operation->operationDetails[1]->status = 'ROGZITETT';
+		$operation->operationDetails[1]->detail_id = null;
 		
 		return $operation;	
 	}

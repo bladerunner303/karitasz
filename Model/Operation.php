@@ -266,6 +266,7 @@ class Operation implements JsonSerializable {
 			if (($operationDetail->name != $originalOperationDetails[$index]->name) 
 			||  ($operationDetail->goods_type != $originalOperationDetails[$index]->goods_type)
 			||  ($operationDetail->status != $originalOperationDetails[$index]->status)
+			||  ($operationDetail->detail_id != $originalOperationDetails[$index]->detail_id)
 			){
 				return true;	
 			}
@@ -283,6 +284,7 @@ class Operation implements JsonSerializable {
 			$detail->setGoodsType($operationDetail->goods_type);
 			$detail->setStatus($operationDetail->status);
 			$detail->setOrderIndicator($index);
+			$detail->setDetailId($operationDetail->detail_id);
 			$detail->save();
 		}
 	}

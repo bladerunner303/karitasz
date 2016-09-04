@@ -20,6 +20,18 @@ padding: 0;
 cursor:pointer;
 }
 
+.icon-cancel-mid-little {
+display:inline-block;
+background-image: url("gnome-icons/Gnome-Process-Stop-32.png");
+background-repeat: no-repeat;
+background-size: 24px 24px;
+width: 24px; /*or your image's width*/
+height: 24px; /*or your image's height*/
+margin: 0;
+padding: 0;
+cursor:pointer;
+}
+
 .icon-add {
 display:inline-block;
 background-image: url("gnome-icons/Gnome-List-Add-32.png");

@@ -96,6 +96,7 @@ function handleOperationDetailSaveClick(){
 
 function handleOperationDetailNewElementClick(){
 	$('#operation-detail-new-element').click(function(){
+		removeOperationDetailElementSelectedPotentialElement();
 		$('#dialog-add-element').dialog('open');
 	});
 }
@@ -106,14 +107,17 @@ function handleOperationDetailAddElementSaveClick(){
 		var elementName = $.trim($('#operation-detail-add-element-name').val());
 		var elementType = $('#operation-detail-add-element-type').val();
 		var elementTypeName = $('#operation-detail-add-element-type option:selected').text();
-		
+		var detailId = $('#operation-detail-add-element-related-detail').val();
+		var relatedOperationDetail = $('#operation-detail-add-element-related-detail-format').val();
 		operationData.operationDetails.push({
 			name: elementName,
 			goods_type: elementType,
 			goods_type_local: elementTypeName,
 			status: 'ROGZITETT',
 			status_local: 'Rögzített',
-			order_indicator: operationData.operationDetails.length
+			order_indicator: operationData.operationDetails.length,
+			detail_id: detailId,
+			related_operation_detail: relatedOperationDetail
 		});
 		
 		$('#operation-detail-add-element-cancel').trigger('click');
@@ -318,6 +322,7 @@ function initSelectGoodsType(selectedValue){
 	    	if (!Util.isNullOrEmpty(selectedValue)){
 		    	selectGoodsType.val(selectedValue);	
 	    	}
+	    	selectGoodsType.trigger('change');
 	    },
 		error: function(response) {
 			Util.handleErrorToConsole();      
@@ -633,6 +638,21 @@ function statusChangeOperationDetailElement(orderIndicator){
 	}
 }
 
+function removeOperationDetailRelatedElement(orderIndicator){
+	if (confirm('A művelet nem visszavonható! Biztos töröljük véglegesen az elemet?')){
+		for (var i=0;i<operationData.operationDetails.length;i++){
+			
+			if (operationData.operationDetails[i].order_indicator == orderIndicator){
+				operationData.operationDetails[i].detail_id = null;
+				operationData.operationDetails[i].related_operation_detail = null;
+				return;
+			}
+		}
+		
+		reloadOperationDetailsTable();
+	}
+}
+
 function refreshOperationDetailAttachment(customerId){
 	var url = OPERATION_URL_LIST_ATTACHMENT;
 	url = Util.addUrlParameter(url, 'id', operationData.id);
@@ -686,13 +706,19 @@ function downloadOperationDetailAttachment(id){
 	window.location=url;
 }
 
-function selectPotentialOperations(operationDetailId){
-	//TODO: implementation here
+function selectPotentialOperations(operationDetailId,  customer, operation, detailName){
+	$('#operation-detail-add-element-related-detail').val(operationDetailId);
+	$('#operation-detail-add-element-related-detail-format').val(operation + '/' + customer + ' ' + detailName);
+	var html = '<fieldset><legend>Kapcsolt elem</legend>';
+	html += '<p>Ügyfél: ' + customer + '</p>';
+	html += '<p>Kérvény/felajánlás: ' + operation + ' ' + detailName + '</p>'
+	html += '<div class="icon-cancel-mid-little" onclick="removeOperationDetailElementSelectedPotentialElement();" title="Kapcsolt elem törlése"></div>';
+	html += '</fieldset>';
+	$('#operation-detail-add-element-related-operation').html(html);
+	$('#tr-element-dialog-related-operation').show();
 }
 
 function showPotentialOperations(goodsType){
-	//TODO: implementation here 
-	
 	listPotentionalOperations(goodsType, $('#operation-potential-operations'));
 	$('#dialog-potentional-operations').dialog('open');
 	
@@ -721,4 +747,11 @@ function listPotentionalOperations(detail, resultsDiv){
 			Util.handleErrorToConsole(response);
 	    }
 	});
+}
+
+function removeOperationDetailElementSelectedPotentialElement(){
+	$('#operation-detail-add-element-related-detail').val('');
+	$('#operation-detail-add-element-related-detail-format').val('');
+	$('#operation-detail-add-element-related-operation').html('');
+	$('#tr-element-dialog-related-operation').hide();
 }

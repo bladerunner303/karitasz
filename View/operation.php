@@ -243,6 +243,7 @@
 					<td>Név</td>
 					<td>Típus</td>
 					<td>Státusz</td>
+					<td>Kapcsolt elem</td>
 					<td>Műveletek</td>
 				</thead>
 				<tbody>
@@ -253,6 +254,15 @@
 						<td><%-rows[row].name%></td>
 						<td><%-rows[row].goods_type_local%></td>
 						<td><%-rows[row].status_local%></td>
+						<td>
+							<%-rows[row].related_operation_detail%>
+							<div class="icon-cancel-mid-little" onclick="removeOperationDetailRelatedElement(<%-rows[row].order_indicator%>);" title="Kapcsolt elem törlése"
+							<% if (Util.isNullOrEmpty(rows[row].related_operation_detail)) { 
+								print ('style="display:none;"');
+							}
+							%>
+							></div>
+						</td>
 						<td>
 							<!-- <div class="icon-edit-little" onclick="openPictures(<%-rows[row].id%>);" title="Képek"></div> -->
 							<div class="icon-trash-full-mid-little" onclick="removeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Törlés"></div>
@@ -291,7 +301,7 @@
 						<td><%-rows[row].full_address_format%></td>
 						<td><%-rows[row].created_date%></td>
 						<td>
-							<div class="icon-select-mid-little" onclick="selectPotentialOperations(<%-rows[row].operation_detail_id%>);" title="Szállítás készre állítás"></div>
+							<div class="icon-select-mid-little" onclick="selectPotentialOperations('<%-rows[row].operation_detail_id%>', '<%-rows[row].customer_format%>', '<%-rows[row].id%>', '<%-rows[row].name%>');" title="Szállítás készre állítás"></div>
 						</td>
 					</tr>
 					 <% } %>
@@ -316,6 +326,11 @@
 						<td><button id="operation-detail-add-element-upload">Kép feltöltés</button></td>
 						<td></td>
 					</tr>
+					<tr id="tr-element-dialog-related-operation" style="display:none;">
+						<td colspan="2">
+							<div id="operation-detail-add-element-related-operation"></div>
+						</td>
+					</tr>
 					<tr>
 						<td colspan="2">
 							<div id="operation-detail-add-element-potential-element"></div>
@@ -330,6 +345,8 @@
 				<div class="icon-cancel" title="Változások elvetése" id="operation-detail-add-element-cancel"></div>
 				<br>
 				<div id="element-save-errors" style="display:none;"></div>
+				<input type="hidden" id="operation-detail-add-element-related-detail"/>
+				<input type="hidden" id="operation-detail-add-element-related-detail-format"/>
 			</div>
 		
 			<div id="dialog-customer">

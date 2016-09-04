@@ -157,8 +157,10 @@ create table operation_detail
 	storehouse_id			varchar(36) null, 
 	status					varchar(20) not null, 
 	order_indicator			integer		not null,
+	detail_id				varchar(36) null,
 	constraint pk_operation_detail primary key (id),
 	constraint fk_operation_operation_detail foreign key (operation_id) references operation(id),
+--	constraint fk_operation_detail_own foreign key (detail_id) references operation_detail(id),
 	constraint ck_operation_detail_status check (status in (select id from code where code_type = 'operation_status'))
 )
 engine innodb;
