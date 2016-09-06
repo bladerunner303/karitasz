@@ -137,6 +137,8 @@ create table operation
 	created 				timestamp 	not null default current_timestamp,
 	modifier 				varchar(20) not null,
 	modified 				timestamp 	not null,
+	last_status_changed		timestamp	not null,
+	last_status_changed_user varchar(20) not null,
 	constraint pk_operation primary key (id),
 	constraint fk_customer_operation foreign key (customer_id) references customer(id),
 	constraint ck_operation_type check (operation_type in (select id from code where code_type = 'operation_type')),
@@ -160,7 +162,6 @@ create table operation_detail
 	detail_id				varchar(36) null,
 	constraint pk_operation_detail primary key (id),
 	constraint fk_operation_operation_detail foreign key (operation_id) references operation(id),
---	constraint fk_operation_detail_own foreign key (detail_id) references operation_detail(id),
 	constraint ck_operation_detail_status check (status in (select id from code where code_type = 'operation_status'))
 )
 engine innodb;

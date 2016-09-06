@@ -44,19 +44,23 @@ class UnitTestBase extends UnitTestCase {
 						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
 		
-		$db->exec("delete from code where id = 'GT_ALMAFA'");
+		$db->exec("delete from code where id in ('GT_ALMAFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");
 		$db->exec("delete from operation_detail where id <> '0'");
 		$db->exec("delete from operation where id <> 0");
 		$db->exec("delete from customer_history where id <> '0'");
 		$db->exec("delete from customer where id <> '0'");
+
+		$db->exec("insert into code values ('GT_BABA_AGY', 'goods_type', 'Baba ágy', 'SYSTEM', current_timestamp)");
+		$db->exec("insert into code values ('GT_SZEKRENY', 'goods_type', 'Szekrény', 'SYSTEM', current_timestamp)");
+		
 		$db->exec("INSERT INTO customer(id, surname, forename, customer_type, zip, city, street, phone, qualification, description, additional_contact, additional_contact_phone, status, creator, created, modifier, modified) 
 				VALUES ('K000221','Dudás','Ildikó','KERVENYEZO','1111','Budapest','Baross u. 28.' ,'201234567','NORMAL',NULL,NULL,NULL,'AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
 		$db->exec("INSERT INTO customer(id, surname, forename, customer_type, zip, city, street, phone, qualification, description, additional_contact, additional_contact_phone, status, creator, created, modifier, modified) 
-		VALUES ('K000246','Kovács','Marianna','KERVENYEZO','1081','Budapest','Szitás u. 113/a','317654321','TILTOTT','Eladja a kapott butorokat',NULL,NULL,'AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
+				VALUES ('K000246','Kovács','Marianna','KERVENYEZO','1081','Budapest','Szitás u. 113/a','317654321','TILTOTT','Eladja a kapott butorokat',NULL,NULL,'AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
 		$db->exec("INSERT INTO customer(id, surname, forename, customer_type, zip, city, street, phone, qualification, description, additional_contact, additional_contact_phone, status, creator, created, modifier, modified) 
-		VALUES ('F000027','Aszabó Menyhértné',null,'FELAJANLO',1121,'Budapest','Fürj u. 42.','11234567','NORMAL',NULL,NULL,NULL,'AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
+				VALUES ('F000027','Aszabó Menyhértné',null,'FELAJANLO',1121,'Budapest','Fürj u. 42.','11234567','NORMAL',NULL,NULL,NULL,'AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
 		$db->exec("INSERT INTO customer(id, surname, forename, customer_type, zip, city, street, phone, qualification, description, additional_contact, additional_contact_phone, status, creator, created, modifier, modified) 
-		VALUES ('F000005','Cég Group',NULL,'FELAJANLO',1111,'Budapest','Szemere u. 87.','307654321','NORMAL', NULL, 'Hornok Edina','306701825','AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
+				VALUES ('F000005','Cég Group',NULL,'FELAJANLO',1111,'Budapest','Szemere u. 87.','307654321','NORMAL', NULL, 'Hornok Edina','306701825','AKTIV','SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
 		$db->exec("INSERT INTO customer(id, surname, forename, customer_type, zip, city, street, phone, qualification, description, additional_contact, additional_contact_phone, status, tax_number, creator, created, modifier, modified)
 				VALUES ('K000621','Kiss','Blanka','KERVENYEZO','2100','Gödöllő','Fő u. 28.' ,'701234567','NORMAL',NULL,NULL,NULL,'AKTIV','12345678', 'SYSTEM',CURRENT_TIMESTAMP,'SYSTEM',CURRENT_TIMESTAMP);");
 		
@@ -67,24 +71,25 @@ class UnitTestBase extends UnitTestCase {
 		
 		$db->exec("INSERT INTO operation 
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender, 
-				income_type, income, others_income, creator, created, modifier, modified) 
+				income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user) 
 				VALUES (-1000, 'FELAJANLAS', 'Y', 'Y', 'F000027', 'FOLYAMATBAN', NULL, NULL, NULL, 
-				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
+				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'SYSTEM')");
 		$db->exec("INSERT INTO operation
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender,
-				income_type, income, others_income, creator, created, modifier, modified)
+				income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user)
 				VALUES (-1005, 'KERVENYEZES', 'N', 'Y', 'K000246', 'BEFEJEZETT', NULL, NULL, NULL,
-				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
+				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP, 'SYSTEM')");
 		$db->exec("INSERT INTO operation
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender,
-				income_type, income, others_income, creator, created, modifier, modified)
+				income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user)
 				VALUES (-1010, 'KERVENYEZES', 'Y', 'N', 'K000221', 'BEFEJEZETT', NULL, NULL, NULL,
-				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
+				NULL, NULL, NULL, 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP, 'SYSTEM')");
 		
 		$db->exec("INSERT INTO `operation_detail` (`id`, `operation_id`, `name`, `goods_type`, `storehouse_id`, `status`, `order_indicator`) 
 				VALUES ('c5af3004-5a23-11e6-99eb-0013f7cf157c', '-1000', 'Kis gyermek ágy pelenkázóval', 'GT_BABA_AGY', NULL, 'ROGZITETT', '1');");
 		$db->exec("INSERT INTO `operation_detail` (`id`, `operation_id`, `name`, `goods_type`, `storehouse_id`, `status`, `order_indicator`)
 				VALUES ('b28b2833-0d3b-43ac-80e7-5ff6452ed873', '-1000', 'Ruhás szekrény', 'GT_SZEKRENY', NULL, 'ROGZITETT', '2');");
+		
 
 	}
 	

@@ -47,6 +47,7 @@ insert into code values ('TAX_NUMBER_CHANGE', 'customer_history_data_type', 'Ad�
 insert into code values ('TB_NUMBER_CHANGE', 'customer_history_data_type', 'Taj szám változás', 'SYSTEM', current_timestamp);
 insert into code values ('BIRTH_DATA_CHANGE', 'customer_history_data_type', 'Születési adatok változás', 'SYSTEM', current_timestamp);
 
+/*
 insert into code values ('GT_KOMOD', 'goods_type', 'Komód', 'SYSTEM', current_timestamp);
 insert into code values ('GT_TV', 'goods_type', 'Televízió', 'SYSTEM', current_timestamp);
 insert into code values ('GT_HUTO', 'goods_type', 'Hűtőszekrény', 'SYSTEM', current_timestamp);
@@ -58,7 +59,7 @@ insert into code values ('GT_SZEKRENY', 'goods_type', 'Szekrény', 'SYSTEM', cur
 insert into code values ('GT_IRO_ASZTAL', 'goods_type', 'Író asztal', 'SYSTEM', current_timestamp);
 insert into code values ('GT_ETKEZO_ASZTAL', 'goods_type', 'Étkező asztal', 'SYSTEM', current_timestamp);
 insert into code values ('GT_DOHANYZO_ASZTAL', 'goods_type', 'Dohányzó asztal', 'SYSTEM', current_timestamp);
-
+*/
 -- user
 delete from system_user where id <> '0';
 INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES

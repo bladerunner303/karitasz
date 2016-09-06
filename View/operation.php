@@ -182,6 +182,10 @@
 				<td>Módosítás</td>
 				<td><%-modified_info%></td>
 			</tr>
+			<tr id="tr-operation-detail-last-status-change">
+				<td>Státusz váltás</td>
+				<td><%-last_status_changed_info%></td>
+			</tr>
 		</table>
 
 		<br>
@@ -361,7 +365,7 @@
 			<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
 				<div id="operation-potential-operations"></div>
 			</div>
-		<script type="text/javascript" src="js/operation-0.3.js"></script>
+		<script type="text/javascript" src="js/operation-0.4.js"></script>
 		
     </body>
 </html>

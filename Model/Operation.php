@@ -30,7 +30,8 @@ class Operation implements JsonSerializable {
 					has_transport_bool.code_value has_transport_local,
 					is_wait_callback_bool.code_value is_wait_callback_local,
 					concat(o.created, ' (', o.creator, ')') created_info,
-					concat(o.modified, ' (', o.modifier, ')') modified_info
+					concat(o.modified, ' (', o.modifier, ')') modified_info,
+					concat(o.last_status_changed, ' (', o.last_status_changed_user, ')') last_status_changed_info
 				from 
 					operation o
 					inner join customer c on c.id = o.customer_id
@@ -152,10 +153,10 @@ class Operation implements JsonSerializable {
 			
 			$pre = $db->prepare("insert into operation 
 								( operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level,
-								  sender, income_type, income, others_income, creator, created, modifier, modified) 
+								  sender, income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user) 
 						 values (
 								  :operation_type, :has_transport, :is_wait_callback, :customer_id, :status, :description, :neediness_level,
-								  :sender, :income_type, :income, :others_income, :creator, :created, :modifier, :modified 
+								  :sender, :income_type, :income, :others_income, :creator, :created, :modifier, :modified, :last_status_changed, :last_status_changed_user 
 								)");
 			$params = array(
 					':operation_type' => $this->operation_type,
@@ -172,7 +173,9 @@ class Operation implements JsonSerializable {
 					':creator'=>$this->modifier,
 					':modifier'=>$this->modifier,
 					':created'=> $t,
-					':modified'=> $t
+					':modified'=> $t,
+					':last_status_changed' => $t,
+					':last_status_changed_user' => $this->modifier,
 			);
 
 			$pre->execute($params);
@@ -182,8 +185,24 @@ class Operation implements JsonSerializable {
 
 		}
 		else {
+
+			$findOperation = new Operation();
+			$findOperation->setId( $this->id );
+			$originalList = $findOperation->find(null,1);
+			$original = new Operation();
+			SystemUtil::cast($original, $originalList[0]);
 			
-			if ($this->isChanged()){
+			if ($this->isChanged($original)){
+				
+					if ($original->status != $this->status){
+						$this->last_status_changed_user = $this->modifier;
+						$this->last_status_changed = $t;
+					}
+					else {
+						$this->last_status_changed_user = $original->last_status_changed_user;
+						$this->last_status_changed = $original->last_status_changed;
+					}
+				
 					$pre = $db->prepare("update operation
 							set
 							has_transport = :has_transport,
@@ -197,7 +216,9 @@ class Operation implements JsonSerializable {
 							income = :income,
 							others_income = :others_income,
 							modifier = :modifier,
-							modified = :modified
+							modified = :modified,
+							last_status_changed = :last_status_changed,
+							last_status_changed_user = :last_status_changed_user
 							where
 							id = :id
 							");
@@ -215,6 +236,8 @@ class Operation implements JsonSerializable {
 							':others_income' => $this->others_income,
 							':modifier'=>$this->modifier,
 							':modified'=> $t,
+							':last_status_changed' => $this->last_status_changed,
+							':last_status_changed_user' => $this->last_status_changed_user,
 							':id' => $this->id
 					);
 						
@@ -227,18 +250,12 @@ class Operation implements JsonSerializable {
 
 	}
 	
-	private function isChanged(){
+	private function isChanged($original){
 
 		if (empty($this->id)){
 			return false;
 		}
-		
-		$findOperation = new Operation();
-		$findOperation->setId( $this->id );
-		$originalList = $findOperation->find(null,1);
-		$original = new Operation();
-		SystemUtil::cast($original, $originalList[0]);
-		
+			
 		if (($original->hasTransport()!= $this->hasTransport())
 		||  ($original->isWaitCallback() != $this->isWaitCallback())
 		||	($original->getCustomerId() != $this->getCustomerId())
@@ -340,6 +357,8 @@ class Operation implements JsonSerializable {
 	private $modifier;
 	private $created;
 	private $modified;
+	private $last_status_changed;
+	private $last_status_changed_user;
 	private $operationDetails;
 	
 	/**
@@ -644,6 +663,35 @@ class Operation implements JsonSerializable {
 
 		return $this->modified;
 	}
+
+	/**
+	 *
+	 * @param string $closingUser
+	 */
+	public function setLastStatusChangedUser($lastStatusChangedUser){
+	
+		$this->last_status_changed_user = substr($lastStatusChangedUser,0, 35);
+		return $this;
+	}
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getLastStatusChangedUser(){
+	
+		return $this->last_status_changed_user;
+	}
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getLastStatusChanged(){
+	
+		return $this->last_status_changed;
+	}
+	
 	
 	/**
 	 *
