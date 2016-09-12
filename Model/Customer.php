@@ -251,6 +251,14 @@ class Customer implements JsonSerializable {
 			$findCustomer = new Customer();		
 			$findCustomer->setId( $this->id );
 			$originalList = $findCustomer->find(null, 1);
+			//Külön ellenőrízzük, hogy a korábbi jó volt, ha nem akkor eldobjuk: 
+			if (!$this::isValidPhoneNumber($originalList[0]->phone)){
+				$originalList[0]->phone = '';
+			}
+			if (!$this::isValidPhoneNumber($originalList[0]->additional_contact_phone)){
+				$originalList[0]->additional_contact_phone = '';
+			}
+			
 			$original = new Customer();
 			SystemUtil::cast($original, $originalList[0]);
 			
@@ -818,21 +826,12 @@ class Customer implements JsonSerializable {
 	 * @param string $phone 
 	 */
 	public function setPhone($phone){
-		
-		$regexp = Config::getContextParam("VALID_PHONE_NUMBER_REGEXP");
-		if (empty($regexp)){
-			Logger::warning("Nincs kitöltve a VALID_PHONE_NUMBER_REGEXP context paraméter a web.xml fájlban. Így bármilyen telefonszámomt elfogad a rendszer!");
-			$regexp = "/^[0-9]{1,20}$/";
+
+		if ($this::isValidPhoneNumber($phone)){
+			$this->phone = $phone;
 		}
-	
-		if (!empty($phone)){
-			if (preg_match($regexp, str_replace("-", "", str_replace("/", "", $phone )))) {
-				$this->phone = $phone;
-			}
-			
-			else {
-				throw new InvalidArgumentException("Érvénytelen telefonszám formátum");
-			}
+		else {
+			throw new InvalidArgumentException("Érvénytelen telefonszám formátum" );
 		}
 		return $this;
 	}
@@ -920,22 +919,30 @@ class Customer implements JsonSerializable {
 	 */
 	public function setAdditionalContactPhone($additionalContactPhone){
 	
+		if ($this::isValidPhoneNumber($additionalContactPhone)){
+			$this->additional_contact_phone = $additionalContactPhone;
+		}
+		else {
+			throw new InvalidArgumentException("Érvénytelen másodlagos telefonszám formátum");
+		}
+		return $this;
+	}
+	
+	private static function isValidPhoneNumber($phoneNumber){
 		$regexp = Config::getContextParam("VALID_PHONE_NUMBER_REGEXP");
 		if (empty($regexp)){
 			Logger::warning("Nincs kitöltve a VALID_PHONE_NUMBER_REGEXP context paraméter a web.xml fájlban. Így bármilyen telefonszámomt elfogad a rendszer!");
 			$regexp = "/^[0-9]{1,20}$/";
 		}
-	
-	
-		if (!empty($additionalContactPhone)){
-			if (preg_match($regexp, str_replace("-", "", str_replace("/", "", $additionalContactPhone )))) {
-				$this->additional_contact_phone = $additionalContactPhone;
-			}
-			else {
-				throw new InvalidArgumentException("Érvénytelen másodlagos telefonszám formátum");
-			}
+		
+		
+		if (empty($phoneNumber)){
+			return true; //ha üres az valid 
 		}
-		return $this;
+		else {
+			return (preg_match($regexp, str_replace("-", "", str_replace("/", "", $phoneNumber ))));
+		}
+		
 	}
 	
 }
