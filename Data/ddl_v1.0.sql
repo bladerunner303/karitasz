@@ -178,7 +178,7 @@ create table transport
 	modifier 				varchar(20) not null,
 	modified 				timestamp 	not null,
 	constraint pk_transport primary key (id),
-	constraint ck_transport_status check (status in (select id from code where code_type = 'operation_status'))
+	constraint ck_transport_status check (status in (select id from code where code_type = 'transport_status'))
 )
 engine innodb;
 
@@ -190,11 +190,12 @@ create table transport_address
 	zip						varchar(4)	not null, 
 	city					varchar(35) not null,
 	street					varchar(35) not null, 
-	phone					varchar(20) not null, 
 	description				varchar(500) null,
+	status					varchar(20) not null,
 	constraint pk_transport_address primary key (id),
 	constraint fk_transport_address_operation foreign key (operation_id) references operation(id),
-	constraint fk_transport_address_transport foreign key (transport_id) references transport(id)
+	constraint fk_transport_address_transport foreign key (transport_id) references transport(id),
+	constraint ck_transport_address_status check (status in (select id from code where code_type = 'transport_status'))
 )
 engine innodb;
 

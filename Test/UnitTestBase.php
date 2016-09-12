@@ -43,7 +43,8 @@ class UnitTestBase extends UnitTestCase {
 					('$this->currentSessionId' ,'127.0.0.1', '382b0f5185773fa0f67a8ed8056c7759',
 						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
-		
+		$db->exec("delete from transport_address where id<>'0'");
+		$db->exec("delete from transport where id <> '0'");
 		$db->exec("delete from code where id in ('GT_ALMAFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");
 		$db->exec("delete from operation_detail where id <> '0'");
 		$db->exec("delete from operation where id <> 0");
@@ -90,7 +91,22 @@ class UnitTestBase extends UnitTestCase {
 		$db->exec("INSERT INTO `operation_detail` (`id`, `operation_id`, `name`, `goods_type`, `storehouse_id`, `status`, `order_indicator`)
 				VALUES ('b28b2833-0d3b-43ac-80e7-5ff6452ed873', '-1000', 'Ruhás szekrény', 'GT_SZEKRENY', NULL, 'ROGZITETT', '2');");
 		
+		$db->exec("INSERT INTO transport (id, transport_date, status, creator, created, modifier, modified) 
+				   VALUES ('caTf36E4-7a23-14e6-99Cf-0a13f7cd65tl', '2016-09-21', 'KIADOTT', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
 
+		$db->exec("INSERT INTO transport (id, transport_date, status, creator, created, modifier, modified)
+				VALUES ('brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ', '2016-09-15', 'BEFELYEZETT', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
+		
+		$db->exec("INSERT INTO transport (id, transport_date, status, creator, created, modifier, modified)
+				VALUES ('G8Tf36E4-7a23-14e6-Z9Cf-0a13f7cd35Fl', '2016-09-28', 'ROGZITETT', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
+		
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description)
+				VALUES ('40be00cd-7325-4659-9518-b5afc88e4e5a', '-1010', 'brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ', 1111, 'Budapest', 'Pitypang u 3', null )");
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description)
+				VALUES ('970d746a-2c3e-4df6-866d-9c58d0688df2', '-1005', 'brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ', 1121, 'Budapest', 'Seholsincs tér 3', null )");
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description)
+				VALUES ('fc1c0333-d64a-4f06-8e15-b507881d0773', '-1010', 'caTf36E4-7a23-14e6-99Cf-0a13f7cd65tl', 1131, 'Budapest', 'Imott-amott köz 45', null )");
+		
 	}
 	
 	function tearDown() { }
