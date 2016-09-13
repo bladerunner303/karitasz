@@ -108,7 +108,7 @@
 								}
 
 								if (rows[row].is_wait_callback == 'Y') { 
-									print('<div class="icon-call-start" title="Visszahívást vár! Tel: ' + rows[row].phone + '"></div>' ); 
+									print('<div class="icon-call-start" title="Visszahívást vár! Tel: ' + rows[row].phones + '"></div>' ); 
 							 	}
 							%>
 						</td>
@@ -182,7 +182,7 @@
 				<td>Módosítás</td>
 				<td><%-modified_info%></td>
 			</tr>
-			<tr id="tr-operation-detail-last-status-change">
+			<tr id="tr-operation-detail-last-status-changed">
 				<td>Státusz váltás</td>
 				<td><%-last_status_changed_info%></td>
 			</tr>

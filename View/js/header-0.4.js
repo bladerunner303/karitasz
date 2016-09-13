@@ -1,4 +1,5 @@
 statuses = [];
+maritalStatuses = [];
 operationStatus = [];
 goodsTypes = [];
 senders = [];

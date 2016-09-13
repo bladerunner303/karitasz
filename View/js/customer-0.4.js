@@ -1,6 +1,6 @@
 
 //global constans
-var CUSTOMER_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=status;customer_qualification&x=' + new Date().getTime().toString();
+var CUSTOMER_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=status;customer_qualification;marital_status&x=' + new Date().getTime().toString();
 var CUSTOMER_URL_REFRESH = '../Controls/listCustomers.php';
 var CUSTOMER_URL_SIMILAR = '../Controls/similarCustomers.php';
 var CUSTOMER_URL_SAVE = '../Controls/saveCustomer.php';
@@ -35,6 +35,7 @@ function getCustomerSelectItems(){
 	    success: function(data){ 
 	    	statuses = data.status;
 	    	customerQualifications = data.customer_qualification;
+	    	maritalStatuses = data.marital_status;
 	    },
 		error: function(response) {
 			Util.handleErrorToConsole(response);
@@ -43,10 +44,12 @@ function getCustomerSelectItems(){
 	});
 }
 
-function initCustomerSelectElements(selectedStatus, selectedQualification){
+function initCustomerSelectElements(selectedStatus, selectedQualification, selectedMaritalStatus){
 	
 	var selectCustomerStatus = $('#customer-detail-customer-status');
 	var selectQualification = $('#customer-detail-qualification');
+	var selectMaritalStatus = $('#customer-detail-marital-status');
+	selectMaritalStatus.append($('<option></option>').val('').html(''));
 	
 	for(var i=0; i< statuses.length; i++){
 		selectCustomerStatus.append($('<option></option>').val(statuses[i].id).html(statuses[i].code_value));
@@ -55,7 +58,11 @@ function initCustomerSelectElements(selectedStatus, selectedQualification){
 	for(var i=0; i< customerQualifications.length; i++){
 		selectQualification.append($('<option></option>').val(customerQualifications[i].id).html(customerQualifications[i].code_value));
 	}
-
+	
+	for(var i=0; i< maritalStatuses.length; i++){
+		selectMaritalStatus.append($('<option></option>').val(maritalStatuses[i].id).html(maritalStatuses[i].code_value));
+	}
+	
 	if (!Util.isNullOrEmpty(selectedStatus)){
 		selectCustomerStatus.val(selectedStatus);
 	}
@@ -63,6 +70,11 @@ function initCustomerSelectElements(selectedStatus, selectedQualification){
 	if (!Util.isNullOrEmpty(selectedQualification)){
 		selectQualification.val(selectedQualification);
 	}
+	
+	if (!Util.isNullOrEmpty(selectedMaritalStatus)){
+		selectMaritalStatus.val(selectedMaritalStatus);
+	}
+	
 }
 	
 function setCustomerTableFormat(){
@@ -95,15 +107,19 @@ function openCustomerDetail(id) {
 						forename: null, 
 						zip: null, 
 						city: null, 
-						street: null, 
+						street: null,
+						email: null,
 						phone: null,
+						phone2: null,
 						additional_contact: null, 
 						additional_contact_phone: null,
 						description: null,
+						marital_status: null,
 						tax_number: null, 
 						tb_number: null, 
 						birth_place: null, 
 						birth_date: null,
+						mother_name: null,
 						created_info: null, 
 						modified_info: null};
 	$('#customer').hide();
@@ -139,7 +155,7 @@ function openCustomerDetail(id) {
 		    	customerData = data[0];
 		    	$('#customer-detail-general').html(customerDetailTemplate(customerData));
 		    	initCustomerDetailsEvents();
-		    	initCustomerSelectElements(customerData.status, customerData.qualification);
+		    	initCustomerSelectElements(customerData.status, customerData.qualification, customerData.marital_status);
 		    	initCustomerDetailsNumericField();
 		    	$('#tr-customer-detail-id').show();
 		    	$('input[name=customer-detail-customer-type]').val([customerData.customer_type]);
@@ -258,13 +274,17 @@ function reloadCustomerData(){
 	customerData.city = $.trim($('#customer-detail-city').val()); 
 	customerData.street = $.trim($('#customer-detail-street').val()); 
 	customerData.phone = $.trim($('#customer-detail-phone').val().split('-').join('').split('/').join('').split(' ').join(''));
+	customerData.phone2 = $.trim($('#customer-detail-phone2').val().split('-').join('').split('/').join('').split(' ').join('')); 
+	customerData.email = $.trim($('#customer-detail-email').val());
 	customerData.additional_contact = $.trim($('#customer-detail-additional-contact').val()); 
-	customerData.additional_contact_phone = $.trim($('#customer-detail-additional-contact-phone').val());
+	customerData.additional_contact_phone = $.trim($('#customer-detail-additional-contact-phone').val().split('-').join('').split('/').join('').split(' ').join(''));
 	customerData.description = $.trim($('#customer-detail-description').val());
 	customerData.status = $.trim($('#customer-detail-customer-status').val());
+	customerData.marital_status = $.trim($('#customer-detail-marital-status').val());
 	customerData.qualification = $.trim($('#customer-detail-qualification').val());
 	customerData.tax_number = $.trim($('#customer-detail-tax-number').val());
 	customerData.tb_number = $.trim($('#customer-detail-tb-number').val());
+	customerData.mother_name = $.trim($('#customer-detail-mother-name').val());
 	customerData.birth_date = Util.lpad($('#customer-detail-birth-date-year').val(), 4, '0') + '-' + 
 								Util.lpad($('#customer-detail-birth-date-month').val(), 2, '0') + '-' + 
 								Util.lpad($('#customer-detail-birth-date-day').val(), 2, '0')  ;
@@ -288,6 +308,14 @@ function checkCustomerData(){
 	var phonePattern = new RegExp($('#valid-phone-number-regexp').val());
 	if (!phonePattern.test(customerData.phone)){
 		errors.push('Érvénytelen telefonszám formátum');
+	}
+	
+	if ((!Util.isNullOrEmpty(customerData.phone2)) && (!phonePattern.test(customerData.phone2))){
+		errors.push('Érvénytelen másodlagos telefonszám formátum');
+	}
+	
+	if ((!Util.isNullOrEmpty(customerData.additional_contact_phone)) && (!phonePattern.test(customerData.additional_contact_phon))){
+		errors.push('Érvénytelen család gondnok telefon formátum');
 	}
 	
 	if ((!Util.isNullOrEmpty(customerData.birth_date)) && (isNaN(Date.parse(customerData.birth_date)))) {
@@ -318,6 +346,7 @@ function checkSimilarCustomers(){
 		var url = CUSTOMER_URL_SIMILAR;
 		url = Util.addUrlParameter(url, 'id', id);
 		url = Util.addUrlParameter(url, 'phone', customerData.phone);
+		url = Util.addUrlParameter(url, 'phone2', customerData.phone2);
 		url = Util.addUrlParameter(url, 'surname', customerData.surname);
 		url = Util.addUrlParameter(url, 'forename', customerData.forename);
 		url = Util.addUrlParameter(url, 'zip', customerData.zip);

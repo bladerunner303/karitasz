@@ -50,7 +50,7 @@
 	<script type="text/javascript" src="js/lib/jquery.dataTables-1.10.5.min.js"></script> 
 	<script type="text/javascript" src="js/lib/jquery.numericField-1.0.js"></script> 
 	<script type="text/javascript" src="js/lib/underscore-1.8.3.min.js"></script>
-	<script type="text/javascript" src="js/header-0.3.js" defer="defer"></script>		
+	<script type="text/javascript" src="js/header-0.4.js" defer="defer"></script>		
 	
 	<script type="text/javascript">
 	

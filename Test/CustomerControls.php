@@ -87,11 +87,17 @@ class CustomerControls  extends UnitTestBase {
 		$this->assertEqual($row->city, $customer->city, "city mező nem egyezik " . $row->city);
 		$this->assertEqual($row->street, $customer->street, "street mező nem egyezik " . $row->street);
 		$this->assertEqual($row->customer_type, $customer->customer_type, "customer_type mező nem egyezik " . $row->customer_type);
+		$this->assertEqual($row->email, $customer->email, "email mező nem egyezik " . $row->email);
 		$this->assertEqual($row->phone, $customer->phone, "phone mező nem egyezik " . $row->phone);
+		$this->assertEqual($row->phone2, $customer->phone2, "phone2 mező nem egyezik " . $row->phone2);
 		$this->assertEqual($row->qualification, $customer->qualification, "qualification mező nem egyezik " . $row->qualification);
 		$this->assertEqual($row->description, $customer->description, "description mező nem egyezik " . $row->description);
 		$this->assertEqual($row->status, $customer->status, "status mező nem egyezik " . $row->status);
+		$this->assertEqual($row->marital_status, $customer->marital_status, "marital_status mező nem egyezik " . $row->marital_status);
 		$this->assertEqual($row->tax_number, $customer->tax_number, "tax number mező nem egyezik " . $row->tax_number);
+		$this->assertEqual($row->tb_number, $customer->tb_number, "tb number mező nem egyezik " . $row->tb_number);
+		$this->assertEqual($row->mother_name, $customer->mother_name, "mother_name mező nem egyezik " . $row->mother_name);
+		
 	}
 	
 	function test_saveCustomer_good_simple_modify(){
@@ -101,6 +107,7 @@ class CustomerControls  extends UnitTestBase {
 		$customer->status = 'INAKTIV';
 		$customer->surname = 'Teszt Tamara';
 		$customer->street = 'Második utca 3';
+		$customer->email = 'valami@valami.hu';
 		$customer->phone = '311234567';
 		$customer->additional_contact = 'Kata';
 		$customer->tb_number = '7654321';
@@ -119,17 +126,20 @@ class CustomerControls  extends UnitTestBase {
 		$this->assertEqual($row->city, $customer->city, "city mező nem egyezik " . $row->city);
 		$this->assertEqual($row->street, $customer->street, "street mező nem egyezik " . $row->street);
 		$this->assertEqual($row->customer_type, $customer->customer_type, "customer_type mező nem egyezik " . $row->customer_type);
+		$this->assertEqual($row->email, $customer->email, "email mező nem egyezik " . $row->email);
 		$this->assertEqual($row->phone, $customer->phone, "phone mező nem egyezik " . $row->phone);
+		$this->assertEqual($row->phone2, $customer->phone2, "phone2 mező nem egyezik " . $row->phone2);
 		$this->assertEqual($row->qualification, $customer->qualification, "qualification mező nem egyezik " . $row->qualification);
 		$this->assertEqual($row->description, $customer->description, "description mező nem egyezik " . $row->description);
 		$this->assertEqual($row->status, $customer->status, "status mező nem egyezik " . $row->status);
+		$this->assertEqual($row->marital_status, $customer->marital_status, "marital_status mező nem egyezik " . $row->marital_status);
 		$this->assertEqual($row->tax_number, $customer->tax_number, "tax number mező nem egyezik " . $row->tax_number);
 		$this->assertEqual($row->tb_number, $customer->tb_number, "tb number mező nem egyezik " . $row->tb_number);
 		$this->assertEqual($row->additional_contact, $customer->additional_contact, "additional_contact mező nem egyezik " . $row->additional_contact);
 	
 		$histories = $db->query("select * from customer_history where customer_id = '" . $row->id . "' order by case when data_type='NAME_CHANGE' THEN 1 ELSE 2 end ")->fetchAll(PDO::FETCH_OBJ);
 		
-		if (count($histories) != 6) {
+		if (count($histories) != 7) {
 			$this->fail('Nem vett fel elég history sort!');
 			return;
 		}
@@ -154,16 +164,20 @@ class CustomerControls  extends UnitTestBase {
 		$customer->city = 'Budapest';
 		$customer->street = 'Teszt Tibor Tér 3';
 		$customer->customer_type = 'KERVENYEZO';
+		$customer->email = '';
 		$customer->phone = '301234567';
+		$customer->phone2 = '';
 		$customer->qualification = 'NORMAL';
 		$customer->description = 'Árvíztűrő Tükörfúrógép';
 		$customer->additional_contact = null;
 		$customer->additional_contact_phone = null;
 		$customer->status = 'AKTIV'	;
+		$customer->marital_status = 'HAZAS'	;
 		$customer->tax_number = '12345678';
 		$customer->tb_number = null;
 		$customer->birth_place = null;
 		$customer->birth_date = null;
+		$customer->mother_name = null;
 		return $customer;	
 	}
 	

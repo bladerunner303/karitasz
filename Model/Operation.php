@@ -21,6 +21,7 @@ class Operation implements JsonSerializable {
 					o.*,
 					concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
 					c.phone,
+					concat(c.phone, ';', c.phone2) phones,
 					concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format,
 					operation_type_codes.code_value operation_type_local,
 					status_codes.code_value status_local,

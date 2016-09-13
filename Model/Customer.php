@@ -17,7 +17,7 @@ class Customer implements JsonSerializable {
 					x.id,
 					x.full_name,
 					x.full_address,
-					x.phone,
+					x.phones,
 					x.qualification,
 					x.tax_number,
 					x.tb_number,
@@ -27,7 +27,7 @@ class Customer implements JsonSerializable {
 						c0.id,
 						trim(concat(c0.surname, ' ', coalesce(c0.forename, ''))) full_name,
 						concat(c0.zip, ' ', c0.city, ' ' , c0.street) full_address,
-						c0.phone phone,
+						concat(c0.phone, ';', coalesce(c0.phone2)) phones,
 						c0.qualification qualification,
 						c0.tax_number,
 						c0.tb_number,
@@ -44,7 +44,7 @@ class Customer implements JsonSerializable {
 						c.id,
 						trim(concat(c.surname, ' ', coalesce(c.forename, ''))) full_name,
 						concat(c.zip, ' ', c.city, ' ' , c.street) full_address,
-						c.phone phone,
+						concat(c.phone, ';', coalesce(c.phone2)) phones,
 						c.qualification qualification,
 						c.tax_number,
 						c.tb_number,
@@ -54,13 +54,16 @@ class Customer implements JsonSerializable {
 					from 
 						customer c
 					where  c.phone = :phone
+					or c.phone2 = :phone
+					or c.phone = :phone2
+					or c.phone2 = :phone2
 					
 					union 
 					select 
 						c2.id,
 						trim(concat(c2.surname, ' ', coalesce(c2.forename, ''))) full_name,
 						concat(c2.zip, ' ', c2.city, ' ' , c2.street) full_address,
-						c2.phone phone,
+						concat(c2.phone, ';', coalesce(c2.phone2)) phones,
 						c2.qualification qualification,
 						c2.tax_number,
 						c2.tb_number,
@@ -75,7 +78,7 @@ class Customer implements JsonSerializable {
 						c3.id,
 						trim(concat(c3.surname, ' ', coalesce(c3.forename, ''))) full_name,
 						concat(c3.zip, ' ', c3.city, ' ' , c3.street) full_address,
-						c3.phone phone,
+						concat(c3.phone, ';', coalesce(c3.phone2)) phones,
 						c3.qualification qualification,
 						c3.tax_number,
 						c3.tb_number,
@@ -99,6 +102,7 @@ class Customer implements JsonSerializable {
 				':zip' => $this->zip,
 				':street' => $this->street,
 				':phone' => $this->phone,
+				':phone2' => $this->phone2,
 				':tax_number' => $this->tax_number,
 				':tb_number' => $this->tb_number
 		);
@@ -126,17 +130,16 @@ class Customer implements JsonSerializable {
 					code_status.code_value status_local,
 					code_qualification.code_value qualificaton_local,
 					code_type.code_value customer_type_local,
+					code_marital_status.code_value marital_status_local,
 					concat(c.created, ' (', c.creator, ')') created_info,
 					concat(c.modified, ' (', c.modifier, ')') modified_info
 				from 
-					customer c,
-					code code_status,
-					code code_qualification,
-					code code_type
+					customer c
+				inner join code code_status on c.status = code_status.id
+				inner join code code_qualification on c.qualification = code_qualification.id
+				inner join code code_type on c.customer_type = code_type.id
+				left join code code_marital_status on c.marital_status = code_marital_status.id
 				where 1=1
-				and c.status = code_status.id
-				and c.qualification = code_qualification.id
-				and c.customer_type = code_type.id
 				and (:id is null or c.id = :id)
 				and (:customer_type is null or c.customer_type = :customer_type)
 				and concat( c.id, 
@@ -146,6 +149,8 @@ class Customer implements JsonSerializable {
 						    c.city, 
 						    c.street, 
 						    c.phone, 
+						    coalesce(c.phone2, ''),
+						    coalesce(c.email, ''),
 						    coalesce(c.description, ''),
 						    coalesce(c.additional_contact, ''),
 						    coalesce(c.additional_contact_phone, ''),
@@ -153,9 +158,11 @@ class Customer implements JsonSerializable {
 						   	code_status.code_value ,
 							code_qualification.code_value ,
 							code_type.code_value ,
+							coalesce(code_marital_status.code_value, ''),
 							coalesce(c.tax_number, ''),
 							coalesce(c.tb_number, ''),
-							coalesce(c.birth_place, '')
+							coalesce(c.birth_place, ''),
+							coalesce(c.mother_name, '')
 						     )
 					like concat('%', coalesce(:text, ''), '%')
 				order by c.surname, c.forename
@@ -212,13 +219,13 @@ class Customer implements JsonSerializable {
 			$this->id = ($this->customer_type == 'KERVENYEZO' ? 'K': 'F') . str_pad($seqNext,6,"0",STR_PAD_LEFT);
 			
 			$pre = $db->prepare("insert into customer 
-								( id, surname, forename, customer_type, zip, city, street, phone, qualification, description, 
-								  additional_contact, additional_contact_phone, status, tax_number, tb_number, birth_place, birth_date, 
-								creator, modifier, created, modified) 
+								( id, surname, forename, customer_type, zip, city, street, email, phone, phone2, qualification, description, 
+								  additional_contact, additional_contact_phone, status, marital_status, tax_number, tb_number, birth_place, birth_date, 
+								mother_name, creator, modifier, created, modified) 
 						 values (
-								  :id, :surname, :forename, :customer_type, :zip, :city, :street, :phone, :qualification, :description, 
-								  :additional_contact, :additional_contact_phone, :status, :tax_number, :tb_number, :birth_place, :birth_date, 
-									:creator, :modifier, :created, :modified 
+								  :id, :surname, :forename, :customer_type, :zip, :city, :street, :email, :phone, :phone2, :qualification, :description, 
+								  :additional_contact, :additional_contact_phone, :status, :marital_status, :tax_number, :tb_number, :birth_place, :birth_date, 
+								  :mother_name,	:creator, :modifier, :created, :modified 
 								)");
 			$params = array(
 					':id' => $this->id,
@@ -228,16 +235,20 @@ class Customer implements JsonSerializable {
 					':zip'=>$this->zip,
 					':city'=>$this->city,
 					':street'=>$this->street,
+					':email'=>$this->email,
 					':phone'=>$this->phone,
+					':phone2'=>$this->phone2,
 					':qualification' => $this->qualification,
 					':description' => $this->description,
 					':additional_contact' => $this->additional_contact,
 					':additional_contact_phone' => $this->additional_contact_phone,
 					':status' => $this->status,
+					':marital_status' => $this->marital_status,
 					':tax_number' => $this->tax_number,
 					':tb_number' => $this->tb_number,
 					':birth_place' => $this->birth_place,
 					':birth_date' => $this->birth_date,
+					':mother_name' => $this->mother_name,
 					':creator'=>$this->modifier,
 					':modifier'=>$this->modifier,
 					':created'=> $t,
@@ -255,6 +266,9 @@ class Customer implements JsonSerializable {
 			if (!$this::isValidPhoneNumber($originalList[0]->phone)){
 				$originalList[0]->phone = '';
 			}
+			if (!$this::isValidPhoneNumber($originalList[0]->phone2)){
+				$originalList[0]->phone2 = '';
+			}
 			if (!$this::isValidPhoneNumber($originalList[0]->additional_contact_phone)){
 				$originalList[0]->additional_contact_phone = '';
 			}
@@ -268,17 +282,21 @@ class Customer implements JsonSerializable {
 					||	($original->getZip() != $this->zip)
 					||	($original->getCity() != $this->city)
 					||	($original->getStreet() != $this->street)
+					||	($original->getEmail() != $this->email)
 					||	($original->getPhone() != $this->phone)
+					||	($original->getPhone2() != $this->phone2)
 					||  ($original->getQualification() != $this->qualification)
 					||	($original->getDescription() != $this->description)
 					||	($original->getAdditionalContact() != $this->additional_contact)
 					||	($original->getAdditionalContactPhone() != $this->additional_contact_phone)
 					||	($original->getStatus() != $this->status)
+					||	($original->getMaritalStatus()!= $this->marital_status)
 					||	($original->getTaxNumber() != $this->tax_number)
 					||	($original->getTbNumber() != $this->tb_number)
 					||	($original->getBirthPlace() != $this->birth_place)
 					||	($original->getBirthDate() != $this->birth_date)
-					
+					||	($original->getMotherName() != $this->mother_name)
+						
 					){
 				
 				$db->beginTransaction();
@@ -290,16 +308,20 @@ class Customer implements JsonSerializable {
 							zip = :zip,
 							city = :city,
 							street = :street,
+							email = :email,
 							phone = :phone,
+							phone2 = :phone2,
 							qualification = :qualification,
 							description = :description,
 							additional_contact = :additional_contact,
 							additional_contact_phone = :additional_contact_phone,
 							status = :status,
+							marital_status = :marital_status,
 							tax_number = :tax_number,
 							tb_number = :tb_number,
 							birth_place = :birth_place,
 							birth_date = :birth_date,
+							mother_name = :mother_name,
 							modifier = :modifier,
 							modified = :modified
 							where
@@ -312,16 +334,20 @@ class Customer implements JsonSerializable {
 							':zip'=>$this->zip,
 							':city'=>$this->city,
 							':street'=>$this->street,
+							':email'=>$this->email,
 							':phone'=>$this->phone,
+							':phone2'=>$this->phone2,
 							':qualification' => $this->qualification,
 							':description' => $this->description,
 							':additional_contact' => $this->additional_contact,
 							':additional_contact_phone' => $this->additional_contact_phone,
 							':status' => $this->status,
+							':marital_status' => $this->marital_status,
 							':tax_number' => $this->tax_number,
 							':tb_number' => $this->tb_number,
 							':birth_place' => $this->birth_place,
 							':birth_date' => $this->birth_date,
+							':mother_name'=> $this->mother_name,
 							':modifier'=>$this->modifier,
 							':modified'=>$t,
 							':id'=>$this->id
@@ -364,6 +390,18 @@ class Customer implements JsonSerializable {
 						);
 						$pre->execute($params);
 					}
+					if ($original->getEmail() != $this->email){
+						$params = array(
+								':id' => SystemUtil::getGuid(),
+								':customer_id' => $this->id,
+								':data_type'=>'EMAIL_CHANGE',
+								':old_value'=>$original->getEmail() ,
+								':new_value'=>$this->getEmail(),
+								':creator'=>$this->modifier,
+								':created'=>$t
+						);
+						$pre->execute($params);
+					}
 					if ($original->getPhone() != $this->phone){
 						$params = array(
 								':id' => SystemUtil::getGuid(),
@@ -371,6 +409,18 @@ class Customer implements JsonSerializable {
 								':data_type'=>'PHONE_CHANGE',
 								':old_value'=>$original->getPhone() ,
 								':new_value'=>$this->getPhone(),
+								':creator'=>$this->modifier,
+								':created'=>$t
+						);
+						$pre->execute($params);
+					}
+					if ($original->getPhone2() != $this->phone2){
+						$params = array(
+								':id' => SystemUtil::getGuid(),
+								':customer_id' => $this->id,
+								':data_type'=>'PHONE2_CHANGE',
+								':old_value'=>$original->getPhone2() ,
+								':new_value'=>$this->getPhone2(),
 								':creator'=>$this->modifier,
 								':created'=>$t
 						);
@@ -429,6 +479,19 @@ class Customer implements JsonSerializable {
 						$pre->execute($params);
 					}
 					
+					if ($original->getMaritalStatus() != $this->marital_status){
+						$params = array(
+								':id' => SystemUtil::getGuid(),
+								':customer_id' => $this->id,
+								':data_type'=>'marital_STAT_CHANGE',
+								':old_value'=>$original->getMaritalStatus() ,
+								':new_value'=>$this->getMaritalStatus(),
+								':creator'=>$this->modifier,
+								':created'=>$t
+						);
+						$pre->execute($params);
+					}
+					
 					if ($original->getTaxNumber() != $this->tax_number){
 						$params = array(
 								':id' => SystemUtil::getGuid(),
@@ -456,14 +519,16 @@ class Customer implements JsonSerializable {
 					}
 					
 					if (($original->getBirthPlace() != $this->birth_place)
-						||($original->getBirthDate() != $this->birth_date)) 
+						||($original->getBirthDate() != $this->birth_date)
+						|| ($original->getMotherName() != $this->mother_name)	
+					   ) 
 					{
 						$params = array(
 								':id' => SystemUtil::getGuid(),
 								':customer_id' => $this->id,
 								':data_type'=>'BIRTH_DATA_CHANGE',
-								':old_value'=>$original->getBirthPlace() . ' ' . $original->getBirthDate() ,
-								':new_value'=>$this->getBirthPlace() . ' ' . $this->getBirthDate() ,
+								':old_value'=>$original->getBirthPlace() . ' ' . $original->getBirthDate(). ' an: ' . $original->getMotherName() ,
+								':new_value'=>$this->getBirthPlace() . ' ' . $this->getBirthDate() . ' an: ' . $this->getMotherName(),
 								':creator'=>$this->modifier,
 								':created'=>$t
 						);
@@ -503,6 +568,11 @@ class Customer implements JsonSerializable {
 	private $modifier;
 	private $created;
 	private $modified;
+	private $phone2;
+	private $email;
+	private $marital_status;
+	private $mother_name;
+	
 	/**
 	 *
 	 * @return string
@@ -924,6 +994,95 @@ class Customer implements JsonSerializable {
 		}
 		else {
 			throw new InvalidArgumentException("Érvénytelen másodlagos telefonszám formátum");
+		}
+		return $this;
+	}
+	
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getPhone2(){
+		return $this->phone2;
+	}
+	
+	/**
+	 *
+	 * @param string $phone2,
+	 */
+	public function setPhone2($phone2){
+	
+		if ($this::isValidPhoneNumber($phone2)){
+			$this->phone2 = $phone2;
+		}
+		else {
+			throw new InvalidArgumentException("Érvénytelen másodlagos telefonszám formátum");
+		}
+		return $this;
+	}
+	
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getEmail(){
+	
+		return $this->email;
+	}
+	
+	/**
+	 *
+	 * @param string $email
+	 */
+	public function setEmail($email){
+	
+		if (!empty($email)){
+			$this->email = substr($email, 0, 105);
+		}
+		return $this;
+	}
+	
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getMaritalStatus(){
+	
+		return $this->marital_status;
+	}
+	
+	/**
+	 *
+	 * @param string $maritalStatus
+	 */
+	public function setMaritalStatus($maritalStatus){
+	
+		if (!empty($maritalStatus)){
+			$this->marital_status = $maritalStatus;
+		}
+		return $this;
+	}
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getMotherName(){
+	
+		return $this->mother_name;
+	}
+	
+	/**
+	 *
+	 * @param string $motherName
+	 */
+	public function setMotherName($motherName){
+	
+		if (!empty($motherName)){
+			$this->mother_name = $motherName;
 		}
 		return $this;
 	}

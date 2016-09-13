@@ -131,7 +131,15 @@
 			</tr>
 			<tr>
 				<td>Telefon +36 </td>
-				<td colspan="3" ><input type="text" maxlength="12" id="customer-detail-phone" value="<%-phone%>" class="width100percent"/></td>
+				<td colspan="3" ><input type="text" maxlength="20" id="customer-detail-phone" value="<%-phone%>" class="width100percent"/></td>
+			</tr>
+			<tr>
+				<td>&nbsp; &nbsp; &nbsp; &nbsp;+36 </td>
+				<td colspan="3" ><input type="text" maxlength="20" id="customer-detail-phone2" value="<%-phone2%>" class="width100percent"/></td>
+			</tr>
+			<tr>
+				<td>Email </td>
+				<td colspan="3" ><input type="email" maxlength="105" id="customer-detail-email" value="<%-email%>" class="width100percent"/></td>
 			</tr>
 			<tr>
 				<td>Család gondozó</td>
@@ -144,6 +152,10 @@
 			<tr>
 				<td>Státusz</td>
 				<td colspan="3"><select id="customer-detail-customer-status" class="width100percent"/></td>
+			</tr>
+			<tr>
+				<td>Családi állapot </td>
+				<td colspan="3" ><select id="customer-detail-marital-status" class="width100percent"/></td>
 			</tr>
 			<tr>
 				<td>Minősítés</td>
@@ -171,6 +183,11 @@
 					<input class="input-short" type="text" id="customer-detail-birth-date-day" value="<% print(Util.nvl(birth_date, '').substr(8,2)); %>" maxlength="2"/>
 				<td>
 			</tr>
+			<tr>
+				<td>Anyja neve</td>
+				<td colspan="3"> <input type="text" maxlength="50" id="customer-detail-mother-name" value="<%-mother_name%>" class="width100percent"/></td>
+			</tr>
+			
 			<tr id="tr-customer-detail-created">
 				<td>Létrehozás</td>
 				<td colspan="3"><%-created_info%></td>
@@ -205,7 +222,7 @@
 						<td><%-rows[row].id%></td>
 						<td><%-rows[row].full_name%></td>
 						<td><%-rows[row].full_address%></td>
-						<td><%-rows[row].phone%></td>
+						<td><%-rows[row].phones%></td>
 						<td><%-rows[row].qualification_local%></td>
 						<td><%-rows[row].tax_number%></td>
 						<td><%-rows[row].tb_number%></td>

@@ -9,6 +9,12 @@ insert into code values ('TILTOTT', 'customer_qualification', 'Tiltott', 'SYSTEM
 insert into code values ('NORMAL', 'customer_qualification', 'Normál', 'SYSTEM', current_timestamp);
 insert into code values ('KIEMELT', 'customer_qualification', 'Kiemelt', 'SYSTEM', current_timestamp);
 
+insert into code values ('HAZAS', 'marital_status', 'Házas', 'SYSTEM', current_timestamp);
+insert into code values ('EGYEDULALLO', 'marital_status', 'Egyedülálló', 'SYSTEM', current_timestamp);
+insert into code values ('ELLETTARS', 'marital_status', 'Élettársi kapcsolatban', 'SYSTEM', current_timestamp);
+insert into code values ('OZVEGY', 'marital_status', 'Özvegy', 'SYSTEM', current_timestamp);
+insert into code values ('ELVALT', 'marital_status', 'Elvált', 'SYSTEM', current_timestamp);
+
 insert into code values ('FELAJANLAS', 'operation_type', 'Felajánlás', 'SYSTEM', current_timestamp);
 insert into code values ('KERVENYEZES', 'operation_type', 'Kérvényezés', 'SYSTEM', current_timestamp);
 
@@ -43,8 +49,11 @@ insert into code values ('SEGELY', 'income_type', 'Segély', 'SYSTEM', current_t
 
 insert into code values ('NAME_CHANGE', 'customer_history_data_type', 'Név változás', 'SYSTEM', current_timestamp);
 insert into code values ('ADDRESS_CHANGE', 'customer_data_type', 'Cím változás', 'SYSTEM', current_timestamp);
+insert into code values ('EMAIL_CHANGE', 'customer_history_data_type', 'Email cím változás', 'SYSTEM', current_timestamp);
 insert into code values ('PHONE_CHANGE', 'customer_history_data_type', 'Telefonszám változás', 'SYSTEM', current_timestamp);
+insert into code values ('PHONE2_CHANGE', 'customer_history_data_type', 'Másodlagos telefonszám változás', 'SYSTEM', current_timestamp);
 insert into code values ('STATUS_CHANGE', 'customer_data_type', 'Státusz változás', 'SYSTEM', current_timestamp);
+insert into code values ('MARTIAL_STAT_CHANGE', 'customer_data_type', 'Családi állapot változás', 'SYSTEM', current_timestamp);
 insert into code values ('DESCRIPTION_CHANGE', 'customer_history_data_type', 'Megjegyzés változás', 'SYSTEM', current_timestamp);
 insert into code values ('QUALIFICATION_CHANGE', 'customer_data_type', 'Minősítés változás', 'SYSTEM', current_timestamp);
 insert into code values ('ADD_CONTACT_CHANGE', 'customer_history_data_type', 'További kapcsolattartó változás', 'SYSTEM', current_timestamp);

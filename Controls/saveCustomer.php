@@ -21,12 +21,16 @@ $customer->setDescription(!empty($request->description)? $request->description :
 $customer->setAdditionalContact(!empty($request->additional_contact)? $request->additional_contact : null);
 $customer->setAdditionalContactPhone(!empty($request->additional_contact_phone)? $request->additional_contact_phone : null);
 $customer->setQualification($request->qualification);
+$customer->setEmail(!empty($request->email)?$request->email:null);
 $customer->setPhone($request->phone);
+$customer->setPhone2(!empty($request->phone2)?$request->phone2:null);
 $customer->setStatus($request->status);
+$customer->setMaritalStatus(!empty($request->marital_status)?$request->marital_status:null);
 $customer->setTaxNumber(!empty($request->tax_number)? $request->tax_number : null);
 $customer->setTbNumber(!empty($request->tb_number)? $request->tb_number : null);
 $customer->setBirthPlace(!empty($request->birth_place)? $request->birth_place : null);
 $customer->setBirthDate(!empty($request->birth_date)? $request->birth_date : null);
+$customer->setMotherName(!empty($request->mother_name)? $request->mother_name : null);
 $customer->setModifier(Session::getUserInfo($_COOKIE['sessionId'])->userName);
 JsonParser::sendJson($customer->save());
 

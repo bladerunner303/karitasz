@@ -84,24 +84,29 @@ create table customer
 	customer_type				varchar(20) not null, 
 	zip							varchar(4)	not null, 
 	city						varchar(35) not null,
-	street						varchar(35) not null, 
+	street						varchar(35) not null,
+	email						varchar(105)null, 
 	phone						varchar(20) not null, 
+	phone2						varchar(20) null,
 	qualification				varchar(20)	not null,
 	description					varchar(500)null,
 	additional_contact			varchar(50) null, 
 	additional_contact_phone 	varchar(20)	null,
 	status 						varchar(20)	not null,
+	marital_status				varchar(20) null,
 	tax_number					varchar(20) null, 
 	tb_number					varchar(20) null,
 	birth_date					date 		null,
 	birth_place					varchar(35) null,
+	mother_name					varchar(50) null,
 	creator 					varchar(20) not null,
 	created 					timestamp 	not null default current_timestamp,
 	modifier 					varchar(20) not null,
 	modified 					timestamp 	not null,
 	constraint pk_customer primary key (id),
 	constraint ck_customer_type check (customer_type in (select id from code where code_type = 'customer_type')),
-	constraint ck_customer_qualification check (qualification in (select id from code where code_type = 'customer_qualification'))
+	constraint ck_customer_qualification check (qualification in (select id from code where code_type = 'customer_qualification')),
+	constraint ck_customer_marital_status check (marital_status in (select id from code where code_type = 'marital_status'))
 )
 engine innodb;
 

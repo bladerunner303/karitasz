@@ -370,6 +370,7 @@ function openOpertaionDetail(id){
 					 others_income: null,
 					 created_info: null, 
 					 modified_info: null,
+					 last_status_changed_info: null,
 					 operationDetails: []
 					 };
 	$('#operation').hide();
