@@ -41,6 +41,7 @@ class CustomerControls  extends UnitTestBase {
 		}
 	
 		$this->assertEqual($response->content[0]->full_name, "Cég Group", "Nem jó a találat: " . $response->content[0]->full_name);
+		$this->assertEqual(count($response->content[0]->members), 1, "Nem jó mennyiségű találat: " . json_encode($response->content[0]->members));	
 	}
 	
 	function test_listCustomers_bad_cookie(){
@@ -98,10 +99,28 @@ class CustomerControls  extends UnitTestBase {
 		$this->assertEqual($row->tb_number, $customer->tb_number, "tb number mező nem egyezik " . $row->tb_number);
 		$this->assertEqual($row->mother_name, $customer->mother_name, "mother_name mező nem egyezik " . $row->mother_name);
 		
+		
+		$rows = $db->query("select * from customer_family_member where customer_id = '" . $row->id . "' order by name")->fetchAll(PDO::FETCH_OBJ);
+		if (count($rows) !=2){
+			$this->fail('Nem insertált family member sort');
+			return;
+		}
+		$this->assertEqual($rows[0]->name, $customer->members[0]->name, "name mező nem egyezik " . $rows[0]->name);
+		$this->assertEqual($rows[0]->description, $customer->members[0]->description, "description mező nem egyezik " . $rows[0]->description);
+		$this->assertEqual($rows[0]->family_member_customer, $customer->members[0]->family_member_customer, "family_member_customer mező nem egyezik " . $rows[0]->family_member_customer);
+		$this->assertEqual($rows[0]->family_member_type, $customer->members[0]->family_member_type, "family_member_type mező nem egyezik " . $rows[0]->family_member_type);
+		$this->assertEqual($rows[0]->birth_date, $customer->members[0]->birth_date, "birth_date mező nem egyezik " . $rows[0]->birth_date);
+		$this->assertEqual($rows[1]->name, $customer->members[1]->name, "name mező nem egyezik " . $rows[1]->name);
+		$this->assertEqual($rows[1]->description, $customer->members[1]->description, "description mező nem egyezik " . $rows[1]->description);
+		$this->assertEqual($rows[1]->family_member_customer, $customer->members[1]->family_member_customer, "family_member_customer mező nem egyezik " . $rows[1]->family_member_customer);
+		$this->assertEqual($rows[1]->family_member_type, $customer->members[1]->family_member_type, "family_member_type mező nem egyezik " . $rows[1]->family_member_type);
+		$this->assertEqual($rows[1]->birth_date, $customer->members[1]->birth_date, "birth_date mező nem egyezik " . $rows[1]->birth_date);
+
 	}
 	
 	function test_saveCustomer_good_simple_modify(){
 		$this->test_saveCustomer_good_simple_new();
+		sleep(1);
 		$db = Data::getInstance($this->unitDbSetting);
 		$customer = $db->query("select * from customer where surname = '" . $this::getCustomerObject()->surname . "'")->fetch(PDO::FETCH_OBJ);
 		$customer->status = 'INAKTIV';
@@ -111,6 +130,16 @@ class CustomerControls  extends UnitTestBase {
 		$customer->phone = '311234567';
 		$customer->additional_contact = 'Kata';
 		$customer->tb_number = '7654321';
+		
+		$customer->members = $db->query("select * from customer_family_member where customer_id = '" . $customer->id . "' order by name")->fetchAll(PDO::FETCH_OBJ);
+		$customer->members[0] = new stdClass();
+		$customer->members[0]->id = null;
+		$customer->members[0]->name = 'Módosult Marci';
+		$customer->members[0]->description = 'Leírás hosszan';
+		$customer->members[0]->family_member_customer = null;
+		$customer->members[0]->family_member_type = 'FM_GYERMEK';
+		$customer->members[0]->birth_date = '2010-01-01';
+		$customer->members[1]->birth_date = '2007-08-11';
 		
 		$response = $this->getResponse(URL_SAVE_CUSTOMER, $this->getPhpSessionCookie(), json_encode($customer));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
@@ -136,11 +165,29 @@ class CustomerControls  extends UnitTestBase {
 		$this->assertEqual($row->tax_number, $customer->tax_number, "tax number mező nem egyezik " . $row->tax_number);
 		$this->assertEqual($row->tb_number, $customer->tb_number, "tb number mező nem egyezik " . $row->tb_number);
 		$this->assertEqual($row->additional_contact, $customer->additional_contact, "additional_contact mező nem egyezik " . $row->additional_contact);
-	
+
+		$rows = $db->query("select * from customer_family_member where customer_id = '" . $row->id . "' order by name")->fetchAll(PDO::FETCH_OBJ);
+		if (count($rows) !=2){
+			$this->fail('Nem megfelelő számú family member sor maradt');
+			return;
+		}
+		$this->assertEqual($rows[0]->name, $customer->members[0]->name, "name mező nem egyezik " . $rows[0]->name);
+		$this->assertEqual($rows[0]->description, $customer->members[0]->description, "description mező nem egyezik " . $rows[0]->description);
+		$this->assertEqual($rows[0]->family_member_customer, $customer->members[0]->family_member_customer, "family_member_customer mező nem egyezik " . $rows[0]->family_member_customer);
+		$this->assertEqual($rows[0]->family_member_type, $customer->members[0]->family_member_type, "family_member_type mező nem egyezik " . $rows[0]->family_member_type);
+		$this->assertEqual($rows[0]->birth_date, $customer->members[0]->birth_date, "birth_date mező nem egyezik " . $rows[0]->birth_date);
+		$this->assertEqual($rows[1]->name, $customer->members[1]->name, "name mező nem egyezik " . $rows[1]->name);
+		$this->assertEqual($rows[1]->description, $customer->members[1]->description, "description mező nem egyezik " . $rows[1]->description);
+		$this->assertEqual($rows[1]->family_member_customer, $customer->members[1]->family_member_customer, "family_member_customer mező nem egyezik " . $rows[1]->family_member_customer);
+		$this->assertEqual($rows[1]->family_member_type, $customer->members[1]->family_member_type, "family_member_type mező nem egyezik " . $rows[1]->family_member_type);
+		$this->assertEqual($rows[1]->birth_date, $customer->members[1]->birth_date, "birth_date mező nem egyezik " . $rows[1]->birth_date);
+		
+		
 		$histories = $db->query("select * from customer_history where customer_id = '" . $row->id . "' order by case when data_type='NAME_CHANGE' THEN 1 ELSE 2 end ")->fetchAll(PDO::FETCH_OBJ);
 		
-		if (count($histories) != 7) {
-			$this->fail('Nem vett fel elég history sort!');
+		if (count($histories) != 12) {
+			$this->fail('Nem vett fel elég history sort! ' . count($histories));
+	//		echo(json_encode($histories));
 			return;
 		}
 		$nameHistory = $histories[0];
@@ -154,6 +201,25 @@ class CustomerControls  extends UnitTestBase {
 	
 	function test_saveCustomer_bad_cookie(){
 		$this->checkBadCookie(URL_SAVE_CUSTOMER);
+	}
+	
+	function test_listCustomerHistory_good_simple_id(){
+		$response = $this->getResponse(URL_LIST_CUSTOMER_HISTORY . '?id=F000005', $this->getPhpSessionCookie());
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
+		if (count($response->content) != HISTORY_COUNT){
+			$this->fail('Nem ' . HISTORY_COUNT . ' találatot kaptunk vissza, hanem ' . count($response->content));
+			return;
+		}
+	
+		$this->assertEqual($response->content[0]->data_type, "PHONE_CHANGE", "Nem jó a data_type: " . $response->content[0]->data_type);
+		$this->assertEqual($response->content[0]->data_type_local, "Telefonszám változás", "Nem jó a data_type_local: " . $response->content[0]->data_type_local);		
+		$this->assertEqual($response->content[1]->new_value, "Cég Group", "Nem jó az új érték: " . $response->content[0]->new_value);
+		$this->assertEqual($response->content[1]->old_value, "Régi név", "Nem jó a régi érték: " . $response->content[0]->old_value);
+
+	}
+	
+	function test_listCustomerHistory_bad_cookie(){
+		$this->checkBadCookie(URL_LIST_CUSTOMER_HISTORY);
 	}
 	
 	private static function getCustomerObject(){
@@ -178,27 +244,25 @@ class CustomerControls  extends UnitTestBase {
 		$customer->birth_place = null;
 		$customer->birth_date = null;
 		$customer->mother_name = null;
-		return $customer;	
+		$customer->members = array();
+		$customer->members[0] = new stdClass();
+		$customer->members[0]->id = null;
+		$customer->members[0]->name = 'valami';
+		$customer->members[0]->description = 'Leírás hosszan';
+		$customer->members[0]->family_member_customer = null;
+		$customer->members[0]->family_member_type = 'FM_GYERMEK';
+		$customer->members[0]->birth_date = '2010-01-01';
+		$customer->members[1] = new stdClass();
+		$customer->members[1]->id = null;
+		$customer->members[1]->name = 'valami más';
+		$customer->members[1]->description = null;
+		$customer->members[1]->family_member_customer = 'K000123';
+		$customer->members[1]->family_member_type = 'FM_HAZASTARS';
+		$customer->members[1]->birth_date = NULL;
+	
+		return $customer;
 	}
 	
-	function test_listCustomerHistory_good_simple_id(){
-		$response = $this->getResponse(URL_LIST_CUSTOMER_HISTORY . '?id=F000005', $this->getPhpSessionCookie());
-		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
-		if (count($response->content) != HISTORY_COUNT){
-			$this->fail('Nem ' . HISTORY_COUNT . ' találatot kaptunk vissza, hanem ' . count($response->content));
-			return;
-		}
-	
-		$this->assertEqual($response->content[0]->data_type, "PHONE_CHANGE", "Nem jó a data_type: " . $response->content[0]->data_type);
-		$this->assertEqual($response->content[0]->data_type_local, "Telefonszám változás", "Nem jó a data_type_local: " . $response->content[0]->data_type_local);		
-		$this->assertEqual($response->content[1]->new_value, "Cég Group", "Nem jó az új érték: " . $response->content[0]->new_value);
-		$this->assertEqual($response->content[1]->old_value, "Régi név", "Nem jó a régi érték: " . $response->content[0]->old_value);
-
-	}
-	
-	function test_listCustomerHistory_bad_cookie(){
-		$this->checkBadCookie(URL_LIST_CUSTOMER_HISTORY);
-	}
 	
 }
 ?>

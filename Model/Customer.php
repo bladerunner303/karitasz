@@ -256,6 +256,8 @@ class Customer implements JsonSerializable {
 			);
 
 			$pre->execute($params);
+			
+			$this->saveFamilyMembers(array());
 		}
 		else {
 			
@@ -276,28 +278,11 @@ class Customer implements JsonSerializable {
 			$original = new Customer();
 			SystemUtil::cast($original, $originalList[0]);
 			
-			if (
-						($original->getSurname()!= $this->surname)
-					||  ($original->getForename() != $this->forename)
-					||	($original->getZip() != $this->zip)
-					||	($original->getCity() != $this->city)
-					||	($original->getStreet() != $this->street)
-					||	($original->getEmail() != $this->email)
-					||	($original->getPhone() != $this->phone)
-					||	($original->getPhone2() != $this->phone2)
-					||  ($original->getQualification() != $this->qualification)
-					||	($original->getDescription() != $this->description)
-					||	($original->getAdditionalContact() != $this->additional_contact)
-					||	($original->getAdditionalContactPhone() != $this->additional_contact_phone)
-					||	($original->getStatus() != $this->status)
-					||	($original->getMaritalStatus()!= $this->marital_status)
-					||	($original->getTaxNumber() != $this->tax_number)
-					||	($original->getTbNumber() != $this->tb_number)
-					||	($original->getBirthPlace() != $this->birth_place)
-					||	($original->getBirthDate() != $this->birth_date)
-					||	($original->getMotherName() != $this->mother_name)
-						
-					){
+			$findFamilyMember = new CustomerFamilyMember();
+			$findFamilyMember->setCustomerId($this->id);
+			$originalMemberList = $findFamilyMember->find();
+			
+			if ($this->isChanged($original, $originalMemberList)){
 				
 				$db->beginTransaction();
 				try {
@@ -355,186 +340,11 @@ class Customer implements JsonSerializable {
 					
 					$pre->execute($params);
 					
-					$pre = $db->prepare("insert into customer_history
-							(id, customer_id, data_type, old_value, new_value, creator, created)
-							values
-							(:id, :customer_id, :data_type, :old_value, :new_value, :creator, :created) ");
+					$this->logChange($original);						
+					$this->saveFamilyMembers($originalMemberList);
+
 					
-					if (($original->getSurname()!= $this->surname)
-							|| ($original->getForename() != $this->forename)){
-							
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'NAME_CHANGE',
-								':old_value'=>$original->getSurname() . ' ' . $original->getForename(),
-								':new_value'=>$this->getSurname() . ' ' . $this->getForename(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-							
-					}
-					
-					if (($original->getZip() != $this->zip)
-							||	($original->getCity() != $this->city)
-							||	($original->getStreet() != $this->street)) {
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'ADDRESS_CHANGE',
-								':old_value'=>$original->getZip() . ' ' . $original->getCity() . ' ' . $original->getStreet(),
-								':new_value'=>$this->getZip() . ' ' . $this->getCity() . ' ' . $this->getStreet(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					if ($original->getEmail() != $this->email){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'EMAIL_CHANGE',
-								':old_value'=>$original->getEmail() ,
-								':new_value'=>$this->getEmail(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					if ($original->getPhone() != $this->phone){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'PHONE_CHANGE',
-								':old_value'=>$original->getPhone() ,
-								':new_value'=>$this->getPhone(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					if ($original->getPhone2() != $this->phone2){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'PHONE2_CHANGE',
-								':old_value'=>$original->getPhone2() ,
-								':new_value'=>$this->getPhone2(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					if ($original->getQualification() != $this->qualification){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'QUALIFICATION_CHANGE',
-								':old_value'=>$original->getQualification() ,
-								':new_value'=>$this->getQualification(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if	($original->getDescription() != $this->description){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'DESCRIPTION_CHANGE',
-								':old_value'=>$original->getDescription() ,
-								':new_value'=>$this->getDescription(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if (($original->getAdditionalContact() != $this->additional_contact)
-							|| ($original->getAdditionalContactPhone() != $this->additional_contact_phone)){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'ADD_CONTACT_CHANGE',
-								':old_value'=>$original->getAdditionalContact() . ' ' .  $original->getAdditionalContactPhone() ,
-								':new_value'=>$this->getAdditionalContact() . ' ' . $this->getAdditionalContactPhone(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if ($original->getStatus() != $this->status){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'STATUS_CHANGE',
-								':old_value'=>$original->getStatus() ,
-								':new_value'=>$this->getStatus(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if ($original->getMaritalStatus() != $this->marital_status){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'marital_STAT_CHANGE',
-								':old_value'=>$original->getMaritalStatus() ,
-								':new_value'=>$this->getMaritalStatus(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if ($original->getTaxNumber() != $this->tax_number){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'TAX_NUMBER_CHANGE',
-								':old_value'=>$original->getTaxNumber() ,
-								':new_value'=>$this->getTaxNumber(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if ($original->getTbNumber() != $this->tb_number){
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'TB_NUMBER_CHANGE',
-								':old_value'=>$original->getTbNumber() ,
-								':new_value'=>$this->getTbNumber(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
-					if (($original->getBirthPlace() != $this->birth_place)
-						||($original->getBirthDate() != $this->birth_date)
-						|| ($original->getMotherName() != $this->mother_name)	
-					   ) 
-					{
-						$params = array(
-								':id' => SystemUtil::getGuid(),
-								':customer_id' => $this->id,
-								':data_type'=>'BIRTH_DATA_CHANGE',
-								':old_value'=>$original->getBirthPlace() . ' ' . $original->getBirthDate(). ' an: ' . $original->getMotherName() ,
-								':new_value'=>$this->getBirthPlace() . ' ' . $this->getBirthDate() . ' an: ' . $this->getMotherName(),
-								':creator'=>$this->modifier,
-								':created'=>$t
-						);
-						$pre->execute($params);
-					}
-					
+										
 					$db->commit();
 				} catch (Exception $e) {
 					$db->rollback();
@@ -545,6 +355,307 @@ class Customer implements JsonSerializable {
 		}
 		return $this->id;
 
+	}
+	
+	private function logChange($original){
+		$t = SystemUtil::getCurrentTimestamp();
+		$db = Data::getInstance();
+		$pre = $db->prepare("insert into customer_history
+				(id, customer_id, data_type, old_value, new_value, creator, created)
+				values
+				(:id, :customer_id, :data_type, :old_value, :new_value, :creator, :created) ");
+			
+		if (($original->getSurname()!= $this->surname)
+				|| ($original->getForename() != $this->forename)){
+				
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'NAME_CHANGE',
+					':old_value'=>$original->getSurname() . ' ' . $original->getForename(),
+					':new_value'=>$this->getSurname() . ' ' . $this->getForename(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+				
+		}
+			
+		if (($original->getZip() != $this->zip)
+				||	($original->getCity() != $this->city)
+				||	($original->getStreet() != $this->street)) {
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'ADDRESS_CHANGE',
+					':old_value'=>$original->getZip() . ' ' . $original->getCity() . ' ' . $original->getStreet(),
+					':new_value'=>$this->getZip() . ' ' . $this->getCity() . ' ' . $this->getStreet(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+		if ($original->getEmail() != $this->email){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'EMAIL_CHANGE',
+					':old_value'=>$original->getEmail() ,
+					':new_value'=>$this->getEmail(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+		if ($original->getPhone() != $this->phone){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'PHONE_CHANGE',
+					':old_value'=>$original->getPhone() ,
+					':new_value'=>$this->getPhone(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+		if ($original->getPhone2() != $this->phone2){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'PHONE2_CHANGE',
+					':old_value'=>$original->getPhone2() ,
+					':new_value'=>$this->getPhone2(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+		if ($original->getQualification() != $this->qualification){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'QUALIFICATION_CHANGE',
+					':old_value'=>$original->getQualification() ,
+					':new_value'=>$this->getQualification(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if	($original->getDescription() != $this->description){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'DESCRIPTION_CHANGE',
+					':old_value'=>$original->getDescription() ,
+					':new_value'=>$this->getDescription(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if (($original->getAdditionalContact() != $this->additional_contact)
+				|| ($original->getAdditionalContactPhone() != $this->additional_contact_phone)){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'ADD_CONTACT_CHANGE',
+					':old_value'=>$original->getAdditionalContact() . ' ' .  $original->getAdditionalContactPhone() ,
+					':new_value'=>$this->getAdditionalContact() . ' ' . $this->getAdditionalContactPhone(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if ($original->getStatus() != $this->status){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'STATUS_CHANGE',
+					':old_value'=>$original->getStatus() ,
+					':new_value'=>$this->getStatus(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if ($original->getMaritalStatus() != $this->marital_status){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'marital_STAT_CHANGE',
+					':old_value'=>$original->getMaritalStatus() ,
+					':new_value'=>$this->getMaritalStatus(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if ($original->getTaxNumber() != $this->tax_number){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'TAX_NUMBER_CHANGE',
+					':old_value'=>$original->getTaxNumber() ,
+					':new_value'=>$this->getTaxNumber(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if ($original->getTbNumber() != $this->tb_number){
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'TB_NUMBER_CHANGE',
+					':old_value'=>$original->getTbNumber() ,
+					':new_value'=>$this->getTbNumber(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+			
+		if (($original->getBirthPlace() != $this->birth_place)
+				||($original->getBirthDate() != $this->birth_date)
+				|| ($original->getMotherName() != $this->mother_name)
+		)
+		{
+			$params = array(
+					':id' => SystemUtil::getGuid(),
+					':customer_id' => $this->id,
+					':data_type'=>'BIRTH_DATA_CHANGE',
+					':old_value'=>$original->getBirthPlace() . ' ' . $original->getBirthDate(). ' an: ' . $original->getMotherName() ,
+					':new_value'=>$this->getBirthPlace() . ' ' . $this->getBirthDate() . ' an: ' . $this->getMotherName(),
+					':creator'=>$this->modifier,
+					':created'=>$t
+			);
+			$pre->execute($params);
+		}
+		
+	}
+	
+	private function isChanged($original, $originalFamilyMembers){
+	
+		if (empty($this->id)){
+			return false;
+		}
+		
+		if (($original->getSurname()!= $this->surname)
+		||  ($original->getForename() != $this->forename)
+		||	($original->getZip() != $this->zip)
+		||	($original->getCity() != $this->city)
+		||	($original->getStreet() != $this->street)
+		||	($original->getEmail() != $this->email)
+		||	($original->getPhone() != $this->phone)
+		||	($original->getPhone2() != $this->phone2)
+		||  ($original->getQualification() != $this->qualification)
+		||	($original->getDescription() != $this->description)
+		||	($original->getAdditionalContact() != $this->additional_contact)
+		||	($original->getAdditionalContactPhone() != $this->additional_contact_phone)
+		||	($original->getStatus() != $this->status)
+		||	($original->getMaritalStatus()!= $this->marital_status)
+		||	($original->getTaxNumber() != $this->tax_number)
+		||	($original->getTbNumber() != $this->tb_number)
+		||	($original->getBirthPlace() != $this->birth_place)
+		||	($original->getBirthDate() != $this->birth_date)
+		||	($original->getMotherName() != $this->mother_name)
+		){
+			return true;
+		}
+		
+		if (count($originalFamilyMembers) != count($this->familyMembers)){
+			return true;
+		}
+		
+		foreach ($this->familyMembers as $index => $familyMember) {
+			if (empty($familyMember->id)){
+				return true;
+			}
+			
+			foreach ($originalFamilyMembers as $index => $originalMember) {
+				if ($originalMember->id == $familyMember->id){
+					if (($originalMember->name != $familyMember->name)
+						||  ($originalMember->family_member_customer != $familyMember->family_member_customer)
+						||  ($originalMember->family_member_type != $familyMember->family_member_type)
+						||  ($originalMember->birth_date != $familyMember->birth_date)
+						||  ($originalMember->description != $familyMember->description)
+						){
+							return true;
+						}			
+				}
+			}
+		}	
+
+		return false;
+		
+	}
+	
+	private function saveFamilyMembers($originalMemberList){
+	
+		//Töröljük a be nem küldött familyMembers-eket. 
+		foreach ($originalMemberList as $key => $originalMember) {
+			
+			$found = false;
+			foreach ($this->familyMembers as $familyMember) {
+				if ($familyMember->id == $originalMember->id){
+					$found = true;
+					break;
+				}
+			}
+			if (!$found){
+				//delete and log
+				$member = new CustomerFamilyMember();
+				$member->setId($originalMember->id);
+				$member->setCustomerId($this->id);
+				$member->remove($this->modifier);
+			}
+		}
+		
+		//updateljük ami módosult
+		foreach ($originalMemberList as $key => $originalMember) {
+			foreach ($this->familyMembers as $familyMember) {
+				if ($familyMember->id == $originalMember->id){
+					if (($originalMember->name != $familyMember->name) 
+					|| ($originalMember->description != $familyMember->description)
+					|| ($originalMember->birth_date != $familyMember->birth_date)
+					|| ($originalMember->family_member_type != $familyMember->family_member_type)
+					|| ($originalMember->family_member_customer != $familyMember->family_member_customer)
+					){
+						$member = new CustomerFamilyMember();
+						SystemUtil::cast($member, $familyMember);
+						$member->save($this->modifier);
+						break;
+					}
+				}
+			}
+		}
+		
+		
+		//Beszurjuk az új sorokat
+			
+		foreach ($this->familyMembers as $index => $familyMember) {
+				
+			if (empty($familyMember->id)){
+				$member = new CustomerFamilyMember();
+				$member->setCustomerId($this->id);
+				$member->setName($familyMember->name);
+				$member->setFamilyMemberType($familyMember->family_member_type);
+				$member->setFamilyMemberCustomer($familyMember->family_member_customer);
+				$member->setBirthDate($familyMember->birth_date);
+				$member->setDescription($familyMember->description);
+				$member->save($this->modifier);
+			}
+			
+		}
+		
 	}
 
 	private $id;
@@ -572,6 +683,7 @@ class Customer implements JsonSerializable {
 	private $email;
 	private $marital_status;
 	private $mother_name;
+	private $familyMembers;
 	
 	/**
 	 *
@@ -1086,6 +1198,30 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
+	
+	
+	/**
+	 *
+	 * @return array
+	 */
+	public function getFamilyMembers(){
+	
+		return $this->familyMembers;
+	}
+	
+	/**
+	 *
+	 * @param array $familyMembers
+	 */
+	public function setFamilyMembers($familyMembers){
+	
+		if (!empty($familyMembers)){
+			$this->familyMembers = $familyMembers;
+		}
+		return $this;
+	}
+	
+	
 	
 	private static function isValidPhoneNumber($phoneNumber){
 		$regexp = Config::getContextParam("VALID_PHONE_NUMBER_REGEXP");

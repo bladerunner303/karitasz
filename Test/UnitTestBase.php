@@ -48,6 +48,7 @@ class UnitTestBase extends UnitTestCase {
 		$db->exec("delete from code where id in ('GT_ALMAFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");
 		$db->exec("delete from operation_detail where id <> '0'");
 		$db->exec("delete from operation where id <> 0");
+		$db->exec("delete from customer_family_member where id <> '0'");
 		$db->exec("delete from customer_history where id <> '0'");
 		$db->exec("delete from customer where id <> '0'");
 
@@ -69,6 +70,12 @@ class UnitTestBase extends UnitTestCase {
 				VALUES ('a', 'F000005','Régi név', 'Cég Group', 'NAME_CHANGE', CURRENT_TIMESTAMP, 'SYSTEM');");
 		$db->exec("INSERT INTO customer_history(id, customer_id, old_value, new_value, data_type, created, creator)
 				VALUES ('B', 'F000005','307654326', '307654321', 'PHONE_CHANGE' , CURRENT_TIMESTAMP, 'SYSTEM');");
+
+		$db->exec("insert into customer_family_member(id, customer_id, name, family_member_type)
+					values ('h77c8204-5ti3-99eb-11e6-9013f7c56u7d', 'F000005', 'Családtag Csaba', 'FM_GYERMEK')");
+		
+		$db->exec("insert into customer_family_member(id, customer_id, name, family_member_type, birth_date)
+				values ('c8204hj4-8t93-9rec-11f6-9f73e7u5fegb', 'K000221', 'Feleség Fanni', 'FM_HAZASTARS', '1984-10-10')");
 		
 		$db->exec("INSERT INTO operation 
 				(id, operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level, sender, 

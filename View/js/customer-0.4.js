@@ -1,6 +1,6 @@
 
 //global constans
-var CUSTOMER_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=status;customer_qualification;marital_status&x=' + new Date().getTime().toString();
+var CUSTOMER_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=family_member;status;customer_qualification;marital_status&x=' + new Date().getTime().toString();
 var CUSTOMER_URL_REFRESH = '../Controls/listCustomers.php';
 var CUSTOMER_URL_SIMILAR = '../Controls/similarCustomers.php';
 var CUSTOMER_URL_SAVE = '../Controls/saveCustomer.php';
@@ -36,6 +36,7 @@ function getCustomerSelectItems(){
 	    	statuses = data.status;
 	    	customerQualifications = data.customer_qualification;
 	    	maritalStatuses = data.marital_status;
+	    	familyMembers = data.family_member;
 	    },
 		error: function(response) {
 			Util.handleErrorToConsole(response);
@@ -43,6 +44,11 @@ function getCustomerSelectItems(){
 	    }
 	});
 }
+
+function initCustomerFamilyMemberSpecialFields(){
+	$('.member-datepicker').datepicker( $.datepicker.regional[ "hu" ] );	
+}
+
 
 function initCustomerSelectElements(selectedStatus, selectedQualification, selectedMaritalStatus){
 	
@@ -102,6 +108,7 @@ function openCustomerDetail(id) {
 	
 	$('#customer-selected-id').val(id);
 	var customerDetailTemplate = _.template($('#template_customer_detail').html());
+	var customerFamilyMemberTemplate = _.template($('#template_customer_family_member').html());
 	customerData = {id: null, //'<script type="text/javascript">var x="v"; alert("xss");</script>', 
 						surname: null,
 						forename: null, 
@@ -121,15 +128,20 @@ function openCustomerDetail(id) {
 						birth_date: null,
 						mother_name: null,
 						created_info: null, 
-						modified_info: null};
+						modified_info: null,
+						members: []};
 	$('#customer').hide();
 	
 	if (id == 0){
 		//Új
 		$('#customer-detail-general').html(customerDetailTemplate(customerData));
+		$('#customer-detail-family-member').html(customerFamilyMemberTemplate({rows: customerData.members}));
+    	
 		initCustomerDetailsEvents();
 		initCustomerSelectElements(null, 'NORMAL');
 		initCustomerDetailsNumericField();
+		initCustomerFamilyMemberSpecialFields();
+		
 		$('#tr-customer-detail-id').hide();
 		$('input[name=customer-detail-customer-type]').removeAttr( "disabled" );
 		$('#tr-customer-detail-created').hide();
@@ -154,9 +166,11 @@ function openCustomerDetail(id) {
 		    	
 		    	customerData = data[0];
 		    	$('#customer-detail-general').html(customerDetailTemplate(customerData));
+		    	$('#customer-detail-family-member').html(customerFamilyMemberTemplate({rows: customerData.members}));
 		    	initCustomerDetailsEvents();
 		    	initCustomerSelectElements(customerData.status, customerData.qualification, customerData.marital_status);
 		    	initCustomerDetailsNumericField();
+		    	initCustomerFamilyMemberSpecialFields();
 		    	$('#tr-customer-detail-id').show();
 		    	$('input[name=customer-detail-customer-type]').val([customerData.customer_type]);
 		    	$('input[name=customer-detail-customer-type]').attr('disabled', 'disabled');
@@ -185,6 +199,7 @@ function initCustomerDetailsEvents(){
 	handleCustomerSaveClick();
 	handleCustomerZipChange();
 	handleCustomerCancelClick();
+	handleAddCustomerDetailFamilyMemberClick();
 }
 
 function initCustomerDetailsNumericField(){
@@ -264,6 +279,20 @@ function handleFindCustomerTypeRadioChange(){
 	});
 }
 
+function handleAddCustomerDetailFamilyMemberClick(){
+	$('#add-customer-detail-family-member').click(function(){
+		var familyMemberRowTemplate = _.template($('#template_customer_family_member_row').html());
+		var lastTr = $('#customer-detail-family-member-table tr:last');
+		if (lastTr.length == 0){
+			$('#customer-detail-family-member-table').append(familyMemberRowTemplate);
+		}
+		else {
+			lastTr.after(familyMemberRowTemplate);
+		}
+		initCustomerFamilyMemberSpecialFields();
+	});
+}
+
 function reloadCustomerData(){
 	//Adatok visszagyűjtése
 	customerData.id = $('#customer-selected-id').val(); 
@@ -292,6 +321,24 @@ function reloadCustomerData(){
 		customerData.birth_date = null;
 	}
 	customerData.birth_place = $.trim($('#customer-detail-birth-place').val());
+	//members
+	customerData.members = [];
+
+
+	$("#customer-detail-family-member-table .item").each(function() {
+	  $this = $(this);
+	  var member = {};
+	  member.name = $.trim($this.find('.name').val());
+	  if (!Util.isNullOrEmpty(member.name)){
+		  member.id = $this.find(".id").val();
+		  member.family_member_customer = $this.find('.family_member_customer').val();
+		  member.birth_date = $.trim($this.find('.member-datepicker').val());
+		  member.family_member_type = $this.find('.member-type-select').val();
+		  member.description = $.trim($this.find('.description').val());
+		  customerData.members.push(member);
+	  }
+	});
+
 }
 
 function checkCustomerData(){

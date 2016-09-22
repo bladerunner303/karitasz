@@ -52,10 +52,12 @@
 			<div id="customer-detail-tabs">
 			  <ul>
 			    <li><a href="#customer-detail-general">Alapadatok</a></li>
+			    <li><a href="#customer-detail-family-member">Családtagok</a></li>
 			    <li><a href="#customer-detail-operation" id="href-customer-detail-operation">Kérvények/felajánlások</a></li>
 			    <li><a href="#customer-detail-log" id="href-customer-detail-log">Adat változások</a></li>
 			  </ul>
 			    <div id="customer-detail-general"></div>
+			    <div id="customer-detail-family-member"></div>
 			    <div id="customer-detail-operation">
 			    	<?php require_once 'operation.php';	?>
 			    </div>
@@ -103,6 +105,57 @@
 			<% } %>
 		</script>
 		
+		<script type="text/x-custom-template" id="template_customer_family_member">
+			
+			<table id="customer-detail-family-member-table">
+				<% for(var row in rows) { %>
+					<tr class="item">
+						<td><input type="hidden" class="id" value="<%-rows[row].id%>" />
+							Név: <input class="name" type="text" maxlength="50" value="<%-rows[row].name%>" title="Családtag neve"/></td>
+						<td>Azonosító: <input class="family_member_customer" type="text" maxlength="10" value="<%-rows[row].family_member_customer%>" title="Ha van kapcsolodó ügyfél"/></td>
+						<td>Szül. dátum: <input type="text" class="member-datepicker" value="<%-rows[row].birth_date%>" title="Születési dátum"/></td>
+						<td>Típus: <select class="member-type-select">
+									<% for(var member in familyMembers) { %>
+										<option value="<%-familyMembers[member].id%>" 
+										<% if (familyMembers[member].id == rows[row].family_member_type) { print('selected="selected"');} %> >
+										<%-familyMembers[member].code_value%>
+										</option>
+									<% } %>
+							</select></td>
+						<td>Egyéb: <input type="text" class="description" maxlength="255" style="width: 300px;" value="<%-rows[row].description%>" title="Leírás"></td>
+						<td>
+							<div class="icon-trash-full cursor-link" onClick="$(this).closest('tr').remove();" title="Törlés"></div>
+						</td>
+					</tr>
+				<% } %>
+					
+			</table>
+			<div class="icon-add" title="Új családtag hozzáadása" id="add-customer-detail-family-member"></div>
+		</script>
+		
+		<script type="text/x-custom-template" id="template_customer_family_member_row">
+					<tr class="item">
+						<td><input type="hidden" class="id" value="" />
+							Név: <input class="name" type="text" maxlength="50" value="" title="Családtag neve"/></td>
+						<td>Azonosító: <input class="family_member_customer" type="text" maxlength="10" value="" title="Ha van kapcsolodó ügyfél"/></td>
+						<td>Szül. dátum: <input type="text" class="member-datepicker" value="" title="Születési dátum"/></td>
+						<td>Típus: <select class="member-type-select">
+									<% for(var member in familyMembers) { %>
+										<option value="<%-familyMembers[member].id%>" >
+										<%-familyMembers[member].code_value%>
+										</option>
+									<% } %>
+							</select></td>
+						<td>Egyéb: <input type="text"  class="description" maxlength="255" style="width: 300px;" value="" title="Leírás"></td>
+						<td>
+							<div class="icon-trash-full cursor-link" onClick="$(this).closest('tr').remove();" title="Törlés"></div>
+						</td>
+					</tr>
+		</script>
+		<!--
+		removeCustomerDetailFamilyMember
+		 
+		 -->
 		<script type="text/x-custom-template" id="template_customer_detail">
 		<table>
 			<tr id="tr-customer-detail-id">

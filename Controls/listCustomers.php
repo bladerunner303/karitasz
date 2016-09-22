@@ -18,6 +18,13 @@ $finder = new Customer();
 $finder->setId($id);
 $finder->setCustomerType($customerType);
 
-JsonParser::sendJson($finder->find($text, $limit));
+$ret = $finder->find($text, $limit);
+if ((!empty($id)) && (count($ret) == 1)){
+	$finderMember = new CustomerFamilyMember();
+	$finderMember->setCustomerId($id);
+	$ret[0]->members = $finderMember->find();
+}
+
+JsonParser::sendJson($ret);
 
 ?>

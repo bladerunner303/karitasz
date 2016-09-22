@@ -32,6 +32,7 @@ $customer->setBirthPlace(!empty($request->birth_place)? $request->birth_place : 
 $customer->setBirthDate(!empty($request->birth_date)? $request->birth_date : null);
 $customer->setMotherName(!empty($request->mother_name)? $request->mother_name : null);
 $customer->setModifier(Session::getUserInfo($_COOKIE['sessionId'])->userName);
+$customer->setFamilyMembers($request->members);
 JsonParser::sendJson($customer->save());
 
 ?>

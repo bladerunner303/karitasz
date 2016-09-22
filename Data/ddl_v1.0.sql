@@ -124,6 +124,22 @@ create table customer_history
 )
 engine innodb;
 
+create table customer_family_member
+(
+	id						varchar(36) not null,
+	customer_id				varchar(10) not null,
+	name					varchar(50) not null,
+	family_member_customer varchar(10) null, 
+	birth_date				date		null,
+	family_member_type		varchar(20) not null,
+	description				varchar(255)null,
+	constraint pk_customer_family primary key(id),
+	constraint fk_customer_customer_family foreign key (customer_id) references customer(id),
+	constraint fk_customer_family_member_type foreign key (family_member_type) references code(id),
+	constraint ck_customer_family_member_type check (family_member_type in (select id from code where code_type='family_member'))
+)
+engine innodb;
+
 create table operation
 (
 	id						integer 	not null AUTO_INCREMENT,

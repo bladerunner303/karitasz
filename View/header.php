@@ -47,6 +47,7 @@
 	<!-- Javascript -->
 	<script type="text/javascript" src="js/lib/jquery-2.2.4.min.js"></script>
 	<script type="text/javascript" src="js/lib/jquery-ui-1.11.3.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.ui.datepicker-hu.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.dataTables-1.10.5.min.js"></script> 
 	<script type="text/javascript" src="js/lib/jquery.numericField-1.0.js"></script> 
 	<script type="text/javascript" src="js/lib/underscore-1.8.3.min.js"></script>

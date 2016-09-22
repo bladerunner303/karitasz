@@ -6,6 +6,7 @@ senders = [];
 incomeTypes = [];
 needinessLevels = [];
 customerQualifications = [];
+familyMembers = [];
 
 $( document ).ready(function() {
 

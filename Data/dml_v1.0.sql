@@ -15,6 +15,12 @@ insert into code values ('ELLETTARS', 'marital_status', 'Élettársi kapcsolatba
 insert into code values ('OZVEGY', 'marital_status', 'Özvegy', 'SYSTEM', current_timestamp);
 insert into code values ('ELVALT', 'marital_status', 'Elvált', 'SYSTEM', current_timestamp);
 
+insert into code values ('FM_GYERMEK', 'family_member', 'Gyermek', 'SYSTEM', current_timestamp);
+insert into code values ('FM_UNOKA', 'family_member', 'Unoka', 'SYSTEM', current_timestamp);
+insert into code values ('FM_HAZASTARS', 'family_member', 'Házastárs', 'SYSTEM', current_timestamp);
+insert into code values ('FM_ELETTARS', 'family_member', 'Élettárs', 'SYSTEM', current_timestamp);
+insert into code values ('FM_FOGY_ELTARTOTT', 'family_member', 'Fogyatékos eltartott', 'SYSTEM', current_timestamp);
+ 
 insert into code values ('FELAJANLAS', 'operation_type', 'Felajánlás', 'SYSTEM', current_timestamp);
 insert into code values ('KERVENYEZES', 'operation_type', 'Kérvényezés', 'SYSTEM', current_timestamp);
 
@@ -60,6 +66,10 @@ insert into code values ('ADD_CONTACT_CHANGE', 'customer_history_data_type', 'To
 insert into code values ('TAX_NUMBER_CHANGE', 'customer_history_data_type', 'Adószám változás', 'SYSTEM', current_timestamp);
 insert into code values ('TB_NUMBER_CHANGE', 'customer_history_data_type', 'Taj szám változás', 'SYSTEM', current_timestamp);
 insert into code values ('BIRTH_DATA_CHANGE', 'customer_history_data_type', 'Születési adatok változás', 'SYSTEM', current_timestamp);
+insert into code values ('MEMBER_NEW', 'customer_history_data_type', 'Felvett családtag', 'SYSTEM', current_timestamp);
+insert into code values ('MEMBER_MODIFY', 'customer_history_data_type', 'Módosult családtag', 'SYSTEM', current_timestamp);
+insert into code values ('MEMBER_REMOVE', 'customer_history_data_type', 'Kitörölt családtag', 'SYSTEM', current_timestamp);
+
 
 /*
 insert into code values ('GT_KOMOD', 'goods_type', 'Komód', 'SYSTEM', current_timestamp);
