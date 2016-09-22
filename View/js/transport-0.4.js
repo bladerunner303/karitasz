@@ -1,39 +1,57 @@
-$( document ).ready(function() {
+//global constanst
+var TRANSPORT_URL_REFRESH = '../Controls/listTransports.php';
 
-	$('#refresh-transport-list').click(function(){
-		var id = $('#transport-selected-id').val();
-		var transportTableTemplate = _.template($('#template-transport-table').html());
-		///TODO: mockot kicserélni
-		var rows = [];
-		rows.push ({id: 1000,
-					status: 'Befejezett', 
-					transportDate: '2016.06.01',
-					createdInfo: '2016.06.01. 14:12:45 (Jerne)',
-					modifiedInfo: '2016.06.04. 15:12:25 (Jerne)'
-				});
-		rows.push({
-					id: 1002,
-					status: 'Folyamatban', 
-					transportDate: '2016.06.02',
-					createdInfo: '2016.06.04. 14:12:45 (Jerne)',
-					modifiedInfo: null
-				});	
-		
-		$('#transport-table > tbody').html(
-				transportTableTemplate({rows: rows})
-		);
-		
-		setTransportTableFormat();
-	});
+//global variables
+var transportDataTable;
+
+$( document ).ready(function() {
 	
+	initDatePickerFields();
+	handleRefreshTransportListClick();
+	handleAddTransportClick();
+	initTransportAddressDialog();
+	initTransportAddressAddDialog();
+	
+});
+
+function initDatePickerFields(){
+	$('#transport-date').datepicker();
+	$('#find-transport-begin-date').datepicker($.datepicker.regional[ "hu" ]);
+	$('#find-transport-end-date').datepicker($.datepicker.regional[ "hu" ]);
+}
+
+function handleRefreshTransportListClick(){
+	$('#refresh-transport-list').click(function(){
+		var url = TRANSPORT_URL_REFRESH;
+		url = Util.addUrlParameter(url, 'begin_date', $('#find-transport-begin-date').val());
+		url = Util.addUrlParameter(url, 'end_date', $('#find-transport-end-date').val());
+		url = Util.addUrlParameter(url, 'customer', $('#find-transport-customer').val());
+		url = Util.addUrlParameter(url, 'limit', $('#find-transport-result-max').val());
+		url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+		
+		$.ajax({
+		    url: url,
+		    type: 'GET',
+		    success: function(data){ 
+		    	Util.clearDataTable(transportDataTable);
+		    	var transportTableTemplate = _.template($('#template-transport-table').html());
+		    	$('#transport-table > tbody').html(	transportTableTemplate({rows: data}) );	
+		    	setTransportTableFormat();
+		    },
+			error: function(response) {
+				Util.handleErrorToConsole(response);
+		       
+		    }
+		});
+		
+	});
+}
+
+function handleAddTransportClick(){
 	$('#add-transport').click(function(){
 		openTransportDetail(0);
 	});
-	
-	initTransportAddressDialog();
-	initTransportAddressAddDialog();
-	$('#transport-date').datepicker();
-});
+}
 
 function initTransportAddressDialog(){
 	$('#dialog-transport-address').dialog({

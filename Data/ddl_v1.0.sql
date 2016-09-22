@@ -191,7 +191,7 @@ engine innodb;
 
 create table transport
 (
-	id						varchar(36) not null, 
+	id						integer 	not null AUTO_INCREMENT, 
 	transport_date			date		not null, 
 	status					varchar(20) not null, 
 	creator 				varchar(20) not null,
@@ -207,7 +207,7 @@ create table transport_address
 (
 	id						varchar(36) not null, 
 	operation_id			integer		not null, 
-	transport_id			varchar(36) not null, 
+	transport_id			integer		not null, 
 	zip						varchar(4)	not null, 
 	city					varchar(35) not null,
 	street					varchar(35) not null, 

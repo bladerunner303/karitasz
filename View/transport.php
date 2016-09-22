@@ -11,19 +11,27 @@
 			<fieldset class="fieldSetSize">
 			    <legend>Keresési feltételek:</legend>
 			    	<table>
-			    		<tr><td>Státusz: </td><td><select id="find-transport-status" class="width500"></select></td></tr>
+			    		<tr>
+			    			<td>Dátum tól-ig: </td>
+			    			<td>
+			    				<input type="text" id="find-transport-begin-date"/>
+			    				<input type="text" id="find-transport-end-date"/>
+			  				</td></tr>
 			    		<tr><td>Ügyfél: </td><td><input type="text" id="find-transport-customer" class="width500 find"></input></td></tr>
 			    	</table>
 		    	
 		  	</fieldset>
 			<br>
+			 <div style="float:left">Találatok maximális száma: 
+		  		<input type="text" id="find-transport-result-max" value="<?php echo Config::getContextParam("DEFAULT_RESULT_SIZE"); ?>" class="input-short"/>
+		    </div>&nbsp;
 			<div class="icon-refresh" id="refresh-transport-list" title="Frissiti a táblázatot" ></div>
 			<div class="icon-add" id="add-transport" title="Új tétel rögzítése"></div>
 		
 			<table id="transport-table" style="display: none">
 				<thead>
 					<tr>
-						<td>Azonosító</td>
+						<td>Azon</td>
 						<td>Dátum</td>
 						<td>Státusz</td>
 						<td>Létrehozás</td>
@@ -109,11 +117,11 @@
 			<script type="text/template" id="template-transport-table">
 				<% for(var row in rows) { %>
 					<tr>
-						<td><%-rows[row].id%></td>
-						<td><%-rows[row].transportDate%></td>
-						<td><%-rows[row].status%></td>
-						<td><%-rows[row].creatorInfo%></td>
-						<td><%-rows[row].modifiedInfo%></td>
+						<td><%-rows[row].id_format%></td>
+						<td><%-rows[row].transport_date%></td>
+						<td><%-rows[row].status_local%></td>
+						<td><%-rows[row].created_info%></td>
+						<td><%-rows[row].modified_info%></td>
 						<td>
 							<div class="icon-edit-little" onclick="openTransportDetail(<%-rows[row].id%>);" title="Részletek"></div>
 							<div class="icon-edit-little" onclick="openAddress(<%-rows[row].id%>);" title="Címek"></div>
@@ -175,7 +183,7 @@
 		</div>
 
 		</script>
-		<script type="text/javascript" src="js/transport-0.1.js"></script>
+		<script type="text/javascript" src="js/transport-0.4.js"></script>
 		
     </body>
 </html>

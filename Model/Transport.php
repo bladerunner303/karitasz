@@ -10,10 +10,15 @@ class Transport implements JsonSerializable {
 
 	public function find($beginDate, $endDate){
 		$sql = "select 
-					* 
+					t.*, 
+					concat(substring(created, 1, 4), '/', lpad(t.id, 8, '0')) id_format,
+					code_status.code_value status_local,
+					concat(t.created, ' (', t.creator, ')') created_info,
+					concat(t.modified, ' (', t.modifier, ')') modified_info
 				from 
-					transport 
-				where (:id is null or id = :id)
+					transport t
+				inner join code code_status on t.status = code_status.id
+				where (:id is null or t.id = :id)
 				and transport_date between :begin_date and :end_date 
 				order by transport_date";
 		$db = Data::getInstance();
