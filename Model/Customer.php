@@ -143,7 +143,8 @@ class Customer implements JsonSerializable {
 				and (:id is null or c.id = :id)
 				and (:customer_type is null or c.customer_type = :customer_type)
 				and concat( c.id, 
-							c.surname, 
+							c.surname,
+							' ', 
 							coalesce(c.forename, ''),
 							c.zip,
 						    c.city, 
