@@ -33,6 +33,9 @@ class Transport implements JsonSerializable {
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
 	
+	/**
+	 * @return INT id
+	 */
 	public function save(){
 		
 		$t = SystemUtil::getCurrentTimestamp();
@@ -42,12 +45,10 @@ class Transport implements JsonSerializable {
 		
 		if (empty($this->id)){
 		
-			$this->id = SystemUtil::getGuid();
-			$sql = "insert into transport (id, transport_date, status, creator, created, modifier, modified)
-					values (:id, :transport_date, :status, :creator, :created, :modifier, :modified)";
+			$sql = "insert into transport ( transport_date, status, creator, created, modifier, modified)
+					values (:transport_date, :status, :creator, :created, :modifier, :modified)";
 			
 			$pre = $db->prepare($sql);
-			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 			$pre->bindValue(':transport_date', $this->transport_date, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 			$pre->bindValue(':creator', $this->modifier);
@@ -56,6 +57,8 @@ class Transport implements JsonSerializable {
 			$pre->bindValue(':modified', $t, PDO::PARAM_STR);
 			
 			$pre->execute();
+			
+			$this->id = (int)$db->query("select max(id) maxid from transport")->fetch(PDO::FETCH_OBJ)->maxid;
 			
 			$this->saveAddresses();
 		}
@@ -67,7 +70,7 @@ class Transport implements JsonSerializable {
 						modified = :modified
 					where id = :id";
 			$pre = $db->prepare($sql);
-			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
+			$pre->bindValue(':id', $this->id, PDO::PARAM_INT);
 			$pre->bindValue(':transport_date', $this->transport_date, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 			$pre->bindValue(':modifier', $this->modifier, PDO::PARAM_STR);
@@ -112,21 +115,21 @@ class Transport implements JsonSerializable {
 	
 	/**
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function getId(){
 	
-		return $this->id;
+		return (int)$this->id;
 	}
 	
 	/**
 	 *
-	 * @param string $id
+	 * @param int $id
 	 */
 	public function setId($id){
 	
 		if (!empty($id)){
-			$this->id = $id;
+			$this->id = (int)$id;
 		}
 		return $this;
 	}

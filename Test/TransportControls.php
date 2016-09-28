@@ -14,7 +14,7 @@ class TransportControls  extends UnitTestBase {
 			return;
 		}
 		
-		$this->assertEqual($response->content[0]->id, "brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ", "Nem jó a találat" . $response->content[0]->id);
+		$this->assertEqual($response->content[0]->id, "-1005", "Nem jó a találat" . $response->content[0]->id);
 	}
 	
 	function test_listTransport_good_simple_date(){
@@ -25,18 +25,18 @@ class TransportControls  extends UnitTestBase {
 			return;
 		}
 	
-		$this->assertEqual($response->content[0]->id, "caTf36E4-7a23-14e6-99Cf-0a13f7cd65tl", "Nem jó a találat" . $response->content[0]->id);
+		$this->assertEqual($response->content[0]->id, "-1000", "Nem jó a találat" . $response->content[0]->id);
 	}
 
 	function test_listTransport_good_simple_id(){
-		$response = $this->getResponse(URL_LIST_TRANSPORT . '?id=brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ' , $this->getPhpSessionCookie());
+		$response = $this->getResponse(URL_LIST_TRANSPORT . '?id=-1005' , $this->getPhpSessionCookie());
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
 		if (count($response->content) != 1){
 			$this->fail('Nem 1 találatot kaptunk vissza, hanem ' . count($response->content));
 			return;
 		}
 	
-		$this->assertEqual($response->content[0]->id, "brTf36E4-7a23-14e6-9RCf-9a1WfFRd55tZ", "Nem jó a találat" . $response->content[0]->id);
+		$this->assertEqual($response->content[0]->id, "-1005", "Nem jó a találat" . $response->content[0]->id);
 		$this->assertEqual(count($response->content[0]->addresses), 2, "Nem jó a találat: " . count($response->content[0]->addresses));
 	}
 	

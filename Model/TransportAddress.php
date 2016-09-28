@@ -38,7 +38,7 @@ class TransportAddress implements JsonSerializable {
 			$pre = $db->prepare($sql);
 			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 			$pre->bindValue(':operation_id', $this->operation_id, PDO::PARAM_STR);
-			$pre->bindValue(':transport_id', $this->transport_id, PDO::PARAM_STR);
+			$pre->bindValue(':transport_id', $this->transport_id, PDO::PARAM_INT);
 			$pre->bindValue(':zip', $this->zip, PDO::PARAM_STR);
 			$pre->bindValue(':city', $this->city, PDO::PARAM_STR);
 			$pre->bindValue(':street', $this->street, PDO::PARAM_STR);
@@ -61,7 +61,7 @@ class TransportAddress implements JsonSerializable {
 			$pre = $db->prepare($sql);
 			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 			$pre->bindValue(':operation_id', $this->operation_id, PDO::PARAM_STR);
-			$pre->bindValue(':transport_id', $this->transport_id, PDO::PARAM_STR);
+			$pre->bindValue(':transport_id', $this->transport_id, PDO::PARAM_INT);
 			$pre->bindValue(':zip', $this->zip, PDO::PARAM_STR);
 			$pre->bindValue(':city', $this->city, PDO::PARAM_STR);
 			$pre->bindValue(':street', $this->street, PDO::PARAM_STR);
@@ -140,16 +140,16 @@ class TransportAddress implements JsonSerializable {
 	
 	/**
 	 *
-	 * @return string
+	 * @return int
 	 */
 	public function getTransportId(){
 	
-		return $this->transport_id;
+		return (int)$this->transport_id;
 	}
 	
 	/**
 	 *
-	 * @param string $transportId
+	 * @param int $transportId
 	 */
 	public function setTransportId($transportId){
 	
