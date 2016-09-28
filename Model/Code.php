@@ -25,8 +25,8 @@ class Code implements JsonSerializable {
 			throw new InvalidArgumentException('Nem engedélyezett kód típus mentése! Csak goods_type típus engedélyezett!');
 		}
 		
-		if ((strlen($this->code_value) < 2) || (strlen($this->code_value) > 18)){
-			throw new InvalidArgumentException('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!');
+		if ((mb_strlen($this->code_value) < 2) || (mb_strlen($this->code_value) > 18)){
+			throw new InvalidArgumentException('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!' . $this->code_value);
 		}
 		
 		//Szerkessze át a kulcs mezőt

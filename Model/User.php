@@ -67,7 +67,7 @@ class User {
 			Logger::info('Kitiltott felhasználóra próbálkozás. Felhasználó név: ' . $userName . ' Ip: ' . SystemUtil::getRequestIp());
 		}
 		
-		elseif ((strlen($user->password) > 3) 
+		elseif ((mb_strlen($user->password) > 3) 
 				&& ($user->password == self::encodePassword( $userPassword)) 
 				&& ($user->status == 'AKTIV'))  {
 		
@@ -99,7 +99,7 @@ class User {
 		
 		$minPasswordLength = (int)Config::getContextParam('MIN_PASSWORD_LENGTH');
 		$minPasswordLength =  $minPasswordLength < 4 ? 4 : ($minPasswordLength > 20 ? 20 : $minPasswordLength);
-		if (strlen($newPassword) < $minPasswordLength) {
+		if (mb_strlen($newPassword) < $minPasswordLength) {
 			throw new InvalidArgumentException("Az új jelszónak minimum $minPasswordLength karakter hosszúnak kell lennie!");
 		}
 		
@@ -112,7 +112,7 @@ class User {
 		}
 				
 		$user = self::get($userName);
-		if ((strlen($user->password) < 4) || ($user->password != self::encodePassword( $oldPassword))){
+		if  ($user->password != self::encodePassword( $oldPassword)){
 			throw new InvalidArgumentException('Nem megfelelő a régi jelszó!');
 		}
 				
