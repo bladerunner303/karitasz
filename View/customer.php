@@ -52,7 +52,7 @@
 			<div id="customer-detail-tabs">
 			  <ul>
 			    <li><a href="#customer-detail-general">Alapadatok</a></li>
-			    <li><a href="#customer-detail-family-member">Családtagok</a></li>
+			    <li><a href="#customer-detail-family-member" id="href-customer-detail-family-member">Családtagok</a></li>
 			    <li><a href="#customer-detail-operation" id="href-customer-detail-operation">Kérvények/felajánlások</a></li>
 			    <li><a href="#customer-detail-log" id="href-customer-detail-log">Adat változások</a></li>
 			  </ul>
@@ -138,7 +138,7 @@
 						<td><input type="hidden" class="id" value="" />
 							Név: <input class="name" type="text" maxlength="50" value="" title="Családtag neve"/></td>
 						<td>Azonosító: <input class="family_member_customer" type="text" maxlength="10" value="" title="Ha van kapcsolodó ügyfél"/></td>
-						<td>Szül. dátum: <input type="text" class="member-datepicker" value="" title="Születési dátum"/></td>
+						<td>Szül. dátum: <input type="text" class="member-datepicker" value="" /></td>
 						<td>Típus: <select class="member-type-select">
 									<% for(var member in familyMembers) { %>
 										<option value="<%-familyMembers[member].id%>" >
@@ -195,7 +195,7 @@
 				<td colspan="3" ><input type="email" maxlength="105" id="customer-detail-email" value="<%-email%>" class="width100percent"/></td>
 			</tr>
 			<tr>
-				<td>Család gondozó</td>
+				<td><span id="customer-detail-additional-contact-label">Család gondozó</span></td>
 				<td colspan="3"><input type="text" maxlength="50" id="customer-detail-additional-contact" value="<%-additional_contact%>" class="width100percent"/></td>
 			</tr>
 			<tr>

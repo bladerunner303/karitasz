@@ -1216,9 +1216,7 @@ class Customer implements JsonSerializable {
 	 */
 	public function setFamilyMembers($familyMembers){
 	
-		if (!empty($familyMembers)){
-			$this->familyMembers = $familyMembers;
-		}
+		$this->familyMembers = $familyMembers;
 		return $this;
 	}
 	

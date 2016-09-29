@@ -141,6 +141,7 @@ function openCustomerDetail(id) {
 		initCustomerSelectElements(null, 'NORMAL');
 		initCustomerDetailsNumericField();
 		initCustomerFamilyMemberSpecialFields();
+		initCustomerDetailFieldVisibleAndLabel();
 		
 		$('#tr-customer-detail-id').hide();
 		$('input[name=customer-detail-customer-type]').removeAttr( "disabled" );
@@ -171,6 +172,8 @@ function openCustomerDetail(id) {
 		    	initCustomerSelectElements(customerData.status, customerData.qualification, customerData.marital_status);
 		    	initCustomerDetailsNumericField();
 		    	initCustomerFamilyMemberSpecialFields();
+		    	
+			    
 		    	$('#tr-customer-detail-id').show();
 		    	$('input[name=customer-detail-customer-type]').val([customerData.customer_type]);
 		    	$('input[name=customer-detail-customer-type]').attr('disabled', 'disabled');
@@ -179,7 +182,8 @@ function openCustomerDetail(id) {
 				$('#href-customer-detail-operation').show();
 				$('#href-customer-detail-log').show();
 				displayCustomerLastOperation(id);
-		    },
+				initCustomerDetailFieldVisibleAndLabel();
+			},
 			error: function(response) {
 				Util.handleErrorToConsole(response);
 		       
@@ -200,6 +204,7 @@ function initCustomerDetailsEvents(){
 	handleCustomerZipChange();
 	handleCustomerCancelClick();
 	handleAddCustomerDetailFamilyMemberClick();
+	handleCustomerDetailCustomerTypeRadioChange();
 }
 
 function initCustomerDetailsNumericField(){
@@ -325,20 +330,21 @@ function reloadCustomerData(){
 	customerData.members = [];
 
 
-	$("#customer-detail-family-member-table .item").each(function() {
-	  $this = $(this);
-	  var member = {};
-	  member.name = $.trim($this.find('.name').val());
-	  if (!Util.isNullOrEmpty(member.name)){
-		  member.id = $this.find(".id").val();
-		  member.family_member_customer = $this.find('.family_member_customer').val();
-		  member.birth_date = $.trim($this.find('.member-datepicker').val());
-		  member.family_member_type = $this.find('.member-type-select').val();
-		  member.description = $.trim($this.find('.description').val());
-		  customerData.members.push(member);
-	  }
-	});
-
+	if (customerData.customer_type === 'KERVENYEZO'){
+		$("#customer-detail-family-member-table .item").each(function() {
+			  $this = $(this);
+			  var member = {};
+			  member.name = $.trim($this.find('.name').val());
+			  if (!Util.isNullOrEmpty(member.name)){
+				  member.id = $this.find(".id").val();
+				  member.family_member_customer = $this.find('.family_member_customer').val();
+				  member.birth_date = $.trim($this.find('.member-datepicker').val());
+				  member.family_member_type = $this.find('.member-type-select').val();
+				  member.description = $.trim($this.find('.description').val());
+				  customerData.members.push(member);
+			  }
+		});
+	}
 }
 
 function checkCustomerData(){
@@ -384,6 +390,25 @@ function checkCustomerData(){
 		return false;
 	}
 
+}
+
+function handleCustomerDetailCustomerTypeRadioChange(){
+	$('input[name=customer-detail-customer-type]').change(function(){
+		initCustomerDetailFieldVisibleAndLabel();
+	});
+}
+
+function initCustomerDetailFieldVisibleAndLabel(){
+	
+	 
+	if ($('input[name=customer-detail-customer-type]:checked').val() == 'KERVENYEZO'){
+		$('#href-customer-detail-family-member').show();
+		$('#customer-detail-additional-contact-label').text("Család gondozó");
+	}
+	else {
+		$('#href-customer-detail-family-member').hide();
+		$('#customer-detail-additional-contact-label').text("Kapcsolattartó");
+	}
 }
 
 function checkSimilarCustomers(){
