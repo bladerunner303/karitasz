@@ -316,15 +316,19 @@
 			<div id="dialog-add-element" title="Elem felvétele">
 				<table>
 					<tr>
-						<td>Leírás</td>
-						<td><input type="text" maxlength="50" class="width500" id="operation-detail-add-element-name"></input></td>
-					</tr>
-					<tr>
 						<td>Típus</td>
 						<td>
 							<select id="operation-detail-add-element-type" class="width500"></select>
 							<div class="icon-add" title="Elem hozzáadása" id="operation-detail-new-element-type"></div>
 						</td>
+					</tr>
+					<tr>
+						<td>Mennyiség</td>
+						<td><input id="operation-detail-add-element-type-number" type="number" min="0" max="10" step="1" value="1"/>
+					</tr>
+					<tr>
+						<td>Leírás</td>
+						<td><input type="text" maxlength="50" class="width500" id="operation-detail-add-element-name"></input></td>
 					</tr>
 					<tr id="tr-element-dialog-upload">
 						<td><button id="operation-detail-add-element-upload">Kép feltöltés</button></td>

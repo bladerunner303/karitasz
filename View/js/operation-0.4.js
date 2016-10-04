@@ -27,6 +27,9 @@ $( document ).ready(function() {
 	initOperationDialogs();
 	getOperationSelectItems();
 	initSelectGoodsType();
+	$('#operation-detail-add-element-related-detail').val('');
+	$('#operation-detail-add-element-related-detail-format').val('');
+	$('#operation-detail-add-element-type-number').val(1);
 });
 
 function handleRefreshOperationListClick(){
@@ -107,18 +110,27 @@ function handleOperationDetailAddElementSaveClick(){
 		var elementName = $.trim($('#operation-detail-add-element-name').val());
 		var elementType = $('#operation-detail-add-element-type').val();
 		var elementTypeName = $('#operation-detail-add-element-type option:selected').text();
-		var detailId = $('#operation-detail-add-element-related-detail').val();
-		var relatedOperationDetail = $('#operation-detail-add-element-related-detail-format').val();
-		operationData.operationDetails.push({
-			name: elementName,
-			goods_type: elementType,
-			goods_type_local: elementTypeName,
-			status: 'ROGZITETT',
-			status_local: 'Rögzített',
-			order_indicator: operationData.operationDetails.length,
-			detail_id: detailId,
-			related_operation_detail: relatedOperationDetail
-		});
+		var elementNumber = parseInt($('#operation-detail-add-element-type-number').val(),10);
+		
+		var detailIds = $('#operation-detail-add-element-related-detail').val().split(';');
+		var relatedOperationDetails = $('#operation-detail-add-element-related-detail-format').val().split(';');
+		
+		for (var i=0;i<elementNumber; i++){
+		
+			var detailId = Util.nvl(detailIds[i], '');
+			var relatedOperationDetail = Util.nvl(relatedOperationDetails[i], '');
+			
+			operationData.operationDetails.push({
+				name: elementName,
+				goods_type: elementType,
+				goods_type_local: elementTypeName,
+				status: 'ROGZITETT',
+				status_local: 'Rögzített',
+				order_indicator: operationData.operationDetails.length,
+				detail_id: detailId,
+				related_operation_detail: relatedOperationDetail
+			});	
+		}
 		
 		$('#operation-detail-add-element-cancel').trigger('click');
 		reloadOperationDetailsTable();
@@ -127,6 +139,8 @@ function handleOperationDetailAddElementSaveClick(){
 
 function handleOperationDetailAddElementCancelClick(){
 	$('#operation-detail-add-element-cancel').click(function(){
+		$('#operation-detail-add-element-related-detail').val('');
+		$('#operation-detail-add-element-related-detail-format').val('');
 		$('#operation-detail-add-element-name').val('');
 		$('#dialog-add-element').dialog('close');
 	});
@@ -188,6 +202,21 @@ function handleOperationDetailNewElementTypeClick(){
 			
 		}
 		
+	});
+}
+
+function handleOperationDetailAddElementTypeNumberChange(){
+	$('#operation-detail-add-element-type-number').change(function(){
+		var currentValue = parseInt($(this).val(),10);
+		var selectedElements = $('#operation-detail-add-element-related-detail').val().split(';');
+		
+		if (currentValue < selectedElements.length){
+			selectedElements.splice(currentValue);
+			$('#operation-detail-add-element-related-detail').val(selectedElements.join(';'));
+			$('#operation-detail-add-element-related-detail-format').val().split(';').splice(currentValue).join(';');
+			
+		}
+	
 	});
 }
 
@@ -629,7 +658,7 @@ function removeOperationDetailElement(orderIndicator){
 }
 
 function statusChangeOperationDetailElement(orderIndicator){
-	if (confirm('A művelet nem visszavonható! Biztos befejzettre állítsuk véglegesen az elemet?')){
+	if (confirm('A művelet nem visszavonható! Biztos befejezettre állítsuk véglegesen az elemet?')){
 		for (var i=0;i<operationData.operationDetails.length;i++){
 			if (operationData.operationDetails[i].order_indicator == orderIndicator){
 				operationData.operationDetails[i].status = 'BEFEJEZETT';
@@ -710,15 +739,31 @@ function downloadOperationDetailAttachment(id){
 }
 
 function selectPotentialOperations(operationDetailId,  customer, operation, detailName){
-	$('#operation-detail-add-element-related-detail').val(operationDetailId);
-	$('#operation-detail-add-element-related-detail-format').val(operation + '/' + customer + ' ' + detailName);
-	var html = '<fieldset><legend>Kapcsolt elem</legend>';
-	html += '<p>Ügyfél: ' + customer + '</p>';
-	html += '<p>Kérvény/felajánlás: ' + operation + ' ' + detailName + '</p>'
-	html += '<div class="icon-cancel-mid-little" onclick="removeOperationDetailElementSelectedPotentialElement();" title="Kapcsolt elem törlése"></div>';
-	html += '</fieldset>';
-	$('#operation-detail-add-element-related-operation').html(html);
-	$('#tr-element-dialog-related-operation').show();
+	
+	var relatedDetail = $('#operation-detail-add-element-related-detail').val();
+	if (relatedDetail.split(';').indexOf(operationDetailId) !== -1){
+		alert('Az adott felajánlás/kérvény már kiválasztásra került!');
+		return;
+	}
+	
+	if (relatedDetail.split(';').length <= parseInt($('#operation-detail-add-element-type-number').val(), 10)){
+		$('#operation-detail-add-element-related-detail').val(relatedDetail + operationDetailId + ';');
+		$('#operation-detail-add-element-related-detail-format').val($('#operation-detail-add-element-related-detail-format').val() 
+				+ operation + '/' + customer + ' ' + detailName + ';');
+		
+		var html = '<fieldset id="operation-detail-element-fieldset-' + operationDetailId + '"><legend>Kapcsolt elem</legend>';
+		html += '<p>Ügyfél: ' + customer + '</p>';
+		html += '<p>Kérvény/felajánlás: ' + operation + ' ' + detailName + '</p>';
+		html += '<div class="icon-cancel-mid-little" onclick="removeOperationDetailElementSelectedPotentialElement(\'' + operationDetailId + '\');" title="Kapcsolt elem törlése"></div>';
+		html += '</fieldset>';
+		
+		$('#operation-detail-add-element-related-operation').html($('#operation-detail-add-element-related-operation').html() +html);
+		$('#tr-element-dialog-related-operation').show();
+	}
+	else {
+		alert('Nem választhatsz ki többet, mert elérted a mennyiség mezőben megadott számot!');
+		return;
+	}
 }
 
 function showPotentialOperations(goodsType){
@@ -752,9 +797,21 @@ function listPotentionalOperations(detail, resultsDiv){
 	});
 }
 
-function removeOperationDetailElementSelectedPotentialElement(){
-	$('#operation-detail-add-element-related-detail').val('');
-	$('#operation-detail-add-element-related-detail-format').val('');
-	$('#operation-detail-add-element-related-operation').html('');
-	$('#tr-element-dialog-related-operation').hide();
+function removeOperationDetailElementSelectedPotentialElement(operationDetailId){
+	
+	var selectedItems = $('#operation-detail-add-element-related-detail').val().split(';');
+	var selectedFormats = $('#operation-detail-add-element-related-detail-format').val().split(';');
+	
+	for (var i=0;i<selectedItems.length; i++){
+		if (selectedItems[i] === operationDetailId){
+			selectedItems.splice(i, 1);
+			selectedFormats.splice(i,1);
+			$('#operation-detail-add-element-related-detail').val(selectedItems.join(';'));
+			$('#operation-detail-add-element-related-detail-format').val(selectedFormats.join(';'));
+			$('#operation-detail-element-fieldset-' + operationDetailId).remove();
+			return;
+		}
+	}
+	
 }
+
