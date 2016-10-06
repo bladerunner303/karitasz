@@ -179,7 +179,7 @@ padding: 0;
 
 .icon-ok {
 	display:inline-block;
-	background-image: url("gnome-icons/emblem-default.png");
+	background-image: url("gnome-icons/Gnome-emblem-default.png");
 	background-repeat: no-repeat;
 	background-size: 32px 32px;
 	width: 32px;
@@ -190,7 +190,7 @@ padding: 0;
 
 .icon-ok-little {
 	display:inline-block;
-	background-image: url("gnome-icons/emblem-default.png");
+	background-image: url("gnome-icons/Gnome-emblem-default.png");
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
 	width: 16px;
