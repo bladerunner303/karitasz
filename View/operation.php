@@ -271,7 +271,7 @@
 							<!-- <div class="icon-edit-little" onclick="openPictures(<%-rows[row].id%>);" title="Képek"></div> -->
 							<div class="icon-trash-full-mid-little" onclick="removeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Törlés"></div>
 							<div class="icon-select-mid-little" onclick="statusChangeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Szállítás készre állítás"></div>
-							<div class="icon-help-contents" onclick="showPotentialOperations('<%-rows[row].goods_type%>');" title="Lehetséges kérvény/felajánlás"></div>
+							<div class="icon-help-contents" onclick="showPotentialOperations('<%-rows[row].goods_type%>', <%-rows[row].order_indicator%>);" title="Lehetséges kérvény/felajánlás"></div>
 						</td>
 					</tr>
 					 <% } %>

@@ -13,6 +13,8 @@ var OPERATION_URL_NEW_ELEMENT_TYPE = '../Controls/saveCode.php';
 //global variables
 var operationDataTable;
 var operationData = {};
+var potentialOperationDialogCaller = '';
+var potentialOperationCallerOrderIndicator = '';
 
 $( document ).ready(function() {
 	initNumericFields();
@@ -100,6 +102,7 @@ function handleOperationDetailSaveClick(){
 function handleOperationDetailNewElementClick(){
 	$('#operation-detail-new-element').click(function(){
 		removeOperationDetailElementSelectedPotentialElement();
+		potentialOperationDialogCaller = 'function-new-element-click';
 		$('#dialog-add-element').dialog('open');
 	});
 }
@@ -740,34 +743,47 @@ function downloadOperationDetailAttachment(id){
 
 function selectPotentialOperations(operationDetailId,  customer, operation, detailName){
 	
-	var relatedDetail = $('#operation-detail-add-element-related-detail').val();
-	if (relatedDetail.split(';').indexOf(operationDetailId) !== -1){
-		alert('Az adott felajánlás/kérvény már kiválasztásra került!');
-		return;
-	}
-	
-	if (relatedDetail.split(';').length <= parseInt($('#operation-detail-add-element-type-number').val(), 10)){
-		$('#operation-detail-add-element-related-detail').val(relatedDetail + operationDetailId + ';');
-		$('#operation-detail-add-element-related-detail-format').val($('#operation-detail-add-element-related-detail-format').val() 
-				+ operation + '/' + customer + ' ' + detailName + ';');
-		
-		var html = '<fieldset id="operation-detail-element-fieldset-' + operationDetailId + '"><legend>Kapcsolt elem</legend>';
-		html += '<p>Ügyfél: ' + customer + '</p>';
-		html += '<p>Kérvény/felajánlás: ' + operation + ' ' + detailName + '</p>';
-		html += '<div class="icon-cancel-mid-little" onclick="removeOperationDetailElementSelectedPotentialElement(\'' + operationDetailId + '\');" title="Kapcsolt elem törlése"></div>';
-		html += '</fieldset>';
-		
-		$('#operation-detail-add-element-related-operation').html($('#operation-detail-add-element-related-operation').html() +html);
-		$('#tr-element-dialog-related-operation').show();
+	if (potentialOperationDialogCaller === 'function-showPotentialOperations'){
+		//Ha az elem táblázatból hívják
+		operationData.operationDetails[potentialOperationCallerOrderIndicator].detail_id = operationDetailId;
+		operationData.operationDetails[potentialOperationCallerOrderIndicator].related_operation_detail = operation + '/' + customer + ' ' + detailName;
+		reloadOperationDetailsTable();
+		$('#dialog-potentional-operations').dialog('close');
 	}
 	else {
-		alert('Nem választhatsz ki többet, mert elérted a mennyiség mezőben megadott számot!');
-		return;
+		//Ha felvitel ablakból hívják
+		var relatedDetail = $('#operation-detail-add-element-related-detail').val();
+		if (relatedDetail.split(';').indexOf(operationDetailId) !== -1){
+			alert('Az adott felajánlás/kérvény már kiválasztásra került!');
+			return;
+		}
+		
+		if (relatedDetail.split(';').length <= parseInt($('#operation-detail-add-element-type-number').val(), 10)){
+			$('#operation-detail-add-element-related-detail').val(relatedDetail + operationDetailId + ';');
+			$('#operation-detail-add-element-related-detail-format').val($('#operation-detail-add-element-related-detail-format').val() 
+					+ operation + '/' + customer + ' ' + detailName + ';');
+			
+			var html = '<fieldset id="operation-detail-element-fieldset-' + operationDetailId + '"><legend>Kapcsolt elem</legend>';
+			html += '<p>Ügyfél: ' + customer + '</p>';
+			html += '<p>Kérvény/felajánlás: ' + operation + ' ' + detailName + '</p>';
+			html += '<div class="icon-cancel-mid-little" onclick="removeOperationDetailElementSelectedPotentialElement(\'' + operationDetailId + '\');" title="Kapcsolt elem törlése"></div>';
+			html += '</fieldset>';
+			
+			$('#operation-detail-add-element-related-operation').html($('#operation-detail-add-element-related-operation').html() +html);
+			$('#tr-element-dialog-related-operation').show();
+		}
+		else {
+			alert('Nem választhatsz ki többet, mert elérted a mennyiség mezőben megadott számot!');
+			return;
+		}
 	}
+	
 }
 
-function showPotentialOperations(goodsType){
+function showPotentialOperations(goodsType, orderIndicator){
 	listPotentionalOperations(goodsType, $('#operation-potential-operations'));
+	potentialOperationDialogCaller = 'function-showPotentialOperations';
+	potentialOperationCallerOrderIndicator = orderIndicator;
 	$('#dialog-potentional-operations').dialog('open');
 	
 }
