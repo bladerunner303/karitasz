@@ -49,9 +49,14 @@ insert into code values ('EMMI', 'sender', 'EMMI', 'SYSTEM', current_timestamp);
 insert into code values ('KARITASZ', 'sender', 'Katolikus karitasz', 'SYSTEM', current_timestamp);
 
 insert into code values ('MUBER', 'income_type', 'Munkabér', 'SYSTEM', current_timestamp);
-insert into code values ('GYES', 'income_type', 'Gyes', 'SYSTEM', current_timestamp);
+insert into code values ('GYES_ES_MUBER', 'income_type', 'GYES + Munkabér', 'SYSTEM', current_timestamp);
+insert into code values ('GYES', 'income_type', 'GYES', 'SYSTEM', current_timestamp);
+insert into code values ('GYED', 'income_type', 'GYED', 'SYSTEM', current_timestamp);
 insert into code values ('NYUGDIJ', 'income_type', 'Nyugdíj', 'SYSTEM', current_timestamp);
 insert into code values ('SEGELY', 'income_type', 'Segély', 'SYSTEM', current_timestamp);
+insert into code values ('CSALADI_POTLEK', 'income_type', 'Családi pótlék', 'SYSTEM', current_timestamp);
+insert into code values ('APOLASI_DIJ', 'income_type', 'Ápolási díj', 'SYSTEM', current_timestamp);
+insert into code values ('REHAB_JARADEK', 'income_type', 'Rehabilitációs járadék', 'SYSTEM', current_timestamp);
 
 insert into code values ('NAME_CHANGE', 'customer_history_data_type', 'Név változás', 'SYSTEM', current_timestamp);
 insert into code values ('ADDRESS_CHANGE', 'customer_data_type', 'Cím változás', 'SYSTEM', current_timestamp);
