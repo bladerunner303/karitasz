@@ -26,7 +26,7 @@ class Code implements JsonSerializable {
 		}
 		
 		if ((mb_strlen($this->code_value) < 2) || (mb_strlen($this->code_value) > 18)){
-			throw new InvalidArgumentException('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!' . $this->code_value);
+			throw new InvalidArgumentException('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!' );
 		}
 		
 		//Szerkessze át a kulcs mezőt

@@ -193,7 +193,7 @@ class CustomerControls  extends UnitTestBase {
 		$nameHistory = $histories[0];
 		$this->assertEqual($nameHistory->old_value, $this::getCustomerObject()->surname . ' ' . $this::getCustomerObject()->forename, "Nem egyezik a név régi érték:" . $nameHistory->old_value);
 		$this->assertEqual($nameHistory->new_value, $customer->surname . ' ' . $customer->forename, "Nem egyezik a név új érték:" . $nameHistory->new_value);
-		$this->assertEqual($nameHistory->created, $row->modified , "Nem egyezik a létrehozási idő");
+		$this->assertEqual($nameHistory->created, $row->modified , "Nem egyezik a létrehozási idő" . $nameHistory->created . ' ' . $row->modified);
 		$this->assertEqual($nameHistory->creator, $row->modifier , "Nem egyezik a létrehozó");
 		$this->assertEqual($nameHistory->data_type, 'NAME_CHANGE' , "Nem egyezik a data_type: " . $nameHistory->data_type);
 		

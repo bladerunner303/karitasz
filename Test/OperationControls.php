@@ -140,7 +140,7 @@ class OperationControls  extends UnitTestBase {
 		$this->test_saveOperation_good_simple_new();
 		$db = Data::getInstance($this->unitDbSetting);
 		$operation = $db->query("select * from operation where id = (select max(id) from operation where id not in (-1000, -1005, -1010))")->fetch(PDO::FETCH_OBJ);
-		$operation->operationDetails = $db->query("select * from operation_detail where operation_id = " . $operation->id . " order by name")->fetchAll(PDO::FETCH_OBJ);
+		$operation->operationDetails = $db->query("select * from operation_detail where operation_id = " . $operation->id . " order by name")->fetchAll(PDO::FETCH_OBJ) ;  //. " order by name")->fetchAll(PDO::FETCH_OBJ);
 		
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
