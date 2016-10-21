@@ -308,3 +308,25 @@ padding: 0;
 	margin: 0;
 	padding: 0;
 }
+
+.icon-address-book {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-x-office-address-book-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}
+
+.icon-print {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-document-print-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width:32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+}

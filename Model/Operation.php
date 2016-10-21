@@ -23,6 +23,10 @@ class Operation implements JsonSerializable {
 					c.phone,
 					concat(c.phone, ';', c.phone2) phones,
 					concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format,
+					c.zip, 
+					c.city, 
+					c.street,
+					 qualification_codes.code_value qualification_local,
 					operation_type_codes.code_value operation_type_local,
 					status_codes.code_value status_local,
 					sender_codes.code_value sender_local,
@@ -40,6 +44,7 @@ class Operation implements JsonSerializable {
 					inner join code status_codes on status_codes.id = o.status
 					inner join code has_transport_bool on has_transport_bool.id = o.has_transport
 					inner join code is_wait_callback_bool on is_wait_callback_bool.id = o.is_wait_callback
+					inner join code qualification_codes on qualification_codes.id = c.qualification
 					left join code sender_codes on sender_codes.id = o.sender
 					left join code income_type_codes on income_type_codes.id = o.income_type
 					left join code neediness_codes on neediness_codes.id = o.neediness_level
@@ -109,6 +114,45 @@ class Operation implements JsonSerializable {
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
 	
+	
+	public function findWaiting($text){
+		
+		if (!empty($text)){
+			$text = '%' . $text . '%';
+		}
+		
+		$sql = "select
+				o.id,
+				concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
+                concat(c.zip, ' ', c.city, ' ' , c.street) address_format, 
+                code_qualification_local.code_value priority_local,
+				o.last_status_changed
+				from 
+					operation o
+				inner join customer c on c.id = o.customer_id 
+				inner join code code_qualification_local on c.qualification = code_qualification_local.id
+				where c.status != 'TILTOTT'
+               	and o.status = 'FOLYAMATBAN'
+               	and c.status = 'AKTIV'
+				and o.id not in (select ta.operation_id from transport_address ta where ta.status not in ('SIKERTELEN_TRANSPORT', 'BEFEJEZETT_TRANSPORT'))
+				and (:text is null or
+					concat(	o.id,  
+							concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')'),
+							concat(c.zip, ' ', c.city, ' ' , c.street),
+							code_qualification_local.code_value
+						) like :text)
+				
+				order by c.qualification, o.created
+			   	limit 100
+               	";
+		$db = Data::getInstance();
+		$pre = $db->prepare($sql);
+		$pre->bindValue(':text', $text, PDO::PARAM_STR);
+		
+		$pre->execute();
+		return $pre->fetchAll(PDO::FETCH_OBJ);
+		
+	}
 	/**
 	 * @return string
 	 */

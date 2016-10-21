@@ -7,6 +7,7 @@ incomeTypes = [];
 needinessLevels = [];
 customerQualifications = [];
 familyMembers = [];
+transportStatuses = [];
 
 $( document ).ready(function() {
 

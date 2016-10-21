@@ -10,11 +10,19 @@ class TransportAddress implements JsonSerializable {
 	}
 	
 	public function find(){
-		$sql = "select * from 
-					transport_address 
-				where (:id is null or id = :id)
-				and (:transport_id is null or transport_id = :transport_id)
-				order by zip";
+		$sql = "select 
+					ta.* ,
+					concat(ta.zip, ' ', ta.city, ' ' , ta.street) address_format,
+					concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
+					status_codes.code_value status_local
+				from 
+					transport_address ta
+				inner join operation o on o.id = ta.operation_id
+				inner join customer c on c.id = o.customer_id
+				inner join code status_codes on status_codes.id = ta.status
+				where (:id is null or ta.id = :id)
+				and (:transport_id is null or ta.transport_id = :transport_id)
+				order by ta.zip";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(

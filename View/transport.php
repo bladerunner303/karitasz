@@ -16,8 +16,7 @@
 			    			<td>
 			    				<input type="text" id="find-transport-begin-date"/>
 			    				<input type="text" id="find-transport-end-date"/>
-			  				</td></tr>
-			    		<tr><td>Ügyfél: </td><td><input type="text" id="find-transport-customer" class="width500 find"></input></td></tr>
+							<td>Ügyfél: </td><td><input type="text" id="find-transport-customer" class="width500 find"></input></td></tr>
 			    	</table>
 		    	
 		  	</fieldset>
@@ -46,73 +45,15 @@
 			</div>
 			
 			<div id="transport-detail-general"></div>
-			<div id="dialog-transport-address" title="Szállításhoz tartozó címek">
-				<table id="dialog-transport-address-table">
-					<thead>
-						<tr>
-							<td>Felajánlás/Kérvény</td>
-							<td>Cím</td>
-							<td>Telefon</td>
-							<td>Butorok</td>
-							<td>Leírás</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>1001</td>
-							<td>1132 Budapest,Pitypang utca 34</td>
-							<td>06-1-123456</td>
-							<td>Kapucsengőn 8-as kód</td>
-							<td>Komód, <br>
-								Szekrény, <br>
-								Hűtő
-							</td>
-						</tr>
-						<tr>
-							<td>1002</td>
-							<td>1132 Budapest,Teszt tér 3</td>
-							<td>06-1-123456</td>
-							<td>Kapucsengőn 8-as kód</td>
-							<td>Komód, <br>
-								Szekrény, <br>
-								Hűtő
-							</td>
-						</tr>
-					</tbody>
-				</table>
+			
+			<div id="dialog-transport-address-add" title="Várakozó transzferek hozzáadása">
+				<?php 
+					$_GET["type"] = 'selector';
+					require_once 'waitingTransports.php';
+				?>
+			
 			</div>
 			
-			<div id="dialog-transport-address-add">
-				<input type="text" id="find-transport-address-add" class="width500 find"></input>
-				<table  id="dialog-transport-address-add-table">
-					<thead>
-						<tr>
-							<td>Cím</td>
-							<td>Telefon</td>
-							<td>Butorok</td>
-							<td>Kiválaszt</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>1132 Pitypang útca 34</td>
-							<td>06-1-123456</td>
-							<td>Szekrény<br>Komód</td>
-							<td>
-								<div class="icon-ok-little"></div>
-							</td>
-						</tr>
-						<tr>
-							<td>1132 Budapest,Teszt tér 3</td>
-							<td>06-1-123456</td>
-							<td>Hűtő</td>
-							<td>
-								<div class="icon-ok-little"></div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
 			
 			<script type="text/template" id="template-transport-table">
 				<% for(var row in rows) { %>
@@ -123,8 +64,9 @@
 						<td><%-rows[row].created_info%></td>
 						<td><%-rows[row].modified_info%></td>
 						<td>
-							<div class="icon-edit-little" onclick="openTransportDetail(<%-rows[row].id%>);" title="Részletek"></div>
-							<div class="icon-edit-little" onclick="openAddress(<%-rows[row].id%>);" title="Címek"></div>
+							<div class="icon-edit cursor-link" onclick="openTransportDetail(<%-rows[row].id%>);" title="Részletek"></div>
+							<div class="icon-address-book cursor-link" onclick="openAddress(<%-rows[row].id%>);" title="Címek"></div>
+							<div class="icon-print cursor-link" title="Szállítási címek nyomtatása" onclick="printTransport(<%-rows[row].id%>);"></div>
 						</td>
 					</tr>
 				 <% } %>
@@ -134,20 +76,28 @@
 			<script type="text/template" id="template-transport-detail-general"> 
 			
 			<table>
-				<tr>
-					<td>Azonosító: <span id="id"><%-id%></span></td>
-				</tr>
-				<tr>
-					<td>Státusz:</td> 
-					<td>
-						<select id="transport-status"></select>
-					</td>
+				<tr id="tr-transport-detail-id">
+					<td>Azonosító: <span id="transport-detail-id"><%-id%></span></td>
 				</tr>
 				<tr>
 					<td>Dátum:</td> 
 					<td>
-						<input type="text" id="transport-date"></input>
+						<input type="text" id="transport-detail-transport-date" value="<%-transport_date%>"></input>
 					</td>
+				</tr>
+				<tr>
+					<td>Státusz:</td> 
+					<td>
+						<select id="transport-detail-status"></select>
+					</td>
+				</tr>
+				<tr id="tr-transport-detail-created">
+					<td>Létrehozás</td>
+					<td colspan="3"><%-created_info%></td>
+				</tr>
+				<tr id="tr-transport-detail-modified">
+					<td>Módosítás</td>
+					<td colspan="3"><%-modified_info%></td>
 				</tr>
 				<tr>
 					<td>Címek
@@ -158,24 +108,18 @@
 					<div id="transport-detail-address-table"></div>
 				</td>	
 				</tr>
-				<tr id="tr-created">
-					<td>Létrehozás</td>
-					<td colspan="3"><%-createdInfo%></td>
-				</tr>
-				<tr id="tr-modified">
-					<td>Módosítás</td>
-					<td colspan="3"><%-modifiedInfo%></td>
-				</tr>
+				
 			</table>
 
-		<div class="icon-save" title="Adatok mentése" id="transport-save" ></div>
-		<div class="icon-cancel" title="Változások elvetése" id="transport-cancel"></div>
+		<div class="icon-save" title="Adatok mentése" id="transport-detail-save" ></div>
+		<div class="icon-cancel" title="Változások elvetése" id="transport-detail-cancel"></div>
+		<div class="icon-print cursor-link" title="Szállítási címek nyomtatása" id="transport-detail-print"></div>
 
 		<br>
 		<div id="transport-save-errors" style="display:none;">
 			<table>
 				<tr>
-					<td><div class="icon-warning" title="Hibás ügyfél rögzítés!"></div></td>
+					<td><div class="icon-warning" title="Hibás szállítás rögzítés!"></div></td>
 					<td><div id="role-save-errors-div" class="errorText"></div></td>
 				</tr>
 			</table>
@@ -183,6 +127,36 @@
 		</div>
 
 		</script>
+		
+			<script type="text/template" id="template-transport-addresses-table">
+
+				<table id="table-transport-addresses-table" class="pure-table">
+				<thead >
+					<td>Cím</td>
+					<td>Ügyfél</td>
+					<td>Kérvény</td>
+					<td>Státusz</td>
+					<td>Műveletek</td>
+				</thead>
+				<tbody>
+
+				<% for(var row in rows) { %>
+					<tr>
+						<td><%-rows[row].address_format%></td>
+						<td><%-rows[row].customer_format%></td>
+						<td><%-rows[row].operation_id%></td>
+						<td><%-rows[row].status_local%></td>
+						<td>
+							<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>
+							<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
+							<div class="icon-select cursor-link" onclick="setSuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikeresre állít"></div>
+							<div class="icon-cancel cursor-link" onclick="setUnsuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikertelenre állít"></div>
+						</td>
+					</tr>
+				 <% } %>
+			</script>
+		
+		
 		<script type="text/javascript" src="js/transport-0.4.js"></script>
 		
     </body>
