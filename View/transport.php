@@ -54,6 +54,11 @@
 			
 			</div>
 			
+			<div id="dialog-transport-address" title="Szállításhoz tartozó címek">
+				<div id="dialog-transport-address-table">
+				</div>
+			</div>
+			
 			
 			<script type="text/template" id="template-transport-table">
 				<% for(var row in rows) { %>
@@ -136,7 +141,9 @@
 					<td>Ügyfél</td>
 					<td>Kérvény</td>
 					<td>Státusz</td>
-					<td>Műveletek</td>
+						<% if (editable) { %>
+							<td>Műveletek</td>
+						<% } %>
 				</thead>
 				<tbody>
 
@@ -146,18 +153,20 @@
 						<td><%-rows[row].customer_format%></td>
 						<td><%-rows[row].operation_id%></td>
 						<td><%-rows[row].status_local%></td>
-						<td>
-							<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>
-							<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
-							<div class="icon-select cursor-link" onclick="setSuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikeresre állít"></div>
-							<div class="icon-cancel cursor-link" onclick="setUnsuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikertelenre állít"></div>
-						</td>
+						<% if (editable) { %>
+							<td>
+								<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>
+								<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
+								<div class="icon-select cursor-link" onclick="setSuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikeresre állít"></div>
+								<div class="icon-cancel cursor-link" onclick="setUnsuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikertelenre állít"></div>
+							</td>
+						<% } %>
 					</tr>
 				 <% } %>
 			</script>
 		
 		
-		<script type="text/javascript" src="js/transport-0.4.js"></script>
+		<script type="text/javascript" src="js/transport-0.5.js"></script>
 		
     </body>
 </html>

@@ -221,8 +221,36 @@ function openTransportDetail(id){
 }
 
 function openAddress(id){
-	$('#dialog-transport-address-table').DataTable(Util.getDefaultDataTable (10));
-	$('#dialog-transport-address').dialog('open');
+	
+	var url = TRANSPORT_URL_REFRESH;
+	url = Util.addUrlParameter(url, 'id', id);
+	url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+	
+	$.ajax({
+	    url: url,
+	    type: 'GET',
+	    success: function(data){ 
+	    	if (data.length != 1){
+	    		Util.logConsole('Nem található a művelet');
+	    		return;
+	    	}
+	    	transportAddressess = data[0].addresses;
+	    	if (transportAddressess.length > 0){
+	    		var transportAddressesTableTemplate = _.template($('#template-transport-addresses-table').html());
+	    		$('#dialog-transport-address-table').html(transportAddressesTableTemplate({rows: transportAddressess, editable: false}));
+	    	}
+	    	else {
+	    		$('#dialog-transport-address-table').html('<p>Nem található a szállításhoz rendelt cím!</p>');
+	    	}
+	    	$('#dialog-transport-address').dialog('open');
+	    	
+	    },
+		error: function(response) {
+			Util.handleErrorToConsole(response);
+	       
+	    }
+	});
+	
 }
 
 function addAddress(id){
@@ -340,7 +368,7 @@ function saveTransport(){
 function reloadTransportAddressTable(){
 	if (transportData.addresses.length > 0){
 		var transportAddressesTableTemplate = _.template($('#template-transport-addresses-table').html());
-		$('#transport-detail-address-table').html(transportAddressesTableTemplate({rows: transportData.addresses}));
+		$('#transport-detail-address-table').html(transportAddressesTableTemplate({rows: transportData.addresses, editable: true}));
 	}
 	else {
 		$('#transport-detail-address-table').html('<p>Nincs még mentett eleme a kérvénynek/felajánlásnak!</p>');
