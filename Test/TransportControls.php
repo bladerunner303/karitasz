@@ -40,6 +40,17 @@ class TransportControls  extends UnitTestBase {
 		$this->assertEqual(count($response->content[0]->addresses), 2, "Nem jó a találat: " . count($response->content[0]->addresses));
 	}
 	
+	function test_listTransport_good_simple_text(){
+		$response = $this->getResponse(URL_LIST_TRANSPORT . '?text=Dudás' , $this->getPhpSessionCookie());
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
+		if (count($response->content) != 2){
+			$this->fail('Nem 2 találatot kaptunk vissza, hanem ' . count($response->content));
+			return;
+		}
+	
+		$this->assertEqual($response->content[0]->id, "-1005", "Nem jó a találat" . $response->content[0]->id);
+	}
+	
 	function test_listTransport_bad_cookie(){
 		$this->checkBadCookie(URL_LIST_TRANSPORT);
 	}

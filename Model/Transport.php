@@ -8,10 +8,10 @@ class Transport implements JsonSerializable {
 		return get_object_vars($this);	
 	}
 
-	public function find($beginDate, $endDate){
+	public function find($beginDate, $endDate, $text){
 		$sql = "select 
 					t.*, 
-					concat(substring(created, 1, 4), '/', lpad(t.id, 8, '0')) id_format,
+					concat(substring(t.created, 1, 4), '/', lpad(t.id, 8, '0')) id_format,
 					code_status.code_value status_local,
 					concat(t.created, ' (', t.creator, ')') created_info,
 					concat(t.modified, ' (', t.modifier, ')') modified_info
@@ -20,13 +20,23 @@ class Transport implements JsonSerializable {
 				inner join code code_status on t.status = code_status.id
 				where (:id is null or t.id = :id)
 				and transport_date between :begin_date and :end_date 
+				and (:text is null 
+						or code_status.code_value = :text
+				 		or concat(substring(t.created, 1, 4), '/', lpad(t.id, 8, '0')) = :text
+						or t.id in (select transport_id from transport_address ta 
+												inner join operation op on op.id = ta.operation_id
+												inner join customer cu on cu.id = op.customer_id
+											  where cu.id = :text or concat(cu.surname, ' ', coalesce(cu.forename)) like concat(:text, '%')
+									)
+					 )
 				order by transport_date";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(
 				':id' => $this->id,
 				':begin_date' => $beginDate,
-				':end_date' => $endDate
+				':end_date' => $endDate,
+				':text' => $text
 		);
 		
 		$pre->execute($params);

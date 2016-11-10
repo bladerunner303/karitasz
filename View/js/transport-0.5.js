@@ -30,7 +30,7 @@ function handleRefreshTransportListClick(){
 		var url = TRANSPORT_URL_REFRESH;
 		url = Util.addUrlParameter(url, 'begin_date', $('#find-transport-begin-date').val());
 		url = Util.addUrlParameter(url, 'end_date', $('#find-transport-end-date').val());
-		url = Util.addUrlParameter(url, 'customer', $('#find-transport-customer').val());
+		url = Util.addUrlParameter(url, 'text', $('#find-transport-text').val());
 		url = Util.addUrlParameter(url, 'limit', $('#find-transport-result-max').val());
 		url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
 		

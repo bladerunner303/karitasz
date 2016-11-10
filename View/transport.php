@@ -16,7 +16,7 @@
 			    			<td>
 			    				<input type="text" id="find-transport-begin-date"/>
 			    				<input type="text" id="find-transport-end-date"/>
-							<td>Ügyfél: </td><td><input type="text" id="find-transport-customer" class="width500 find"></input></td></tr>
+							<td>Ügyfél/státusz</td><td><input type="text" id="find-transport-text" class="width500 find"></input></td></tr>
 			    	</table>
 		    	
 		  	</fieldset>
