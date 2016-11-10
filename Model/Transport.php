@@ -108,6 +108,7 @@ class Transport implements JsonSerializable {
 			$address->setStreet($currentAddress->street);
 			$address->setDescription($currentAddress->description);
 			$address->setStatus($currentAddress->status);
+			$address->setOrderIndicator($currentAddress->order_indicator);
 			$address->save();
 		}
 	}

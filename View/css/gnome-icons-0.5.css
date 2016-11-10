@@ -330,3 +330,27 @@ padding: 0;
 	margin: 0;
 	padding: 0;
 }
+
+.icon-up {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-go-up-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-down {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-go-down-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}

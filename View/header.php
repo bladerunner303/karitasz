@@ -39,7 +39,7 @@
 	
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="css/style-0.2.css">
-	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.4.css">
+	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.5.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/> 
 	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"/>
 	<link rel="stylesheet" type="text/css" href="css/pure-table-0.6.0.css"/>

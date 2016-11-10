@@ -107,12 +107,12 @@ class UnitTestBase extends UnitTestCase {
 		$db->exec("INSERT INTO transport (id, transport_date, status, creator, created, modifier, modified)
 				VALUES (-1010, '2016-09-28', 'ROGZITETT_TRANSPORT', 'SYSTEM', CURRENT_TIMESTAMP, 'SYSTEM', CURRENT_TIMESTAMP)");
 		
-		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status)
-				VALUES ('40be00cd-7325-4659-9518-b5afc88e4e5a', '-1010', -1005, 1111, 'Budapest', 'Pitypang u 3', null , 'BEFEJEZETT_TRANSPORT')");
-		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status)
-				VALUES ('970d746a-2c3e-4df6-866d-9c58d0688df2', '-1005', -1005, 1121, 'Budapest', 'Seholsincs tér 3', null , 'BEFEJEZETT_TRANSPORT')");
-		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status)
-				VALUES ('fc1c0333-d64a-4f06-8e15-b507881d0773', '-1010', -1000, 1131, 'Budapest', 'Imott-amott köz 45', null, 'ROGZITETT_TRANSPORT' )");
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status, order_indicator)
+				VALUES ('40be00cd-7325-4659-9518-b5afc88e4e5a', '-1010', -1005, 1111, 'Budapest', 'Pitypang u 3', null , 'BEFEJEZETT_TRANSPORT', 0)");
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status, order_indicator)
+				VALUES ('970d746a-2c3e-4df6-866d-9c58d0688df2', '-1005', -1005, 1121, 'Budapest', 'Seholsincs tér 3', null , 'BEFEJEZETT_TRANSPORT', 1)");
+		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status, order_indicator)
+				VALUES ('fc1c0333-d64a-4f06-8e15-b507881d0773', '-1010', -1000, 1131, 'Budapest', 'Imott-amott köz 45', null, 'ROGZITETT_TRANSPORT', 0 )");
 		
 	}
 	

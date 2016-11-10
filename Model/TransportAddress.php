@@ -22,7 +22,7 @@ class TransportAddress implements JsonSerializable {
 				inner join code status_codes on status_codes.id = ta.status
 				where (:id is null or ta.id = :id)
 				and (:transport_id is null or ta.transport_id = :transport_id)
-				order by ta.zip";
+				order by ta.order_indicator";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(
@@ -40,8 +40,8 @@ class TransportAddress implements JsonSerializable {
 		if (empty($this->id)){
 	
 			$this->id = SystemUtil::getGuid();
-			$sql = "insert into transport_address (id,operation_id,transport_id,zip,city,street,description, status)
-						values (:id,:operation_id,:transport_id,:zip,:city,:street,:description, :status)";
+			$sql = "insert into transport_address (id,operation_id,transport_id,zip,city,street,description, status, order_indicator)
+						values (:id,:operation_id,:transport_id,:zip,:city,:street,:description, :status, :order_indicator)";
 				
 			$pre = $db->prepare($sql);
 			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
@@ -52,6 +52,7 @@ class TransportAddress implements JsonSerializable {
 			$pre->bindValue(':street', $this->street, PDO::PARAM_STR);
 			$pre->bindValue(':description', $this->description, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
+			$pre->bindValue(':order_indicator', $this->order_indicator, PDO::PARAM_INT);
 				
 			$pre->execute();
 		}
@@ -64,7 +65,8 @@ class TransportAddress implements JsonSerializable {
 									city= :city,
 									street= :street,
 									description= :description,
-									status = :status
+									status = :status,
+									order_indicator = :order_indicator
 								where id = :id";
 			$pre = $db->prepare($sql);
 			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
@@ -75,6 +77,7 @@ class TransportAddress implements JsonSerializable {
 			$pre->bindValue(':street', $this->street, PDO::PARAM_STR);
 			$pre->bindValue(':description', $this->description, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
+			$pre->bindValue(':order_indicator', $this->order_indicator, PDO::PARAM_INT);
 			
 			$pre->execute();
 		}
@@ -101,6 +104,7 @@ class TransportAddress implements JsonSerializable {
 	private $phone;
 	private $description;
 	private $status;
+	private $order_indicator;
 	
 	/**
 	 *
@@ -277,6 +281,24 @@ class TransportAddress implements JsonSerializable {
 		return $this;
 	}
 	
+	/**
+	 *
+	 * @return int
+	 */
+	public function getOrderIndicator(){
+	
+		return $this->order_indicator;
+	}
+	
+	/**
+	 *
+	 * @param int $orderIndicator
+	 */
+	public function setOrderIndicator($orderIndicator){
+	
+		$this->order_indicator = $orderIndicator;
+		return $this;
+	}
 	
 }
 

@@ -282,7 +282,8 @@ function selectTransportItem(id){
 	    		customer_format: row.customer_format,
 	    		priority: row.qualification_local,
 	    		status: 'ROGZITETT_TRANSPORT',
-	    		status_local: 'Rögzített'	
+	    		status_local: 'Rögzített',
+	    		order_indicator: transportData.addresses.length
 	    	});
 	    	reloadTransportAddressTable();
 	    	$('#dialog-transport-address-add').dialog('close');
@@ -367,6 +368,7 @@ function saveTransport(){
 
 function reloadTransportAddressTable(){
 	if (transportData.addresses.length > 0){
+		transportData.addresses.sort(function(a, b){return a.order_indicator - b.order_indicator; });
 		var transportAddressesTableTemplate = _.template($('#template-transport-addresses-table').html());
 		$('#transport-detail-address-table').html(transportAddressesTableTemplate({rows: transportData.addresses, editable: true}));
 	}
@@ -377,4 +379,29 @@ function reloadTransportAddressTable(){
 
 function printTransport(id){
 	alert('Itt jön majd a szállítóknak készülő doksi');
+}
+
+function moveAddress(order_indicator, orientation){
+	
+	if ((transportData.addresses.length < 2) || 
+	   ((transportData.addresses[transportData.addresses.length-1].order_indicator == order_indicator) && (orientation != 'UP'))
+	) {
+		return;
+	}
+	
+	for (var i=0;i<transportData.addresses.length; i++){
+		if (transportData.addresses[i].order_indicator == order_indicator){
+			if (orientation == 'UP'){
+				transportData.addresses[i].order_indicator--;
+				transportData.addresses[i-1].order_indicator++;
+			}
+			else {
+				transportData.addresses[i].order_indicator++;
+				transportData.addresses[i+1].order_indicator--;
+			}
+			reloadTransportAddressTable();
+			return;
+		}
+	}
+	
 }

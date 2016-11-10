@@ -159,6 +159,8 @@
 								<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
 								<div class="icon-select cursor-link" onclick="setSuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikeresre állít"></div>
 								<div class="icon-cancel cursor-link" onclick="setUnsuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikertelenre állít"></div>
+								<div class="icon-up cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'UP');" title="Előre"></div>
+								<div class="icon-down cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'DOWN');" title="Hátra"></div>
 							</td>
 						<% } %>
 					</tr>

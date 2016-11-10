@@ -213,6 +213,7 @@ create table transport_address
 	street					varchar(35) not null, 
 	description				varchar(500) null,
 	status					varchar(20) not null,
+	order_indicator			integer		not null,
 	constraint pk_transport_address primary key (id),
 	constraint fk_transport_address_operation foreign key (operation_id) references operation(id),
 	constraint fk_transport_address_transport foreign key (transport_id) references transport(id),
