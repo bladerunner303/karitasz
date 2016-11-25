@@ -45,40 +45,78 @@ class OperationDetail implements JsonSerializable {
 	public function save(){
 
 		$t = SystemUtil::getCurrentTimestamp();
-		$id = SystemUtil::getGuid();
 		$db = Data::getInstance();
-		
 			
-		$pre = $db->prepare("insert into operation_detail 
-								( id, operation_id, name, goods_type, storehouse_id, status, order_indicator, detail_id) 
-						 values (
-								  :id, :operation_id, :name, :goods_type, :storehouse_id, :status, :order_indicator, :detail_id
-								)");
-		$params = array(
-					':id' => $id,
-					':operation_id' => $this->operation_id,
+		if (empty($this->id)){
+		
+			$this->id = SystemUtil::getGuid();
+			
+				
+			$pre = $db->prepare("insert into operation_detail 
+									( id, operation_id, name, goods_type, storehouse_id, status, order_indicator, detail_id) 
+							 values (
+									  :id, :operation_id, :name, :goods_type, :storehouse_id, :status, :order_indicator, :detail_id
+									)");
+			$params = array(
+						':id' => $this->id,
+						':operation_id' => $this->operation_id,
+						':name' => $this->name,
+						':goods_type' => $this->goods_type,
+						':storehouse_id'=>$this->storehouse_id,
+						':status' => $this->status,
+						':order_indicator' => $this->order_indicator,
+						':detail_id' => $this->detail_id
+			);
+	
+			$pre->execute($params);
+			
+			if (!empty($this->detail_id)){
+				$pre = $db->prepare("update operation_detail set detail_id = :detail_id where id=:id");
+				$params = array(
+						':id' => $this->detail_id,
+						':detail_id' => $this->id
+				);
+				
+				$pre->execute($params);
+					
+			}
+		}
+		else {
+			$pre = $db->prepare("update operation_detail set
+									name = :name, 
+									goods_type = :goods_type,
+									storehouse_id = :storehouse_id,
+									status = :status,
+									order_indicator = :order_indicator,
+									detail_id = :detail_id
+						 			where id=:id");
+			$params = array(
+					':id' => $this->id,
 					':name' => $this->name,
 					':goods_type' => $this->goods_type,
 					':storehouse_id'=>$this->storehouse_id,
 					':status' => $this->status,
 					':order_indicator' => $this->order_indicator,
 					':detail_id' => $this->detail_id
-		);
-
-		$pre->execute($params);
-		
-		if (!empty($this->detail_id)){
-			$pre = $db->prepare("update operation_detail set detail_id = :detail_id where id=:id");
-			$params = array(
-					':id' => $this->detail_id,
-					':detail_id' => $id
 			);
 			
 			$pre->execute($params);
-				
+
+			//Ha befejezett az összes operation_detail a fejet is befejezettre állítjuk.
+			if ($this->status == 'BEFEJEZETT'){
+				$pre = $db->prepare("select count(*) cnt from operation_detail where operation_id= :id and status != 'BEFEJEZETT'");
+				$params = array(':id' => $this->operation_id);
+				$pre->execute($params);
+				if ((int)$pre->fetch(PDO::FETCH_OBJ)->cnt == 0) {
+					$pre = $db->prepare("update operation set status = 'BEFEJEZETT' where id=:id");
+					$params = array(':id' => $this->operation_id);
+					$pre->execute($params);
+				};
+			}
+			
 		}
 		
-		return $id;
+		return $this->id;
 			
 	}
 	

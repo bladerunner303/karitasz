@@ -25,6 +25,12 @@ if (($id != null) && (count($ret) == 1)){
 	$finderAddress = new TransportAddress();
 	$finderAddress->setTransportId($id);
 	$ret[0]->addresses = $finderAddress->find();
+	
+	if ($finderAddress->getStatus() != 'ROGZITETT_TRANSPORT'){
+		foreach ($ret[0]->addresses as $index => $address) {
+			$ret[0]->addresses[$index]->items = TransportAddress::findAddressItems($address->id);
+		}
+	}
 }
 
 JsonParser::sendJson($ret);

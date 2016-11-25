@@ -71,8 +71,21 @@ class Transport implements JsonSerializable {
 			$this->id = (int)$db->query("select max(id) maxid from transport")->fetch(PDO::FETCH_OBJ)->maxid;
 			
 			$this->saveAddresses();
+			
+			if ($this->status != 'ROGZITETT_TRANSPORT'){
+				$this->generateAddressesItems();
+			}
 		}
 		else {
+			
+			$originalFinder = new Transport();
+			$originalFinder->setId($this->id);
+			$originalTransports = $originalFinder->find('1990-01-01', '2100-01-01', null);
+			if (count($originalTransports) != 1){
+				throw new InvalidArgumentException("Nem található az eredeti tétel!");
+			}
+			$originalTransport = $originalTransports[0];
+				
 			$sql = "update transport set
 						transport_date = :transport_date,
 						status = :status,
@@ -89,18 +102,26 @@ class Transport implements JsonSerializable {
 			$pre->execute();
 			
 			$this->saveAddresses();
+			
+			if (($originalTransport->status != $this->status) && ($originalTransport->status == 'ROGZITETT_TRANSPORT')){
+				$this->generateAddressesItems();
+			}
 		}
-		
-		
-		
+				
 		return $this->id;
 	}
 	
 	private function saveAddresses(){
 	
-		TransportAddress::removeAll($this->id);
+		// TransportAddress::removeAll($this->id);
+		
+		TransportAddress::removeMissing($this->addresses);
+		
 		foreach ($this->addresses as $index => $currentAddress) {
+			
+			
 			$address = new TransportAddress();
+			$address->setId(empty($currentAddress->id)? null : $currentAddress->id);
 			$address->setTransportId($this->id);
 			$address->setOperationId($currentAddress->operation_id);
 			$address->setZip($currentAddress->zip);
@@ -109,10 +130,22 @@ class Transport implements JsonSerializable {
 			$address->setDescription($currentAddress->description);
 			$address->setStatus($currentAddress->status);
 			$address->setOrderIndicator($currentAddress->order_indicator);
-			$address->save();
+			$this->addresses[$index]->id = $address->save();
+			//Transport address items save
+			
+			if ((isset($currentAddress->items)) && (count($currentAddress->items) > 0)){
+				foreach ($currentAddress->items as $item) {
+					TransportAddress::saveItem($item, $this->modifier);
+				}
+			}
 		}
 	}
 	
+	private function generateAddressesItems(){
+		foreach ($this->addresses as $index => $currentAddress) {
+			TransportAddress::generateAddressItems($currentAddress->id, $currentAddress->operation_id, $this->modifier);
+		}
+	}
 	
 	private $id;
 	private $transport_date;
@@ -122,8 +155,7 @@ class Transport implements JsonSerializable {
 	private $creator;
 	private $created;
 	private $addresses;
-	
-	
+		
 	/**
 	 *
 	 * @return int

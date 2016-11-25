@@ -43,6 +43,7 @@ class UnitTestBase extends UnitTestCase {
 					('$this->currentSessionId' ,'127.0.0.1', '382b0f5185773fa0f67a8ed8056c7759',
 						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
+		$db->exec("delete from transport_address_item where id<>'0'");
 		$db->exec("delete from transport_address where id<>'0'");
 		$db->exec("delete from transport where id <> '0'");
 		$db->exec("delete from code where id in ('GT_ALMAFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");

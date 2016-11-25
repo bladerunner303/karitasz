@@ -354,3 +354,15 @@ padding: 0;
 	padding: 0;
 	cursor:pointer;
 }
+
+.icon-text-editor {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-text-editor-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}

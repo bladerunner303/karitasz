@@ -221,6 +221,23 @@ create table transport_address
 )
 engine innodb;
 
+create table transport_address_item
+(
+	id						varchar(36) not null,
+	transport_address_id	varchar(36) not null,
+	operation_detail_id		varchar(36) not null, 
+	status					varchar(20) not null, 
+	creator 				varchar(20) not null,
+	created 				timestamp 	not null default current_timestamp,
+	modifier 				varchar(20) not null,
+	modified 				timestamp 	not null,
+	constraint pk_transport_address_item primary key (id),
+	constraint fk_transport_address_item foreign key (transport_address_id) references transport_address(id),
+	constraint fk_address_item_op_detail foreign key (operation_detail_id) references operation_detail(id),
+	constraint ck_transport_address_item_status check (status in (select id from code where code_type = 'transport_status'))
+)
+engine innodb;
+
 create table file_content (
 	id 							varchar(36) not null,
 	content						longblob	not null,

@@ -60,6 +60,11 @@
 			</div>
 			
 			
+			<div id="dialog-transport-address-item" title="Részteljesítés">
+				<div id="dialog-transport-address-item-table">
+				</div>
+			</div>
+			
 			<script type="text/template" id="template-transport-table">
 				<% for(var row in rows) { %>
 					<tr>
@@ -122,12 +127,6 @@
 
 		<br>
 		<div id="transport-save-errors" style="display:none;">
-			<table>
-				<tr>
-					<td><div class="icon-warning" title="Hibás szállítás rögzítés!"></div></td>
-					<td><div id="role-save-errors-div" class="errorText"></div></td>
-				</tr>
-			</table>
 				
 		</div>
 
@@ -157,16 +156,43 @@
 							<td>
 								<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>
 								<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
-								<div class="icon-select cursor-link" onclick="setSuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikeresre állít"></div>
-								<div class="icon-cancel cursor-link" onclick="setUnsuccesfulTransportAddress('<%-rows[row].operation_id%>');" title="Sikertelenre állít"></div>
+								<div class="icon-select cursor-link" onclick="setTransportAddressStatus('<%-rows[row].operation_id%>', 'BEFEJEZETT_TRANSPORT');" title="Sikeresre állít"></div>
+								<div class="icon-cancel cursor-link" onclick="setTransportAddressStatus('<%-rows[row].operation_id%>', 'SIKERTELEN_TRANSPORT');" title="Sikertelenre állít"></div>
 								<div class="icon-up cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'UP');" title="Előre"></div>
 								<div class="icon-down cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'DOWN');" title="Hátra"></div>
+								<div class="icon-text-editor cursor-link" onclick="showTransportAddressItems('<%-rows[row].id%>');" title="Részletes címek"></div>
 							</td>
 						<% } %>
 					</tr>
 				 <% } %>
 			</script>
 		
+			<script type="text/template" id="template-transport-address-item-table">
+			<table class="pure-table">
+				<thead>
+					<tr>
+						<td>Típus</td>
+						<td>Leírás</td>
+						<td>státusz</td>
+						<td>Műveletek</td>
+					</tr>
+				</thead>
+				<tbody>	
+				<% for(var row in rows) { %>
+					<tr>
+						<td><%-rows[row].goods_type_local%></td>		
+						<td><%-rows[row].name%></td>
+						<td><%-rows[row].status_local%></td>
+						<td>
+							<div class="icon-select cursor-link" onclick="setTransportAddressItemStatus('<%-rows[row].id%>', 'BEFEJEZETT_TRANSPORT');" title="Sikeresre állít"></div>
+							<div class="icon-cancel cursor-link" onclick="setTransportAddressItemStatus('<%-rows[row].id%>', 'SIKERTELEN_TRANSPORT');" title="Sikertelenre állít"></div>
+						</td>
+					</tr>
+				 <% } %>
+		
+				</tbody>
+				</table>
+			</script>
 		
 		<script type="text/javascript" src="js/transport-0.5.js"></script>
 		

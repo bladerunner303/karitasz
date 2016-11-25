@@ -13,8 +13,7 @@ $( document ).ready(function() {
 	initDatePickerFields();
 	handleRefreshTransportListClick();
 	handleAddTransportClick();
-	initTransportAddressDialog();
-	initTransportAddressAddDialog();
+	initDialogs();
 	getTransportSelectItems();
 	$('#refresh-transport-list').trigger('click');
 });
@@ -23,6 +22,12 @@ function initDatePickerFields(){
 	$('#transport-date').datepicker();
 	$('#find-transport-begin-date').datepicker($.datepicker.regional[ "hu" ]);
 	$('#find-transport-end-date').datepicker($.datepicker.regional[ "hu" ]);
+}
+
+function initDialogs(){
+	initTransportAddressDialog();
+	initTransportAddressAddDialog();
+	initTransportAddressItemsDialog();
 }
 
 function handleRefreshTransportListClick(){
@@ -107,6 +112,14 @@ function initTransportDetailButtonEvents(){
 
 function initTransportAddressDialog(){
 	$('#dialog-transport-address').dialog({
+		 autoOpen: false, 
+		 modal: true,
+		 width: 'auto'
+	});
+}
+
+function initTransportAddressItemsDialog(){
+	$('#dialog-transport-address-item').dialog({
 		 autoOpen: false, 
 		 modal: true,
 		 width: 'auto'
@@ -316,12 +329,19 @@ function removeTransportAddress(id){
 	}
 }
 
-function setSuccesfulTransportAddress(id){
-	if (confirm('Biztos befejezettre állítsuk véglegesen az elemet?')){
+function setTransportAddressStatus(id, status){
+	if (confirm('A művelet hatására az összes alábontott elemet is sikeresre/sikertelenre állítjuk! Biztos ' + ((status == 'BEFEJEZETT_TRANSPORT') ? 'befejezettre' : 'sikertelenre') + ' állítsuk véglegesen az elemet?')){
 		for (var i=0;i<transportData.addresses.length;i++){
 			if (transportData.addresses[i].operation_id == id ){
-				transportData.addresses[i].status = 'BEFEJEZETT_TRANSPORT';
-				transportData.addresses[i].status_local = 'Befejezett'; ///TODO: local név a js-ben. Ezt ki kell szedni és szerver oldalról venni
+				transportData.addresses[i].status = status;
+				transportData.addresses[i].status_local = (status == 'BEFEJEZETT_TRANSPORT' ? 'Befejezett': 'Sikertelen'); ///TODO: local név a js-ben. Ezt ki kell szedni és szerver oldalról venni
+				
+				for (var n=0; n<transportData.addresses[i].items.length; n++){
+					transportData.addresses[i].items[n].status = status;
+					transportData.addresses[i].items[n].status_local = ((status == 'BEFEJEZETT_TRANSPORT') ? 'Befejezett': 'Sikertelen');
+					
+				}
+				
 				reloadTransportAddressTable();
 				return;
 			}
@@ -329,17 +349,19 @@ function setSuccesfulTransportAddress(id){
 	}
 }
 
-function setUnsuccesfulTransportAddress(id){
-	if (confirm('Biztos sikertelenre állítsuk véglegesen az elemet?')){
+function setTransportAddressItemStatus(id, status){
+	if (confirm('Biztos ' + ((status == 'BEFEJEZETT_TRANSPORT') ? 'befejezettre' : 'sikertelenre') + ' állítsuk véglegesen az elemet?')){
 		for (var i=0;i<transportData.addresses.length;i++){
-			if (transportData.addresses[i].operation_id == id ){
-				transportData.addresses[i].status = 'SIKERTELEN_TRANSPORT';
-				transportData.addresses[i].status_local = 'Sikertelen'; ///TODO: local név a js-ben. Ezt ki kell szedni és szerver oldalról venni
-				reloadTransportAddressTable();
-				return;
+			for (var n=0; n<transportData.addresses[i].items.length; n++){
+				var currentItem = transportData.addresses[i].items[n];
+				if (currentItem.id == id){
+					transportData.addresses[i].items[n].status = status;
+					transportData.addresses[i].items[n].status_local = ((status == 'BEFEJEZETT_TRANSPORT') ? 'Befejezett': 'Sikertelen');
+					$('#dialog-transport-address-item').dialog('close');
+				}
 			}
 		}
-	}
+	}	
 }
 
 function checkTransportData(){
@@ -360,8 +382,8 @@ function saveTransport(){
 	    	openTransportDetail(data);
 	    },
 	    error: function(response) {
-	    	Util.handleErrorToDiv(response, $('#operation-detail-save-errors-div'));
-	    	$('#operation-detail-save-errors').show();
+	    	Util.handleErrorToDiv(response, $('#transport-save-errors'));
+	    	$('#transport-save-errors').show();
 	    }
 	});	
 }
@@ -373,7 +395,7 @@ function reloadTransportAddressTable(){
 		$('#transport-detail-address-table').html(transportAddressesTableTemplate({rows: transportData.addresses, editable: true}));
 	}
 	else {
-		$('#transport-detail-address-table').html('<p>Nincs még mentett eleme a kérvénynek/felajánlásnak!</p>');
+		$('#transport-detail-address-table').html('<p>Nincs még mentett címe a szállításnak!</p>');
 	}
 }
 
@@ -403,5 +425,25 @@ function moveAddress(order_indicator, orientation){
 			return;
 		}
 	}
+	
+}
+
+function showTransportAddressItems(transportAddressId){
+	
+	var transportAddressItems = [];
+	for (var i=0;i<transportData.addresses.length; i++){
+		if (transportData.addresses[i].id == transportAddressId){
+			transportAddressItems = transportData.addresses[i].items;
+		}
+	}
+		
+	if (transportAddressItems.length > 0){
+		var transportAddressItemsTableTemplate = _.template($('#template-transport-address-item-table').html());
+		$('#dialog-transport-address-item-table').html(transportAddressItemsTableTemplate({rows: transportAddressItems}));
+	}
+	else {
+		$('#dialog-transport-address-item-table').html('<p>Nem található a címhez elem!</p>');
+	}
+	$('#dialog-transport-address-item').dialog('open');
 	
 }
