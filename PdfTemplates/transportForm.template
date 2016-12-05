@@ -1,0 +1,26 @@
+<page style="font-family: freeserif;">
+<div style="font-weight: bold; width: 100%; text-align: center;">Szállítási címek</div>
+<div style="padding-left: 15px;">
+	<br>
+	<table cellspacing="0" style="border: none">
+		<tr style="width: 730px;>
+			<td style="width: 33%;">Dátum: <%%transportDate%%></td>
+			<td style="width: 34%;">Szállítás száma: <%%transportNumber%%></td>
+			<td style="width: 33%;">Rögzítő: <%%creator%%></td>
+		</tr>
+	</table>
+	<br>
+	
+	<table cellspacing="0" style="border: solid 1px; border-bottom: solid 1px; text-align: center; max-width: 650px;">
+		<tr style="width: 650px;  background-color: lightgray; font-weight: bold;">
+			<td style="width: 20%;bold; border-right: solid 1px;border-bottom: solid 1px;">Cím</td>
+			<td style="width: 20%;bold; border-right: solid 1px;border-bottom: solid 1px;">Ügyfél</td>
+			<td style="width: 10%;bold; border-right: solid 1px;border-bottom: solid 1px;">Tel.</td>
+			<td style="width: 20%;bold; border-right: solid 1px;border-bottom: solid 1px;">Megjegyzés</td>
+			<td style="width: 30%;bold; border-right: solid 1px;border-bottom: solid 1px;">Szállítandó</td>
+		</tr>
+		<%%transportItems%%>
+	</table>
+</div>
+</page>
+ 

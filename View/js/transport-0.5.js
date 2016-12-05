@@ -3,6 +3,7 @@ var TRANSPORT_URL_REFRESH = '../Controls/listTransports.php';
 var TRANSPORT_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=transport_status';
 var TRANSPORT_URL_ONE_OPERATION = '../Controls/listOperations.php';
 var TRANSPORT_URL_SAVE = '../Controls/saveTransport.php';
+var TRANSPORT_URL_PRINT = '../Controls/printTransportForm.php';
 
 //global variables
 var transportDataTable;
@@ -400,7 +401,7 @@ function reloadTransportAddressTable(){
 }
 
 function printTransport(id){
-	alert('Itt jön majd a szállítóknak készülő doksi');
+	window.open(TRANSPORT_URL_PRINT + "?id=" + id,'_blank');
 }
 
 function moveAddress(order_indicator, orientation){
