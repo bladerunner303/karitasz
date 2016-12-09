@@ -2,6 +2,8 @@
 
 define ( 'URL_LIST_TRANSPORT', 'listTransports.php');
 define ( 'URL_SAVE_TRANSPORT', 'saveTransport.php');
+define ( 'URL_LIST_OPERATION_TRANSPORT', 'listOperationTransports.php');
+define ( 'OPERATION_TRANSPORT_COUNT', 2);
 define ( 'TRANSPORT_COUNT', 3);
 
 class TransportControls  extends UnitTestBase {
@@ -199,6 +201,16 @@ class TransportControls  extends UnitTestBase {
 	
 	function test_saveTransport_bad_cookie(){
 		$this->checkBadCookie(URL_SAVE_TRANSPORT);
+	}
+
+	function test_listOperationTransports_good_simple(){
+		
+		$response = $this->getResponse(URL_LIST_OPERATION_TRANSPORT . "?id=-1010", $this->getPhpSessionCookie());
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . json_encode($response->content));
+		if (count($response->content->transports) != OPERATION_TRANSPORT_COUNT){
+			$this->fail('Nem '. OPERATION_TRANSPORT_COUNT . ' találatot kaptunk vissza, hanem ' . count($response->content->transports));
+			return;
+		}
 	}
 	
 	private static function getTransportObject(){

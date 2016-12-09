@@ -7,8 +7,9 @@ var OPERATION_URL_UPLOAD_ATTACHEMENT = '../Controls/uploadOperationAttachment.ph
 var OPERATION_URL_LIST_ATTACHMENT = '../Controls/listOperationFiles.php';
 var OPERATION_URL_REMOVE_ATTACHMENT = '../Controls/removeOperationAttachment.php';
 var OPERATION_URL_DOWNLOAD_ATTACHMENT = '../Controls/downloadFile.php';
-var OPERATION_URL_SAVE_OPERATION = "../Controls/saveOperation.php";
+var OPERATION_URL_SAVE_OPERATION = '../Controls/saveOperation.php';
 var OPERATION_URL_NEW_ELEMENT_TYPE = '../Controls/saveCode.php';
+var OPERATION_URL_LIST_TRANSPORTS_REFRESH = '../Controls/listOperationTransports.php';
 
 //global variables
 var operationDataTable;
@@ -419,6 +420,7 @@ function openOpertaionDetail(id){
 		$('#tr-operation-detail-modified').hide();
 		$('#tr-operation-detail-last-status-changed').hide();
 		$('#href-operation-detail-attachment').hide();
+		refreshOperationTransports(id);
 	}
 	else {
 		//Módosítás
@@ -456,6 +458,7 @@ function openOpertaionDetail(id){
 				$('#href-operation-detail-attachment').show();
 				$('#operation-detail-attachement-div').show();
 				refreshOperationDetailAttachment(id);
+				refreshOperationTransports(id);
 		    },
 			error: function(response) {
 				Util.handleErrorToConsole(response);
@@ -831,3 +834,33 @@ function removeOperationDetailElementSelectedPotentialElement(operationDetailId)
 	
 }
 
+function refreshOperationTransports(operationId){
+	
+	if (operationId == 0){
+		$('#operation-detail-transport').html('');
+	}
+	else {
+		var url = OPERATION_URL_LIST_TRANSPORTS_REFRESH;
+		url = Util.addUrlParameter(url, 'id', operationId);
+		url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+		
+		$.ajax({
+		    url: url,
+		    type: 'GET',
+		    success: function(data){ 
+		    	if (data.transports.length > 0){
+		    		var refreshOperationTransportsTableTemplate = _.template($('#template-operation-transport-table').html());
+			    	$('#operation-detail-transport').html(	refreshOperationTransportsTableTemplate({rows: data.transports}));
+		    	}
+		    	else {
+		    		$('#operation-detail-transport').html('<p>Nem található szállítás esemény a kérvényhez/felajánláshoz</p>');
+		    	}
+		    	
+		    },
+			error: function(response) {
+				Util.handleErrorToConsole(response);
+		    }
+		});
+	}
+	
+}

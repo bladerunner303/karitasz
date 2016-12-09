@@ -8,8 +8,15 @@ class Transport implements JsonSerializable {
 		return get_object_vars($this);	
 	}
 
-	public function find($beginDate, $endDate, $text){
+	/**
+	 * @param string $beginDate (yyyy-mm-dd format)
+	 * @param string $endDate (yyyy-mm-dd format)
+	 * @param string $text (státusz kód, szállítás kód, ügyfél név-ből keres) 
+	 * @param string $operationId 
+	 */
+	public function find($beginDate, $endDate, $text, $operationId = NULL){
 		$sql = "select 
+					distinct
 					t.*, 
 					concat(substring(t.created, 1, 4), '/', lpad(t.id, 8, '0')) id_format,
 					code_status.code_value status_local,
@@ -18,6 +25,7 @@ class Transport implements JsonSerializable {
 				from 
 					transport t
 				inner join code code_status on t.status = code_status.id
+				left join transport_address tam on tam.transport_id = t.id
 				where (:id is null or t.id = :id)
 				and transport_date between :begin_date and :end_date 
 				and (:text is null 
@@ -29,6 +37,7 @@ class Transport implements JsonSerializable {
 											  where cu.id = :text or concat(cu.surname, ' ', coalesce(cu.forename)) like concat(:text, '%')
 									)
 					 )
+				and (:operation_id is null or tam.operation_id = :operation_id)
 				order by transport_date";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
@@ -36,7 +45,8 @@ class Transport implements JsonSerializable {
 				':id' => $this->id,
 				':begin_date' => $beginDate,
 				':end_date' => $endDate,
-				':text' => $text
+				':text' => $text,
+				':operation_id' => $operationId
 		);
 		
 		$pre->execute($params);

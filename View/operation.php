@@ -88,6 +88,20 @@
 		
 		</div>
 		
+		<script type="text/template" id="template-operation-transport-table">
+				<% for(var row in rows) { %>
+				<div> <%-rows[row].transport_date%> &nbsp; <%-rows[row].id_format%> &nbsp; <%-rows[row].status_local%> </div>
+				<table class="pure-table">
+					<% for(var item in rows[row].items) { %>
+						<tr>
+							<td><%-rows[row].items[item].name_format%></td>
+							<td><%-rows[row].items[item].status_local%></td>
+						</tr>
+					<% } %>
+				</table>
+				 <% } %>
+		</script>
+		
 		<script type="text/template" id="template-operation-table">
 			<% for(var row in rows) { %>
 					<tr>
@@ -369,7 +383,7 @@
 			<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
 				<div id="operation-potential-operations"></div>
 			</div>
-		<script type="text/javascript" src="js/operation-0.4.js"></script>
+		<script type="text/javascript" src="js/operation-0.5.js"></script>
 		
     </body>
 </html>
