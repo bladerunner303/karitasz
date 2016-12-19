@@ -17,6 +17,7 @@ $( document ).ready(function() {
 	handleRefreshCustomerListClick();
 	handleFindCustomerTypeRadioChange();
 	handleAddCustomerClick();
+	handleExportCustomerClick();
 	$('#refresh-customer-list').trigger('click');
 	getCustomerSelectItems();
 	initCustomerDialogs();
@@ -271,7 +272,6 @@ function handleRefreshCustomerListClick(){
 		    },
 			error: function(response) {
 				Util.handleErrorToConsole(response);
-		       
 		    }
 		});
 		
@@ -295,6 +295,12 @@ function handleAddCustomerDetailFamilyMemberClick(){
 			lastTr.after(familyMemberRowTemplate);
 		}
 		initCustomerFamilyMemberSpecialFields();
+	});
+}
+
+function handleExportCustomerClick(){
+	$('#export-customer').click(function(){
+		Util.exportHtmlTableToCsv('Ügyfelek', 'customer-table');
 	});
 }
 
@@ -543,6 +549,3 @@ function displayCustomerLastOperation(customerId){
 		    }
 	});
 }
-
-
-

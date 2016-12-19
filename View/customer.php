@@ -26,8 +26,9 @@
 		     <div style="float:left">Találatok maximális száma: 
 		  		<input type="text" id="find-customer-result-max" value="<?php echo Config::getContextParam("DEFAULT_RESULT_SIZE"); ?>" class="input-short"/>
 		    </div>&nbsp;
-		    <div class="icon-refresh" id="refresh-customer-list" title="Frissiti a táblázatot" ></div>
-		    <div class="icon-add" id="add-customer" title="Új ügyfél rögzítése"></div>
+		    <div class="icon-refresh cursor-link" id="refresh-customer-list" title="Frissiti a táblázatot" ></div>
+		    <div class="icon-add cursor-link" id="add-customer" title="Új ügyfél rögzítése"></div>
+		    <div class="icon-spreadsheet cursor-link" id="export-customer" title="Találatok exportja"></div>
 		    
 		    			<br>
 			<table id="customer-table" style="display: none">
@@ -307,7 +308,7 @@
 		</script>
 		
 		<script type="text/javascript" src="js/lib/zips-1.0.js"></script>
-		<script type="text/javascript" src="js/customer-0.4.js"></script>
+		<script type="text/javascript" src="js/customer-0.6.js"></script>
 
 		
     </body>

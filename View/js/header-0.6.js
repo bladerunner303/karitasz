@@ -8,6 +8,7 @@ needinessLevels = [];
 customerQualifications = [];
 familyMembers = [];
 transportStatuses = [];
+var HEADER_URL_EXPORT_CSV = '../Controls/exportCSV.php';
 
 $( document ).ready(function() {
 
@@ -163,6 +164,39 @@ Util = (function(){
 				dataTable.clear();
 				dataTable.destroy();				
 			}
+		},
+		exportHtmlTableToCsv :  function (fileName, tableId){
+			var columnList = '';
+			var contentData = [];
+			$('#' + tableId + ' thead tr th').each(function(){
+				if (($(this).html() != '') && ($.trim($(this).html()) != 'Műveletek')){
+					columnList += $(this).html() + ';';
+				}
+			});
+			$('#' + tableId + ' tbody tr').each(function(){
+				var row = [];
+				$(this).find('td').each(function(){
+					if ($(this).html().indexOf('class="icon-') === -1){
+						row.push($(this).html().split('&nbsp;').join(' ').split('<br>').join(' '));
+					}
+				});
+				contentData.push(row);
+			});
+			Util.exportCSV(fileName, columnList, contentData);
+		},
+		exportCSV : function(fileName, columnList, contentArray){
+			
+			$('body').append('<form style="display: hidden" action="' + HEADER_URL_EXPORT_CSV +'" method="POST" id="tmp_form">' 
+								+ '<input type="hidden" id="tmp_form_fileName" name="fileName" value=""/>'
+								+ '<input type="hidden" id="tmp_form_columnList" name="columnList" value="">'
+								+ '<input type="hidden" id="tmp_form_contentArray" name="contentArray" value=""/>'
+								+ '</form>');
+								
+			$('#tmp_form_fileName').val(fileName);
+			$('#tmp_form_columnList').val(columnList);
+			$('#tmp_form_contentArray').val(JSON.stringify(contentArray));
+			$('#tmp_form').submit();
+				
 		}
 	};
 }());

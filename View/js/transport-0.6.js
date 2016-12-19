@@ -14,6 +14,7 @@ $( document ).ready(function() {
 	initDatePickerFields();
 	handleRefreshTransportListClick();
 	handleAddTransportClick();
+	handleExportTransportClick();
 	initDialogs();
 	getTransportSelectItems();
 	$('#refresh-transport-list').trigger('click');
@@ -74,6 +75,12 @@ function getTransportSelectItems(){
 function handleAddTransportClick(){
 	$('#add-transport').click(function(){
 		openTransportDetail(0);
+	});
+}
+
+function handleExportTransportClick(){
+	$('#export-transport').click(function(){
+		Util.exportHtmlTableToCsv('Szállítások', 'transport-table');
 	});
 }
 

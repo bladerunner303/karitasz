@@ -42,17 +42,18 @@
 		    </div>&nbsp;
 			<div class="icon-refresh" id="refresh-operation-list" title="Frissiti a táblázatot" ></div>
 			<div class="icon-add" id="add-operation" title="Új tétel rögzítése"></div>
+			<div class="icon-spreadsheet cursor-link" id="export-operation" title="Találatok exportja"></div>
+		    
 			</div>
 			<table id="operation-table" style="display: none">
 				<thead>
 					<tr>
-						<td>Azonosító</td>
-						<?php if (!empty($type)){ echo '<td>Ügyfél</td>'; } ?>
-						<td>Státusz</td>
-						<td>Létrehozás</td>
-						<td>Módosítás</td>
-						<td>Műveletek</td>
-						<?php // if (!empty($type)){ echo '<td>Műveletek</td>'; } 	?>	
+						<th>Azonosító</th>
+						<?php if (!empty($type)){ echo '<th>Ügyfél</th>'; } ?>
+						<th>Státusz</th>
+						<th>Létrehozás</th>
+						<th>Módosítás</th>
+						<th>Műveletek</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -383,7 +384,7 @@
 			<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
 				<div id="operation-potential-operations"></div>
 			</div>
-		<script type="text/javascript" src="js/operation-0.5.js"></script>
+		<script type="text/javascript" src="js/operation-0.6.js"></script>
 		
     </body>
 </html>

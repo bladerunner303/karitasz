@@ -21,6 +21,7 @@ $( document ).ready(function() {
 	initNumericFields();
 	handleRefreshOperationListClick();
 	handleAddOperationClick();
+	handleExportOperationClick();
 	handleOperationDetailAddElementSaveClick();
 	handleOperationDetailAddElementCancelClick();
 	handleOperationDetailNewElementTypeClick();
@@ -74,6 +75,12 @@ function handleRefreshOperationListClick(){
 function handleAddOperationClick(){
 	$('#add-operation').click(function(){
 		openOpertaionDetail(0);
+	});
+}
+
+function handleExportOperationClick(){
+	$('#export-operation').click(function(){
+		Util.exportHtmlTableToCsv((getSiteType() == "KERVENYEZES")? 'Kérvények' : 'Felajánlások', 'operation-table');
 	});
 }
 

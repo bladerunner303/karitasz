@@ -39,7 +39,7 @@
 	
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="css/style-0.2.css">
-	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.5.css">
+	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.6.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/> 
 	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"/>
 	<link rel="stylesheet" type="text/css" href="css/pure-table-0.6.0.css"/>
@@ -51,7 +51,7 @@
 	<script type="text/javascript" src="js/lib/jquery.dataTables-1.10.5.min.js"></script> 
 	<script type="text/javascript" src="js/lib/jquery.numericField-1.0.js"></script> 
 	<script type="text/javascript" src="js/lib/underscore-1.8.3.min.js"></script>
-	<script type="text/javascript" src="js/header-0.4.js" defer="defer"></script>		
+	<script type="text/javascript" src="js/header-0.6.js" defer="defer"></script>		
 	
 	<script type="text/javascript">
 	

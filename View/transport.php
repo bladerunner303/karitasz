@@ -26,16 +26,18 @@
 		    </div>&nbsp;
 			<div class="icon-refresh" id="refresh-transport-list" title="Frissiti a táblázatot" ></div>
 			<div class="icon-add" id="add-transport" title="Új tétel rögzítése"></div>
+			<div class="icon-spreadsheet cursor-link" id="export-transport" title="Találatok exportja"></div>
+		    
 		
 			<table id="transport-table" style="display: none">
 				<thead>
 					<tr>
-						<td>Azon</td>
-						<td>Dátum</td>
-						<td>Státusz</td>
-						<td>Létrehozás</td>
-						<td>Módosítás</td>
-						<td>Műveletek</td>
+						<th>Azon</th>
+						<th>Dátum</th>
+						<th>Státusz</th>
+						<th>Létrehozás</th>
+						<th>Módosítás</th>
+						<th>Műveletek</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -194,7 +196,7 @@
 				</table>
 			</script>
 		
-		<script type="text/javascript" src="js/transport-0.5.js"></script>
+		<script type="text/javascript" src="js/transport-0.6.js"></script>
 		
     </body>
 </html>
