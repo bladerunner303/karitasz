@@ -275,6 +275,7 @@ function openAddress(id){
 }
 
 function addAddress(id){
+	$('#refresh-waiting-transport-operations-list').trigger('click');
 	$('#dialog-transport-address-add').dialog('open');
 	$('#transport-date').datepicker();
 	$('#transport-detail-address-table').html($('#dialog-transport-address-table').html());

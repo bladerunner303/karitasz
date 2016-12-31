@@ -38,16 +38,14 @@ class CodeControls  extends UnitTestBase {
 		
 		$response = $this->getResponse(URL_SAVE_CODE, $this->getPhpSessionCookie(), json_encode($code));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
-	/*	
+	
 		$db = Data::getInstance($this->unitDbSetting);
-		$row = $db->query("select * from customer where surname = '" . $customer->surname . "'")->fetch(PDO::FETCH_OBJ);
+		$row = $db->query("select * from code where id = 'GT_KORTEFA'")->fetch(PDO::FETCH_OBJ);
 		if (!$row){
 			$this->fail('Nem insertált sort');
 			return;
 		}
-		$this->assertEqual($row->surname, $customer->surname, "surname mező nem egyezik " . $row->surname);
-		$this->assertEqual($row->forename, $customer->forename, "forename mező nem egyezik " . $row->forename);
-		*/
+		
 	}
 	
 	function test_saveCode_bad_code_type(){
@@ -83,7 +81,7 @@ class CodeControls  extends UnitTestBase {
 	private function getCodeObject(){
 		$code = new stdClass();
 		$code->code_type = 'goods_type';
-		$code->code_value = 'almafa';
+		$code->code_value = 'körtefa';
 		return $code;
 	}
 	

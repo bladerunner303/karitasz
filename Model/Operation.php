@@ -115,7 +115,7 @@ class Operation implements JsonSerializable {
 	}
 	
 	
-	public function findWaiting($text){
+	public function findWaiting($text, $reservedIds = array()){
 		
 		if (!empty($text)){
 			$text = '%' . $text . '%';
@@ -141,8 +141,13 @@ class Operation implements JsonSerializable {
 							concat(c.zip, ' ', c.city, ' ' , c.street),
 							code_qualification_local.code_value
 						) like :text)
-				
-				order by c.qualification, o.created
+				";
+		
+		if (count($reservedIds)> 0) {
+			$sql .= "and o.id not in (" . implode(',', $reservedIds) . ") ";
+		}
+		
+		$sql .= "order by c.qualification, o.created
 			   	limit 100
                	";
 		$db = Data::getInstance();

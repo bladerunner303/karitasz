@@ -9,7 +9,6 @@ $( document ).ready(function() {
 	
 	handleRefreshWaitingTransportOperationsListClick();
 	initWaitingTransportOperationsDialogs();
-	$('#refresh-waiting-transport-operations-list').trigger('click');
 });
 
 function initWaitingTransportOperationsDialogs(){
@@ -23,8 +22,17 @@ function initWaitingTransportOperationsDialogs(){
 function handleRefreshWaitingTransportOperationsListClick(){
 	
 	$('#refresh-waiting-transport-operations-list').click(function(){
+		
+		var reservedIds = '';
+		if (!Util.isNullOrEmpty(transportData)){
+			for (var i=0;i<transportData.addresses.length;i++){
+				reservedIds += transportData.addresses[i].operation_id + ';';
+			}
+		}
+		
 		var url = WAIT_TRANSPORT_OPERATION_URL_REFRESH;
 		url = Util.addUrlParameter(url, 'text', $('#find-waiting-transport-operations-text').val());
+		url = Util.addUrlParameter(url, 'reservedIds', reservedIds);
 		url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
 		
 		$.ajax({

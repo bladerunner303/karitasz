@@ -10,5 +10,13 @@ if (!SessionUtil::validSession()){
 }
 
 $text = !empty($_GET['text']) ? $_GET['text'] : null ;
-JsonParser::sendJson((new Operation())->findWaiting($text));
+$dirtyReservedIds = !empty($_GET['reservedIds']) ? explode(';', $_GET['reservedIds']) : array() ;
+$reservedIds = array();
+foreach ($dirtyReservedIds as $dirtyId) {
+	if (is_numeric($dirtyId)){
+		array_push($reservedIds, $dirtyId);
+	}
+}
+
+JsonParser::sendJson((new Operation())->findWaiting($text, $reservedIds));
 ?>

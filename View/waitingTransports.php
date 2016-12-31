@@ -78,7 +78,7 @@
 		<div id="dialog-transports-items" title="Kapcsolodó elemek">
 			<div id="waiting-transports-transport-items"></div>
 		</div>
-		<script type="text/javascript" src="js/waitingTransports-0.4.js"></script>
+		<script type="text/javascript" src="js/waitingTransports-0.6.js"></script>
 		
     </body>
 </html>
