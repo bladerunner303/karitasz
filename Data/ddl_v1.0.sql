@@ -69,7 +69,7 @@ CREATE TABLE session
 	user_name 				varchar(20) not null,
 	user_id 				varchar(36) not null,
 	login_time 				timestamp not null default current_timestamp ,
-	last_activity 			timestamp not null ,
+	last_activity 			timestamp not null default current_timestamp ,
 	logout_time 			timestamp null,
 	constraint pk_session primary key (id),
 	constraint fk_session_user foreign key (user_id) references system_user(id)
@@ -102,7 +102,7 @@ create table customer
 	creator 					varchar(20) not null,
 	created 					timestamp 	not null default current_timestamp,
 	modifier 					varchar(20) not null,
-	modified 					timestamp 	not null,
+	modified 					timestamp 	not null default current_timestamp,
 	constraint pk_customer primary key (id),
 	constraint ck_customer_type check (customer_type in (select id from code where code_type = 'customer_type')),
 	constraint ck_customer_qualification check (qualification in (select id from code where code_type = 'customer_qualification')),
@@ -112,7 +112,7 @@ engine innodb;
 
 create table customer_history
 (
-	id						varchar(36) not null, 
+	id						varchar(36) not null,  
 	customer_id				varchar(10)	not null, 
 	data_type				varchar(30) not null, 
 	old_value				varchar(500)null, 
@@ -157,8 +157,8 @@ create table operation
 	creator 				varchar(20) not null,
 	created 				timestamp 	not null default current_timestamp,
 	modifier 				varchar(20) not null,
-	modified 				timestamp 	not null,
-	last_status_changed		timestamp	not null,
+	modified 				timestamp 	not null default current_timestamp,
+	last_status_changed		timestamp	not null default current_timestamp,
 	last_status_changed_user varchar(20) not null,
 	constraint pk_operation primary key (id),
 	constraint fk_customer_operation foreign key (customer_id) references customer(id),
@@ -197,7 +197,7 @@ create table transport
 	creator 				varchar(20) not null,
 	created 				timestamp 	not null default current_timestamp,
 	modifier 				varchar(20) not null,
-	modified 				timestamp 	not null,
+	modified 				timestamp 	not null default current_timestamp,
 	constraint pk_transport primary key (id),
 	constraint ck_transport_status check (status in (select id from code where code_type = 'transport_status'))
 )
@@ -230,7 +230,7 @@ create table transport_address_item
 	creator 				varchar(20) not null,
 	created 				timestamp 	not null default current_timestamp,
 	modifier 				varchar(20) not null,
-	modified 				timestamp 	not null,
+	modified 				timestamp 	not null default current_timestamp,
 	constraint pk_transport_address_item primary key (id),
 	constraint fk_transport_address_item foreign key (transport_address_id) references transport_address(id),
 	constraint fk_address_item_op_detail foreign key (operation_detail_id) references operation_detail(id),
