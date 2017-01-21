@@ -8,7 +8,7 @@ if (!SessionUtil::validSession()){
 	return;
 }
 
-$operationId = $_GET['operation_id'];
+$operationId = (empty($_GET['operation_id']))? null : $_GET['operation_id'];
 $fileName = $_FILES['userfile']['name'];
 $fileType = $_FILES['userfile']['type']; //The mime type of the file, if the browser provided this information. An example would be "image/gif".
 $fileSize = (int)$_FILES['userfile']['size']; //The size, in bytes, of the uploaded file.
@@ -29,8 +29,6 @@ if (!empty($fileName)){
 		die("Reading error\n");
 	}
 	
-	$operation = new Operation();
-	$operation->setId($operationId);
 	$file = new File();
 	$file->setCreator(Session::getUserInfo($_COOKIE['sessionId'])->userName);
 	$file->setName($fileName);
@@ -38,8 +36,17 @@ if (!empty($fileName)){
 	$file->setSize($fileSize);
 	$file->setContent($buffer);
 	
-	$operation->addOperationAttachment($file);
-	JsonParser::sendJson("OK");
+	
+	if (empty($operationId)){
+		//TODO: Formátum ellenőrzés
+		JsonParser::sendJson($file->save());
+	}
+	else {
+		$operation = new Operation();
+		$operation->setId($operationId);	
+		$operation->addOperationAttachment($file);
+		JsonParser::sendJson("OK");
+	}
 }
 
 ?>

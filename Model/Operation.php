@@ -231,7 +231,7 @@ class Operation implements JsonSerializable {
 			$pre->execute($params);
 			
 			$this->id = $db->query("select max(id) maxid from operation")->fetch(PDO::FETCH_OBJ)->maxid;
-			$this->saveOperationDetails();
+			$this->saveOperationDetails([]);
 
 		}
 		else {
@@ -242,7 +242,12 @@ class Operation implements JsonSerializable {
 			$original = new Operation();
 			SystemUtil::cast($original, $originalList[0]);
 			
-			if ($this->isChanged($original)){
+			$finderOperationDetails = new OperationDetail();
+			$finderOperationDetails->setOperationId($this->getId());
+			$originalOperationDetails = $finderOperationDetails->find();
+			
+			
+			if ($this->isChanged($original, $originalOperationDetails)){
 				
 					if ($original->status != $this->status){
 						$this->last_status_changed_user = $this->modifier;
@@ -292,7 +297,7 @@ class Operation implements JsonSerializable {
 					);
 						
 					$pre->execute($params);
-					$this->saveOperationDetails();
+					$this->saveOperationDetails($originalOperationDetails);
 				
 			}
 		}
@@ -300,7 +305,7 @@ class Operation implements JsonSerializable {
 
 	}
 	
-	private function isChanged($original){
+	private function isChanged($original, $originalOperationDetails){
 
 		if (empty($this->id)){
 			return false;
@@ -320,11 +325,7 @@ class Operation implements JsonSerializable {
 		){
 			return true;			
 		}
-		
-		$finderOperationDetails = new OperationDetail();
-		$finderOperationDetails->setOperationId($this->getId());
-		$originalOperationDetails = $finderOperationDetails->find();
-		
+			
 		if (count($originalOperationDetails) != count($this->operationDetails)){
 			return true;
 		}
@@ -341,18 +342,36 @@ class Operation implements JsonSerializable {
 		return false;
 	}
 	
-	private function saveOperationDetails(){
+	private function saveOperationDetails($originalDetails){
 		
-		OperationDetail::removeAll($this->id);
-		foreach ($this->operationDetails as $index => $operationDetail) {
-			$detail = new OperationDetail();
-			$detail->setOperationId($this->id);
-			$detail->setName($operationDetail->name);
-			$detail->setGoodsType($operationDetail->goods_type);
-			$detail->setStatus($operationDetail->status);
-			$detail->setOrderIndicator($index);
-			$detail->setDetailId($operationDetail->detail_id);
-			$detail->save();
+		foreach ($this->operationDetails as $i => $operationDetail) {
+				$detail = new OperationDetail();
+				$detail->setId($operationDetail->id);
+				$detail->setOperationId($this->id);
+				$detail->setName($operationDetail->name);
+				$detail->setGoodsType($operationDetail->goods_type);
+				$detail->setStatus($operationDetail->status);
+				$detail->setOrderIndicator($i);
+				$detail->setDetailId($operationDetail->detail_id);
+				$detail->setDetailFiles($operationDetail->detail_files);
+				$detail->save();
+		}
+		
+		foreach ($originalDetails as $n => $originalDetail) {
+			$needRemove = true;
+			foreach ($this->operationDetails as $i => $operationDetail) {
+				if ($operationDetail->id == $originalDetail->id){
+					$needRemove = false;
+					break;
+				}
+			}
+			
+			if ($needRemove){
+				$forRemove = new OperationDetail();
+				$forRemove->setId($originalDetail->id);
+				$forRemove->remove();
+			}
+			
 		}
 	}
 	
@@ -369,6 +388,7 @@ class Operation implements JsonSerializable {
 		$pre->bindValue(':operation_id', $this->id, PDO::PARAM_STR);
 		$pre->bindValue(':file_meta_data_id', $file->getId(), PDO::PARAM_STR);
 		$pre->execute();
+		return $fileMetaDataId;
 		
 	}
 	

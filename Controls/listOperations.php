@@ -37,6 +37,12 @@ if (($id != null) && (count($ret) == 1)){
 	$finderDetail = new OperationDetail();
 	$finderDetail->setOperationId($id);
 	$ret[0]->operationDetails = $finderDetail->find();
+	
+	foreach ($ret[0]->operationDetails as $index => $detail) {
+		$finderDetail = new OperationDetail();
+		$finderDetail->setId($detail->id);
+		$ret[0]->operationDetails[$index]->detail_files = $finderDetail->getDetailFiles();
+	}
 }
 
 JsonParser::sendJson($ret);

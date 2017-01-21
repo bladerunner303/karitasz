@@ -7,9 +7,9 @@ require_once('../Util/JsonParser.php'); //Objektum kiíráshoz van rá szükség
 define ('SERVICE_ROOT', 'http://localhost:8001/karitasz/Controls/');
 //ini_set('max_execution_time', 300);
 require_once('CodeControls.php');
-require_once('CustomerControls.php');
-require_once('OperationControls.php');
-require_once('TransportControls.php');
+ require_once('CustomerControls.php');
+ require_once('OperationControls.php');
+ require_once('TransportControls.php');
 /*
 assertTrue($x)	Fail unless $x evaluates true
 assertFalse($x)	Fail unless $x evaluates false

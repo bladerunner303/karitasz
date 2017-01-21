@@ -22,6 +22,7 @@ $( document ).ready(function() {
 	getCustomerSelectItems();
 	initCustomerDialogs();
 	$('#find-customer-result-max').numericField(false);
+	$('#customer-dialogs').show();
 });
 
 function initCustomerDialogs(){

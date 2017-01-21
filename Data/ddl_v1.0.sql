@@ -267,6 +267,13 @@ create table operation_file (
 )
 engine innodb;
 
+create table operation_detail_file (
+	operation_detail_id			varchar(36) not null, 
+	file_meta_data_id			varchar(36) not null,
+	constraint pk_operation_detail_file primary key (operation_detail_id, file_meta_data_id),
+	constraint fk_file_md_operation_detail_file foreign key (file_meta_data_id) references file_meta_data(id)	
+)
+engine innodb;
 
 INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
 ('a', 'AKTIV', 'LEVI', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');

@@ -5,6 +5,10 @@
     	
 		require_once 'header.php';
 	?>
+		<!-- Slideshow css and js -->
+		<link rel="stylesheet" type="text/css" href="css/slideshow-0.6.css"/>
+		<script type="text/javascript" src="js/lib/slideshow-0.6.js"></script>
+		
 		<input type="hidden" id="operation-selected-id" value="" />
 		<div id="operation" class="mainArea" >
 		<?php 
@@ -283,7 +287,7 @@
 							></div>
 						</td>
 						<td>
-							<!-- <div class="icon-edit-little" onclick="openPictures(<%-rows[row].id%>);" title="Képek"></div> -->
+							<div class="icon-images" onclick="openPictures(<%-rows[row].order_indicator%>);" title="Képek"></div>
 							<div class="icon-trash-full-mid-little" onclick="removeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Törlés"></div>
 							<div class="icon-select-mid-little" onclick="statusChangeOperationDetailElement(<%-rows[row].order_indicator%>);" title="Szállítás készre állítás"></div>
 							<div class="icon-help-contents" onclick="showPotentialOperations('<%-rows[row].goods_type%>', <%-rows[row].order_indicator%>);" title="Lehetséges kérvény/felajánlás"></div>
@@ -328,6 +332,24 @@
 			</table>
 		</script>
 		
+		<script type="text/template" id="template-operation-slideshow">
+				<% for(var row in rows) { %>
+					<div class="mySlides slideshow-fade">
+				  	
+			      		<div class="slideshow-numbertext"><%-rows[row].index+1%>/<%-rows.length%></div>
+				    		<img src="<%-rows[row].src%>" style="max-width:600px">
+				  		</div>
+					</div>
+					 <% } %>
+					<br>
+
+				  <a class="slideshow-prev" onclick="plusSlides(-1)">&#10094;</a>
+				  <a class="slideshow-next" onclick="plusSlides(1)">&#10095;</a>
+				
+		</script>
+		
+		<div id="operation-dialogs" style="display: none">
+		
 			<div id="dialog-add-element" title="Elem felvétele">
 				<table>
 					<tr>
@@ -346,8 +368,17 @@
 						<td><input type="text" maxlength="50" class="width500" id="operation-detail-add-element-name"></input></td>
 					</tr>
 					<tr id="tr-element-dialog-upload">
-						<td><button id="operation-detail-add-element-upload">Kép feltöltés</button></td>
+						<td>
+						<input name="operation-detail-add-element-upload-pics" type="submit" id="operation-detail-add-element-upload-pics" value="Feltöltés"/>
+						<input id="operation-detail-add-element-upload" type="file" name="operation-detail-add-element-upload" accept="image/gif, image/jpeg"></input>
+						</td>
 						<td></td>
+					</tr>
+					<tr id="tr-element-pics-list" style="display:none;">
+						<td colspan="2">
+							<input type="hidden" id="operation-detail-add-element-element-pics-id-list"/>
+							<div id="tr-element-pics-list-div"></div>
+						</td>
 					</tr>
 					<tr id="tr-element-dialog-related-operation" style="display:none;">
 						<td colspan="2">
@@ -370,21 +401,40 @@
 				<div id="element-save-errors" style="display:none;"></div>
 				<input type="hidden" id="operation-detail-add-element-related-detail"/>
 				<input type="hidden" id="operation-detail-add-element-related-detail-format"/>
-			</div>
 		
-			<div id="dialog-customer">
-				<?php 
-					if (!empty($type)){
-						$_GET["type"] = 'selector';
-						require_once 'customer.php';
-					 }
-				?>
-			</div>
+				<div id="dialog-customer">
+					<?php 
+						if (!empty($type)){
+							$_GET["type"] = 'selector';
+							require_once 'customer.php';
+						 }
+					?>
+				</div>
+	
+				<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
+					<div id="operation-potential-operations"></div>
+				</div>
+				
+				<div id="dialog-operation-slideshow">
+					<div class="slideshow-container" id="dialog-operation-slideshow-mySlides">
+						<br>
+					</div>
+						<div style="text-align:center">
+						  <span class="slideshow-dot" onclick="currentSlide(1)"></span>
+						  <span class="slideshow-dot" onclick="currentSlide(2)"></span>
+						  <span class="slideshow-dot" onclick="currentSlide(3)"></span>
+						</div>
+					
+				</div>
 
-			<div id="dialog-potentional-operations" title="Lehetséges kérvények/felajánlások">
-				<div id="operation-potential-operations"></div>
 			</div>
+			
+		</div>
+			
 		<script type="text/javascript" src="js/operation-0.6.js"></script>
-		
-    </body>
-</html>
+	<?php 
+	if (!empty($type)){
+		echo '</body></html>';
+	}
+	?>
+	

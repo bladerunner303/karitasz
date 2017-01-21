@@ -116,8 +116,38 @@ class OperationDetail implements JsonSerializable {
 			
 		}
 		
+		$sql = "delete from operation_detail_file where operation_detail_id = :id";
+		$pre = $db->prepare($sql);
+		$params = array(':id' => $this->id);
+		$pre->execute($params);
+		
+		foreach ($this->detail_files as  $fileId) {
+			$sql = "insert into operation_detail_file (operation_detail_id, file_meta_data_id) 
+					values (:operation_detail_id, :file_meta_data_id)";
+			$pre = $db->prepare($sql);
+			Logger::warning(json_encode($fileId));
+			$params = array(':operation_detail_id' => $this->id, 
+							':file_meta_data_id' => $fileId );
+			$pre->execute($params);
+		 
+		}
+		
 		return $this->id;
 			
+	}
+	
+	public function remove(){
+		$db = Data::getInstance();
+		
+		$pre = $db->prepare("update operation_detail
+				set detail_id = null
+				where detail_id = :id");
+		$params = array(':id' =>$this->id);
+		$pre->execute($params);
+		
+		$pre = $db->prepare("delete from operation_detail where id = :id" );
+		$pre->execute($params);
+		
 	}
 	
 	public static function removeAll($operationId){
@@ -150,6 +180,7 @@ class OperationDetail implements JsonSerializable {
 	private $status;
 	private $order_indicator;
 	private $detail_id;
+	private $detail_files;
 	/**
 	 *
 	 * @return string
@@ -302,6 +333,39 @@ class OperationDetail implements JsonSerializable {
 		return $this;
 	}
 
+	
+	/**
+	 *
+	 * @return array
+	 */
+	public function getDetailFiles(){
+	
+		if (empty($this->detail_files)){
+			//lazy load
+			$this->detail_files = array();
+			$sql = "select file_meta_data_id from operation_detail_file where operation_detail_id = :operation_detail_id";
+			$db = Data::getInstance();
+			$pre = $db->prepare($sql);
+			$params = array(':operation_detail_id' => $this->id);
+			$pre->execute($params);
+			$detailFiles = $pre->fetchAll(PDO::FETCH_OBJ);
+			foreach ($detailFiles as $detailFile) {
+				array_push($this->detail_files, $detailFile->file_meta_data_id)	;
+			}	
+		}
+		return $this->detail_files;
+	}
+	
+	/**
+	 *
+	 * @param array $detailFiles (csak a file meta id ket egy tömbben) 
+	 */
+	public function setDetailFiles($detailFiles){
+	
+		$this->detail_files = $detailFiles;
+		return $this;
+	}
+	
 }
 
 ?>

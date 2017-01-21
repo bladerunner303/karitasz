@@ -34,6 +34,7 @@ $( document ).ready(function() {
 	$('#operation-detail-add-element-related-detail').val('');
 	$('#operation-detail-add-element-related-detail-format').val('');
 	$('#operation-detail-add-element-type-number').val(1);
+	$('#operation-dialogs').show();
 });
 
 function handleRefreshOperationListClick(){
@@ -109,6 +110,8 @@ function handleOperationDetailSaveClick(){
 
 function handleOperationDetailNewElementClick(){
 	$('#operation-detail-new-element').click(function(){
+		$('#operation-detail-add-element-element-pics-id-list').val('');
+		$('#tr-element-pics-list-div').html('');
 		removeOperationDetailElementSelectedPotentialElement();
 		potentialOperationDialogCaller = 'function-new-element-click';
 		$('#dialog-add-element').dialog('open');
@@ -125,6 +128,7 @@ function handleOperationDetailAddElementSaveClick(){
 		
 		var detailIds = $('#operation-detail-add-element-related-detail').val().split(';');
 		var relatedOperationDetails = $('#operation-detail-add-element-related-detail-format').val().split(';');
+		var detailFiles = $('#operation-detail-add-element-element-pics-id-list').val().split(';');
 		
 		for (var i=0;i<elementNumber; i++){
 		
@@ -139,7 +143,9 @@ function handleOperationDetailAddElementSaveClick(){
 				status_local: 'Rögzített',
 				order_indicator: operationData.operationDetails.length,
 				detail_id: detailId,
-				related_operation_detail: relatedOperationDetail
+				related_operation_detail: relatedOperationDetail,
+				id: null,
+				detail_files: detailFiles
 			});	
 		}
 		
@@ -159,7 +165,11 @@ function handleOperationDetailAddElementCancelClick(){
 
 function handleOperationDetailUploadclick(){
 	$("#operation-upload").click(function(){
-		var fileData = $('#operation-userfile').prop('files')[0];   
+		var fileData = $('#operation-userfile').prop('files')[0];  
+		if (Util.isNullOrEmpty(fileData)){
+			Util.showSaveResultDialog(false, 'Nem választottál ki fájlt');
+			return;
+		}
 	    var formData = new FormData();                  
 	    formData.append('userfile', fileData);               
 	    var url = OPERATION_URL_UPLOAD_ATTACHEMENT;
@@ -214,6 +224,55 @@ function handleOperationDetailNewElementTypeClick(){
 		}
 		
 	});
+}
+
+function handleOperationDetailAddElementUploadPicsClick(){
+	if (getSiteType() == 'KERVENYEZES'){
+		$('#tr-element-dialog-upload').hide();
+	}
+	else {
+		$('#tr-element-dialog-upload').show();
+		$('#operation-detail-add-element-upload-pics').click(function(){
+			var fileData = $('#operation-detail-add-element-upload').prop('files')[0];
+			 
+			if (Util.isNullOrEmpty(fileData)){
+				alert('Nem választottál ki fájlt');
+				return;
+			}
+			$('#operation-detail-add-element-upload').val('');
+		    var formData = new FormData();                  
+		    formData.append('userfile', fileData);               
+		    var url = OPERATION_URL_UPLOAD_ATTACHEMENT;
+		    $.ajax({
+		                url: url, 
+		                dataType: 'text', 
+		                cache: false,
+		                contentType: false,
+		                processData: false,
+		                data: formData,                         
+		                type: 'post',
+		                success: function(data){
+		                	
+		                	var picsId = $('#operation-detail-add-element-element-pics-id-list').val();
+		                	if (!Util.isNullOrEmpty(picsId)){
+		                		picsId += ';';
+		                	}
+		                	
+		                	$('#operation-detail-add-element-element-pics-id-list').val(picsId + JSON.parse(data));	
+		                	$('#tr-element-pics-list-div').append('<p>' + fileData.name + '</p>');
+		                   
+		                	$('#tr-element-pics-list').show();
+		                	
+		                },
+		        		error: function(response) {
+		        			Util.handleErrorToConsole(response);
+		        			Util.showSaveResultDialog(false, response.responseText);
+		        	    }
+		     });
+		});
+
+	}
+
 }
 
 function handleOperationDetailAddElementTypeNumberChange(){
@@ -271,30 +330,23 @@ function initOperationDialogs(){
 	initAddElementDialog();
 	initCustomerDialog();
 	initPotentionalOperationsDialog();
+	initOperationSlideShowDialog();
 }
 
 function initAddElementDialog(){
-	$('#dialog-add-element').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-add-element').dialog(Util.getDefaultDialog());
 }
 
 function initCustomerDialog(){
-	$('#dialog-customer').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-customer').dialog(Util.getDefaultDialog());
 }
 
 function initPotentionalOperationsDialog(){
-	$('#dialog-potentional-operations').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-potentional-operations').dialog( Util.getDefaultDialog());
+}
+
+function initOperationSlideShowDialog(){
+	$('#dialog-operation-slideshow').dialog(Util.getDefaultDialog());
 }
 
 function initOperationFormButtons(){
@@ -303,6 +355,8 @@ function initOperationFormButtons(){
 	handleOperationDetailNewElementClick();
 	handleOperationCustomerFindClick();
 	handleOperationDetailCancelClick();
+	handleOperationDetailAddElementUploadPicsClick();
+
 }
 
 function initOperationSelectElements(selectedValues) {
@@ -427,7 +481,8 @@ function openOpertaionDetail(id){
 		$('#tr-operation-detail-modified').hide();
 		$('#tr-operation-detail-last-status-changed').hide();
 		$('#href-operation-detail-attachment').hide();
-		refreshOperationTransports(id);
+		refreshOperationTransports(id);		
+
 	}
 	else {
 		//Módosítás
@@ -476,13 +531,6 @@ function openOpertaionDetail(id){
 	
 	$('#operation-detail-tabs').tabs();
 	$('#operation-detail').show();
-	
-	if (getSiteType() == 'KERVENYEZES'){
-		$('#tr-element-dialog-upload').hide();
-	}
-	else {
-		$('#tr-element-dialog-upload').show();
-	}
 	
 }
 
@@ -870,4 +918,29 @@ function refreshOperationTransports(operationId){
 		});
 	}
 	
+}
+
+function openPictures(orderIndicator){
+	for (var i=0;i<operationData.operationDetails.length; i++){
+		if ((operationData.operationDetails[i].order_indicator) == orderIndicator){
+			var detailFiles = operationData.operationDetails[i].detail_files;
+			if (detailFiles.length == 0){
+				Util.showSaveResultDialog(false, 'Nem található kép az elemhez');
+				return;
+			}
+			else {
+				var data = [];
+				for (var n=0; n<detailFiles.length; n++){
+					var url = OPERATION_URL_DOWNLOAD_ATTACHMENT;
+					url = Util.addUrlParameter(url, 'file_id', detailFiles[n]);
+					url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+					data.push({index: n, src: url });
+				}
+				var operationSlideShowTemplate = _.template($('#template-operation-slideshow').html());
+				$('#dialog-operation-slideshow-mySlides').html(operationSlideShowTemplate({rows:data}));
+				$('#dialog-operation-slideshow').dialog('open');
+				showSlides(1);
+			}
+		}
+	}
 }

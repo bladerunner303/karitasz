@@ -66,27 +66,29 @@
 			</div>
 		</div>
 		
-		<div id="dialog-similar-customers" title="Hasonló ügyfelek">
-			<p>A következő ügyfelek hasonlítanak ahhoz amit megadtál. Kérlek vizsgáld meg, hogy nem-e a lentiek valamelyikére gondolsz?</p>
-			<table id="table-similar-customer">
-				<thead>
-					<tr>
-						<td>Azonosító</td>
-						<td>Név</td>
-						<td>Cím</td>
-						<td>Telefon</td>
-						<td>Minősítés</td>
-						<td>Adószám</td>
-						<td>TAJ</td>
-						<td></td>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-			<button id="similar-customer-save">Egyik sem, folytatom a mentést</button>
-		</div>
+		<div id="customer-dialogs" style="display:none">
 		
+			<div id="dialog-similar-customers" title="Hasonló ügyfelek">
+				<p>A következő ügyfelek hasonlítanak ahhoz amit megadtál. Kérlek vizsgáld meg, hogy nem-e a lentiek valamelyikére gondolsz?</p>
+				<table id="table-similar-customer">
+					<thead>
+						<tr>
+							<td>Azonosító</td>
+							<td>Név</td>
+							<td>Cím</td>
+							<td>Telefon</td>
+							<td>Minősítés</td>
+							<td>Adószám</td>
+							<td>TAJ</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				<button id="similar-customer-save">Egyik sem, folytatom a mentést</button>
+			</div>
+		</div>
 		<script type="text/x-custom-template" id="template_customer_table">
 				<% for(var row in rows) { %>
 					<tr>
@@ -153,10 +155,7 @@
 						</td>
 					</tr>
 		</script>
-		<!--
-		removeCustomerDetailFamilyMember
-		 
-		 -->
+		
 		<script type="text/x-custom-template" id="template_customer_detail">
 		<table>
 			<tr id="tr-customer-detail-id">
@@ -310,6 +309,11 @@
 		<script type="text/javascript" src="js/lib/zips-1.0.js"></script>
 		<script type="text/javascript" src="js/customer-0.6.js"></script>
 
+		<?php 
+	if (!empty($type)){
+		echo '</body></html>';
+	}
+	?>
 		
     </body>
 </html>

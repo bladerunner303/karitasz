@@ -108,6 +108,18 @@ padding: 0;
 	cursor:pointer;
 }
 
+.icon-images {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-image-x-generic-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
 .icon-edit {
 	display:inline-block;
 	background-image: url("gnome-icons/Gnome-Edit-Paste-32.png");

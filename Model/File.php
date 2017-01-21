@@ -37,11 +37,13 @@ class File implements JsonSerializable {
 		return $ret;
 	}
 	
+	
 	/**
 	 * @return string
 	 */
 	public function save(){
 
+		self::clearFileContents();
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
 		
@@ -70,6 +72,7 @@ class File implements JsonSerializable {
 	}
 	
 	public function remove(){
+		
 		$ret = $this->find();
 		if (count($ret) == 0){
 			return;
@@ -92,8 +95,29 @@ class File implements JsonSerializable {
 		$pre->bindValue(':file_content_id', $this->file_content_id, PDO::PARAM_STR);
 		$pre->execute();
 		
+		self::clearFileContents();
 	}
 	
+	private static function clearFileContents(){
+		$db = Data::getInstance();
+		$pre = $db->prepare("delete from file_meta_data  
+								where id not in ( 
+										select x.* from 
+												(select of.file_meta_data_id from operation_file of
+												union
+												select odf.file_meta_data_id from operation_detail_file odf) x
+								)
+								and created < :checker_timestamp  ");
+		$params = array( ':checker_timestamp' => self::getCheckerTimeStamp() );
+		$pre->execute($params);
+		
+		$db->exec("delete from file_content where id not in ( select file_content_id from file_meta_data ) ");
+		
+	}
+	
+	private static function getCheckerTimeStamp(){
+		return date('Y.m.d H:i:s', strtotime(date('Y-m-d H:i:s') . ' - 30 minute'));
+	}
 	
 	private $id;
 	private $file_content_id;

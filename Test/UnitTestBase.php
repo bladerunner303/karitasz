@@ -43,10 +43,15 @@ class UnitTestBase extends UnitTestCase {
 					('$this->currentSessionId' ,'127.0.0.1', '382b0f5185773fa0f67a8ed8056c7759',
 						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
+		
+		
+		$db->exec("delete from operation_detail_file where 1=1");
+		$db->exec("delete from file_meta_data where id like 'file_meta_data%'");
+		$db->exec("delete from file_content where id like 'file_content%'");
 		$db->exec("delete from transport_address_item where id<>'0'");
 		$db->exec("delete from transport_address where id<>'0'");
 		$db->exec("delete from transport where id <> '0'");
-		$db->exec("delete from code where id in ('GT_ALMAFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");
+		$db->exec("delete from code where id in ('GT_KORTEFA', 'GT_BABA_AGY', 'GT_SZEKRENY') ");
 		$db->exec("delete from operation_detail where id <> '0'");
 		$db->exec("delete from operation where id <> 0");
 		$db->exec("delete from customer_family_member where id <> '0'");
@@ -115,6 +120,13 @@ class UnitTestBase extends UnitTestCase {
 		$db->exec("INSERT INTO transport_address (id, operation_id, transport_id, zip, city, street, description, status, order_indicator)
 				VALUES ('fc1c0333-d64a-4f06-8e15-b507881d0773', '-1010', -1000, 1131, 'Budapest', 'Imott-amott köz 45', null, 'ROGZITETT_TRANSPORT', 0 )");
 		
+		$db->exec("INSERT INTO file_content (id, content) values ('file-content-01', 'abc')");
+		$db->exec("INSERT INTO file_content (id, content) values ('file-content-02', 'efg')");
+		
+		$db->exec("INSERT INTO file_meta_data (id, file_content_id, name, extension, size, creator, created) 
+				   VALUES ('file-meta-data-01', 'file-content-01', 'első fájl.jpg', 'jpg', 100, 'SYSTEM', current_timestamp)");
+		$db->exec("INSERT INTO file_meta_data (id, file_content_id, name, extension, size, creator, created)
+				VALUES ('file-meta-data-02', 'file-content-02', 'második.docx', 'docx', 100, 'SYSTEM', current_timestamp)");
 	}
 	
 	function tearDown() { }

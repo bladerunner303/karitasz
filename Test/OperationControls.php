@@ -98,6 +98,14 @@ class OperationControls  extends UnitTestBase {
 		$operation = $db->query("select * from operation where id = (select max(id) from operation where id not in (-1000, -1005, -1010))")->fetch(PDO::FETCH_OBJ);
 		$operation->operationDetails = $db->query("select * from operation_detail where operation_id = " . $operation->id . " order by name")->fetchAll(PDO::FETCH_OBJ);
 		
+		foreach ($operation->operationDetails as $key => $operationDetail) {
+			$results = $db->query("select file_meta_data_id from operation_detail_file where operation_detail_id ='" . $operationDetail->id . "'")->fetchAll(PDO::FETCH_OBJ);
+			$operation->operationDetails[$key]->detail_files = array();
+			foreach ($results as $result) {
+				array_push($operation->operationDetails[$key]->detail_files, $result->file_meta_data_id);
+			}		
+		}
+		
 		$operation->status = "FOLYAMATBAN";
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
@@ -114,10 +122,12 @@ class OperationControls  extends UnitTestBase {
 		$this->assertEqual($row->status, $operation->status, "status mező nem egyezik " . $row->status);
 		
 		$operation->operationDetails[2] = new stdClass();
+		$operation->operationDetails[2]->id = null;
 		$operation->operationDetails[2]->name = 'Babaágy pelenkázóval';
 		$operation->operationDetails[2]->goods_type = 'GT_BABA_AGY';
 		$operation->operationDetails[2]->status = 'ROGZITETT';
 		$operation->operationDetails[2]->detail_id = null;
+		$operation->operationDetails[2]->detail_files = array();
 		
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
@@ -141,6 +151,13 @@ class OperationControls  extends UnitTestBase {
 		$db = Data::getInstance($this->unitDbSetting);
 		$operation = $db->query("select * from operation where id = (select max(id) from operation where id not in (-1000, -1005, -1010))")->fetch(PDO::FETCH_OBJ);
 		$operation->operationDetails = $db->query("select * from operation_detail where operation_id = " . $operation->id . " order by name")->fetchAll(PDO::FETCH_OBJ) ;  //. " order by name")->fetchAll(PDO::FETCH_OBJ);
+		foreach ($operation->operationDetails as $key => $operationDetail) {
+			$results = $db->query("select file_meta_data_id from operation_detail_file where operation_detail_id ='" . $operationDetail->id . "'")->fetchAll(PDO::FETCH_OBJ);
+			$operation->operationDetails[$key]->detail_files = array();
+			foreach ($results as $result) {
+				array_push($operation->operationDetails[$key]->detail_files, $result->file_meta_data_id);
+			}
+		}
 		
 		$response = $this->getResponse(URL_SAVE_OPERATION, $this->getPhpSessionCookie(), json_encode($operation));
 		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
@@ -230,17 +247,23 @@ class OperationControls  extends UnitTestBase {
 		$operation->is_wait_callback = 'N';
 		$operation->customer_id = 'K000221';
 		$operation->status = 'ROGZITETT';
+		
 		$operation->operationDetails = array();
 		$operation->operationDetails[0] = new stdClass();
+		$operation->operationDetails[0]->id = null;
 		$operation->operationDetails[0]->name = 'A Ruhás szekrény';
 		$operation->operationDetails[0]->goods_type = 'GT_SZEKRENY';
 		$operation->operationDetails[0]->status = 'ROGZITETT';
 		$operation->operationDetails[0]->detail_id = null;
+		$operation->operationDetails[0]->detail_files = array();
+		
 		$operation->operationDetails[1] = new stdClass();
+		$operation->operationDetails[1]->id = null;
 		$operation->operationDetails[1]->name = 'Nagy komod';
 		$operation->operationDetails[1]->goods_type = 'GT_KOMOD';
 		$operation->operationDetails[1]->status = 'ROGZITETT';
 		$operation->operationDetails[1]->detail_id = null;
+		$operation->operationDetails[1]->detail_files = array('file-meta-data-01', 'file-meta-data-02');
 		
 		return $operation;	
 	}

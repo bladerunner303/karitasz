@@ -145,6 +145,7 @@ class TransportAddress implements JsonSerializable {
 			
 			$operationDetail = new OperationDetail();
 			$operationDetail = SystemUtil::cast($operationDetail, $operationDetails[0]);
+			$operationDetail->setDetailFiles($operationDetail->getDetailFiles());
 			$operationDetail->setStatus('BEFEJEZETT' );
 			$operationDetail->save();
 		}
