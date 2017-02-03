@@ -13,27 +13,12 @@ class Customer implements JsonSerializable {
 	 */
 	public function findSimilar(){
 		
-		$sql = "select distinct
-					x.id,
-					x.full_name,
-					x.full_address,
-					x.phones,
-					x.qualification,
-					x.tax_number,
-					x.tb_number,
-					code.code_value qualification_local 
-				from (
-					select 
-						c0.id,
-						trim(concat(c0.surname, ' ', coalesce(c0.forename, ''))) full_name,
-						concat(c0.zip, ' ', c0.city, ' ' , c0.street) full_address,
-						concat(c0.phone, ';', coalesce(c0.phone2)) phones,
-						c0.qualification qualification,
-						c0.tax_number,
-						c0.tb_number,
+		$sql = " select x.* 
+				 from
+					( 
+					select c0.id,
 						'Adó vagy taj szám egyezés' similar_reason ,
 						5 order_num
-						
 					from 
 						customer c0
 					where  (c0.tax_number = :tax_number and c0.tax_number is not null) 
@@ -42,15 +27,8 @@ class Customer implements JsonSerializable {
 				    union
 					select 
 						c.id,
-						trim(concat(c.surname, ' ', coalesce(c.forename, ''))) full_name,
-						concat(c.zip, ' ', c.city, ' ' , c.street) full_address,
-						concat(c.phone, ';', coalesce(c.phone2)) phones,
-						c.qualification qualification,
-						c.tax_number,
-						c.tb_number,
 						'Telefonszám egyezés' similar_reason ,
-						10 order_num
-						
+						10 order_num	
 					from 
 						customer c
 					where  c.phone = :phone
@@ -61,12 +39,6 @@ class Customer implements JsonSerializable {
 					union 
 					select 
 						c2.id,
-						trim(concat(c2.surname, ' ', coalesce(c2.forename, ''))) full_name,
-						concat(c2.zip, ' ', c2.city, ' ' , c2.street) full_address,
-						concat(c2.phone, ';', coalesce(c2.phone2)) phones,
-						c2.qualification qualification,
-						c2.tax_number,
-						c2.tb_number,
 						'Név egyezés' similar_reason ,
 						20 order_num
 					from customer c2
@@ -76,29 +48,18 @@ class Customer implements JsonSerializable {
 					union
 					select
 						c3.id,
-						trim(concat(c3.surname, ' ', coalesce(c3.forename, ''))) full_name,
-						concat(c3.zip, ' ', c3.city, ' ' , c3.street) full_address,
-						concat(c3.phone, ';', coalesce(c3.phone2)) phones,
-						c3.qualification qualification,
-						c3.tax_number,
-						c3.tb_number,
 						'Cím egyezés' similar_reason,
 						30 order_num
 					from customer c3
 					where  c3.zip = :zip and c3.street like concat('%', :street,'%')
-				) as x,
-				code 
-				where x.qualification = code.id 
-				and x.id != coalesce(:id, '')
-				order by x.order_num, x.full_name
-				limit 20";
+				) x 
+				order by x.order_num";
 		
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(
-				':id' => $this->id,
 				':surname' => $this->surname,
-			    ':forename' => $this->forename,
+				':forename' => $this->forename,
 				':zip' => $this->zip,
 				':street' => $this->street,
 				':phone' => $this->phone,
@@ -108,8 +69,47 @@ class Customer implements JsonSerializable {
 		);
 		
 		$pre->execute($params);
-		return $pre->fetchAll(PDO::FETCH_OBJ);			
-				 
+		$similarIdList =  $pre->fetchAll(PDO::FETCH_OBJ);
+		
+		if (count($similarIdList) == 0){
+			return $similarIdList;
+		}
+		
+		//Előállítjuk az in és order sql részt (dinamikusan) 
+		$inSql = "";
+		$orderSql = "case ";
+		foreach ($similarIdList as $i => $customer) {
+			//Ezt itt belehet tenni, mert adatbázisból jött generált id. Nem tartalmazhat támadó részletet. 
+			$inSql .= "'" . $customer->id . "'" . ((count($similarIdList)-1 > $i)? ",":"");
+			$orderSql .= "when c.id = '" . $customer->id . "' then " . $i . " ";		
+		}
+		$orderSql .= " else " .  count($similarIdList) . " end ";
+		
+		$sql = " select 
+						c.id,
+						trim(concat(c.surname, ' ', coalesce(c.forename, ''))) full_name,
+						concat(c.zip, ' ', c.city, ' ' , c.street) full_address,
+						concat(c.phone, ';', coalesce(c.phone2)) phones,
+						c.qualification qualification,
+						c.tax_number,
+						c.tb_number,
+						code.code_value qualification_local 
+					from 
+						customer c,
+						code 
+					where c.qualification = code.id 
+					and c.id != coalesce(:id, '')
+					and c.id in ( $inSql )
+					order by $orderSql
+					limit 20
+					";
+		
+		Logger::warning($sql);
+		$pre = $db->prepare($sql);
+		$params = array(':id' => $this->id);
+		
+		$pre->execute($params);
+		return $pre->fetchAll(PDO::FETCH_OBJ);		 
 		
 	}
 	
