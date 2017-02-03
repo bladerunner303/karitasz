@@ -1,5 +1,5 @@
 <?php
-	define('VERSION', '0.7 RC1');
+	define('VERSION', '0.7 RC2');
 	define('SITE', 'karitasz');
 	require_once '../Util/Loader.php';
 

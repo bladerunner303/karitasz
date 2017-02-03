@@ -22,11 +22,8 @@ $( document ).ready(function() {
 	handleRefreshOperationListClick();
 	handleAddOperationClick();
 	handleExportOperationClick();
-	handleOperationDetailAddElementSaveClick();
-	handleOperationDetailAddElementCancelClick();
-	handleOperationDetailNewElementTypeClick();
+	initOperationDetailAddElementEvents();
 	handleOperationDetailUploadclick();
-	handleOperationDetailAddElementTypeSelectChange();
 	$('#refresh-operation-list').trigger('click');
 	initOperationDialogs();
 	getOperationSelectItems();
@@ -128,7 +125,10 @@ function handleOperationDetailAddElementSaveClick(){
 		
 		var detailIds = $('#operation-detail-add-element-related-detail').val().split(';');
 		var relatedOperationDetails = $('#operation-detail-add-element-related-detail-format').val().split(';');
-		var detailFiles = $('#operation-detail-add-element-element-pics-id-list').val().split(';');
+		var detailFiles = [];
+		if (!Util.isNullOrEmpty($('#operation-detail-add-element-element-pics-id-list').val())){
+			detailFiles = $('#operation-detail-add-element-element-pics-id-list').val().split(';');
+		}
 		
 		for (var i=0;i<elementNumber; i++){
 		
@@ -236,7 +236,7 @@ function handleOperationDetailAddElementUploadPicsClick(){
 			var fileData = $('#operation-detail-add-element-upload').prop('files')[0];
 			 
 			if (Util.isNullOrEmpty(fileData)){
-				alert('Nem választottál ki fájlt');
+				alert('Nem választottál ki kép fájlt');
 				return;
 			}
 			$('#operation-detail-add-element-upload').val('');
@@ -355,8 +355,16 @@ function initOperationFormButtons(){
 	handleOperationDetailNewElementClick();
 	handleOperationCustomerFindClick();
 	handleOperationDetailCancelClick();
-	handleOperationDetailAddElementUploadPicsClick();
+	
 
+}
+
+function initOperationDetailAddElementEvents(){
+	handleOperationDetailAddElementSaveClick();
+	handleOperationDetailAddElementCancelClick();
+	handleOperationDetailNewElementTypeClick();
+	handleOperationDetailAddElementTypeSelectChange();
+	handleOperationDetailAddElementUploadPicsClick();
 }
 
 function initOperationSelectElements(selectedValues) {
