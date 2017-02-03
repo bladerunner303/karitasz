@@ -104,7 +104,6 @@ class Customer implements JsonSerializable {
 					limit 20
 					";
 		
-		Logger::warning($sql);
 		$pre = $db->prepare($sql);
 		$params = array(':id' => $this->id);
 		

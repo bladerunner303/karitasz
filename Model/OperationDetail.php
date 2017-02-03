@@ -125,7 +125,6 @@ class OperationDetail implements JsonSerializable {
 			$sql = "insert into operation_detail_file (operation_detail_id, file_meta_data_id) 
 					values (:operation_detail_id, :file_meta_data_id)";
 			$pre = $db->prepare($sql);
-			Logger::warning(json_encode($fileId));
 			$params = array(':operation_detail_id' => $this->id, 
 							':file_meta_data_id' => $fileId );
 			$pre->execute($params);
