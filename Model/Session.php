@@ -6,6 +6,41 @@ class Session {
 	
 	private static $userInfo = null;
 	
+	public static function logPageLoad($page, $sessionId){
+		if (empty($sessionId) || (empty($page))){
+			Logger::warning('logPageLoad nem kapott megfelelő paramétereket: $sessionId:' . $sessionId . ' $page: ' . $page);
+			return;
+		}
+		
+		$db = Data::getInstance();
+		
+		$pre = $db->prepare("select user_id, user_name, ip from session where id = :id" );
+		$params = array(
+				':id' => $sessionId ,
+		);
+		$pre->execute($params);
+		$sessionData = $pre->fetch(PDO::FETCH_OBJ);
+		Logger::warning(json_encode($sessionData));
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		
+		$pre = $db->prepare( "insert into log_page_load (id, page, page_load_time, user_id, user_name, ip, user_agent)
+				values (:id, :page, :page_load_time, :user_id, :user_name, :ip, :user_agent)");
+		$logId = SystemUtil::getGuid();
+		$t = SystemUtil::getCurrentTimestamp();
+		$params = array(
+				':id' => $logId ,
+				':page' => $page, 
+				':page_load_time' => $t,
+				':user_id' => $sessionData->user_id,
+				':user_name' => $sessionData->user_name,
+				':ip' => $sessionData->ip,
+				':user_agent' => $userAgent
+		);
+		
+		$pre->execute($params);
+		
+	}
+	
 	public static function open ($userId, $userName){
 	
 		$db = Data::getInstance();

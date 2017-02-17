@@ -76,6 +76,19 @@ CREATE TABLE session
 )
 engine innodb;
 
+create table log_page_load (
+	id						varchar(36) not null,
+	page					varchar(105)not null,
+	page_load_time			timestamp not null default current_timestamp ,
+	user_id					varchar(36) not null,
+	user_name				varchar(20) not null,
+	ip						varchar(64) not null,
+	user_agent				varchar(255) null,
+	constraint pk_log_page_load primary key(id),
+	constraint fk_log_page_load_user foreign key (user_id) references system_user(id)
+)
+engine innodb;
+
 create table customer
 (
 	id 							varchar(8) not null,

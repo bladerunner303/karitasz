@@ -2,6 +2,10 @@
 
 class SessionUtil {
 	
+	public static function logPageLoad($page){
+		Session::logPageLoad($page, isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null);
+	}
+	
 	public static function clear(){
 		$sessionId = isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null;
 		if ($sessionId != null){

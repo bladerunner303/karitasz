@@ -1,5 +1,5 @@
 <?php
-	define('VERSION', '0.7 RC2');
+	define('VERSION', '0.7 RC3');
 	define('SITE', 'karitasz');
 	require_once '../Util/Loader.php';
 
@@ -30,6 +30,8 @@
 	else {
 		$site = 'Karitász';
 	}
+	
+	SessionUtil::logPageLoad($_GET["site"]);
 ?>
 <!DOCTYPE html>
 <html>
