@@ -3,12 +3,12 @@
 require_once '../Util/Loader.php';
 
 ErrorHandler::register();
-
-
 if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
+
 $fileName = $_POST['fileName'];
 $columnList = $_POST['columnList'];
 $contentArray = json_decode($_POST['contentArray']);

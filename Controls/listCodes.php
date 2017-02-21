@@ -8,6 +8,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $codeTypes = !empty($_GET['codeTypes']) ? explode(";", $_GET['codeTypes']) : array() ;
 

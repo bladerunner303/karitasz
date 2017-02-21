@@ -8,6 +8,8 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
+
 $operationId = !empty($_GET['id']) ? $_GET['id'] : null ;
 
 $finder = new Transport();

@@ -8,6 +8,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $id = !empty($_GET['id']) ? $_GET['id'] : null ;
 $beginDate = !empty($_GET['begin_date']) ? $_GET['begin_date'] : '2000-01-01' ;

@@ -7,6 +7,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $operationId = (empty($_GET['operation_id']))? null : $_GET['operation_id'];
 $fileName = $_FILES['userfile']['name'];

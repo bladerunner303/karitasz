@@ -89,6 +89,22 @@ create table log_page_load (
 )
 engine innodb;
 
+create table log_control_run (
+	id						varchar(36) not null,
+	control					varchar(105)not null,
+	control_begin_time		timestamp not null default current_timestamp ,
+	control_end_time		timestamp not null default current_timestamp , 
+	user_id					varchar(36) not null,
+	user_name				varchar(20) not null,
+	ip						varchar(64) not null,
+	user_agent				varchar(255) null,
+	constraint pk_log_control_run primary key(id),
+	constraint fk_log_control_run_user foreign key (user_id) references system_user(id)
+
+)
+engine innodb;
+
+
 create table customer
 (
 	id 							varchar(8) not null,

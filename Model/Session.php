@@ -6,6 +6,35 @@ class Session {
 	
 	private static $userInfo = null;
 	
+	public static function logControlRunEnd(){
+		$logControlObject = SessionUtil::getLogControlObject();
+		if (empty($logControlObject) || (empty($logControlObject))){
+			Logger::warning('logPageLoad nem kapott megfelelő paramétert');
+			return;
+		}
+		
+		$sql = "insert into log_control_run
+				(id, control, control_begin_time, control_end_time, user_id, user_name, ip, user_agent)
+				select :id, :control, :control_begin_time, :control_end_time, user_id, user_name, ip, :user_agent
+				from session where id = :session_id
+				";
+		$logControlRunId = SystemUtil::getGuid();
+		$endTime = SystemUtil::getCurrentTimestamp();
+		$params = array(
+				':id' => $logControlRunId ,
+				':control' => $logControlObject->controlName,
+				':control_begin_time' => $logControlObject->startTime, 
+				':control_end_time' => $endTime,
+				':user_agent' => $logControlObject->userAgent,
+				':session_id' => $logControlObject->sessionId
+		);
+		
+		$db = Data::getInstance();
+		$pre = $db->prepare($sql);
+		$pre->execute($params);
+		
+	}
+	
 	public static function logPageLoad($page, $sessionId){
 		if (empty($sessionId) || (empty($page))){
 			Logger::warning('logPageLoad nem kapott megfelelő paramétereket: $sessionId:' . $sessionId . ' $page: ' . $page);

@@ -7,6 +7,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $id = $_GET['file_id'];
 $finder = new File();

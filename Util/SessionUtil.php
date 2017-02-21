@@ -2,8 +2,29 @@
 
 class SessionUtil {
 	
+	
+	private static $logControl;
+	public static function getLogControlObject(){
+		return SessionUtil::$logControl;
+	}
+	
 	public static function logPageLoad($page){
 		Session::logPageLoad($page, isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null);
+	}
+	
+	
+	public static function logControlRun($controlName){
+		//set global variable, logControlObjekt
+		SessionUtil::$logControl = new stdClass();
+		SessionUtil::$logControl->startTime = SystemUtil::getCurrentTimestamp();
+		SessionUtil::$logControl->controlName = $controlName;
+		SessionUtil::$logControl->userAgent = $_SERVER['HTTP_USER_AGENT'];
+		SessionUtil::$logControl->sessionId = isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null;
+		register_shutdown_function( 'Session::logControlRunEnd');
+	}
+	
+	public static function logControlRunEnd(){
+		
 	}
 	
 	public static function clear(){

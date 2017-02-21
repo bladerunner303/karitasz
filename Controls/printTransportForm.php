@@ -8,6 +8,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $id =  (!empty($_GET['id'])) ? $_GET['id'] : null;
 define ("TEMPLATE_PATH", "../PdfTemplates/transportForm.template");

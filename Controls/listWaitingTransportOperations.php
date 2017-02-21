@@ -8,6 +8,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $text = !empty($_GET['text']) ? $_GET['text'] : null ;
 $dirtyReservedIds = !empty($_GET['reservedIds']) ? explode(';', $_GET['reservedIds']) : array() ;

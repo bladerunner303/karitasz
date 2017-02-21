@@ -7,6 +7,7 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+SessionUtil::logControlRun(basename(__FILE__));
 
 $request = json_decode ( file_get_contents ( 'php://input' ) );
 $oldPassword = $request->oldPassword;
