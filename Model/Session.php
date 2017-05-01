@@ -50,7 +50,7 @@ class Session {
 		$pre->execute($params);
 		$sessionData = $pre->fetch(PDO::FETCH_OBJ);
 		Logger::warning(json_encode($sessionData));
-		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		$userAgent = empty($_SERVER['HTTP_USER_AGENT'])? 'N/A': $_SERVER['HTTP_USER_AGENT'];
 		
 		$pre = $db->prepare( "insert into log_page_load (id, page, page_load_time, user_id, user_name, ip, user_agent)
 				values (:id, :page, :page_load_time, :user_id, :user_name, :ip, :user_agent)");
@@ -74,8 +74,9 @@ class Session {
 	
 		$db = Data::getInstance();
 
-		$pre = $db->prepare( "insert into session (id, user_id, user_name, ip, browser_hash, last_activity, login_time)
-				values (:id, :user_id, :user_name, :ip_address, :browser_hash, :last_activity, :login_time)");
+		$pre = $db->prepare( "insert into session (id, user_id, user_name, user_roles, ip, browser_hash, last_activity, login_time)
+				select :id, :user_id, :user_name, roles, :ip_address, :browser_hash, :last_activity, :login_time 
+				from system_user where id = :user_id");
 		$sessionId = SystemUtil::getGuid();
 		
 		$t = SystemUtil::getCurrentTimestamp();
@@ -134,7 +135,8 @@ class Session {
 			$db = Data::getInstance();
 			$pre = $db->prepare( "select 
 					user_id , 
-					user_name  
+					user_name, 
+					user_roles 
 				from 
 					session 
 				where 
@@ -148,6 +150,7 @@ class Session {
 				$userInfo = new stdClass();
 				$userInfo->userId = $row->user_id;
 				$userInfo->userName = $row->user_name;
+				$userInfo->userRoles = $row->user_roles;
 				self::$userInfo = $userInfo;
 			}
 			else {

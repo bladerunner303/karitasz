@@ -74,6 +74,8 @@ insert into code values ('BIRTH_DATA_CHANGE', 'customer_history_data_type', 'Sz�
 insert into code values ('MEMBER_NEW', 'customer_history_data_type', 'Felvett családtag', 'SYSTEM', current_timestamp);
 insert into code values ('MEMBER_MODIFY', 'customer_history_data_type', 'Módosult családtag', 'SYSTEM', current_timestamp);
 insert into code values ('MEMBER_REMOVE', 'customer_history_data_type', 'Kitörölt családtag', 'SYSTEM', current_timestamp);
+insert into code values ('ROLE_BACK_OFFICE', 'system_role', 'Back Office', 'SYSTEM', current_timestamp);
+insert into code values ('ROLE_TRANSPORTER', 'system_role', 'Szállító', 'SYSTEM', current_timestamp);
 
 
 /*
@@ -91,10 +93,13 @@ insert into code values ('GT_DOHANYZO_ASZTAL', 'goods_type', 'Dohányzó asztal'
 */
 -- user
 delete from system_user where id <> '0';
-INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
-('a', 'AKTIV', 'LEVI', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
-INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
-('b', 'AKTIV', 'JERNE', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
-INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`) VALUES
-('c', 'AKTIV', 'MARTA', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13');
+INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`, roles) VALUES
+('a', 'AKTIV', 'LEVI', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13', 'ROLE_BACK_OFFICE');
+INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`, roles) VALUES
+('b', 'AKTIV', 'JERNE', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13', 'ROLE_BACK_OFFICE');
+INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`, roles) VALUES
+('c', 'AKTIV', 'MARTA', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13', 'ROLE_BACK_OFFICE');
+INSERT INTO `system_user` (`id`, `status`, `name`, `password`, `email`, `last_login`, `last_logout`, `last_password_change`, `modifier`, `modified`, roles) VALUES
+('d', 'AKTIV', 'SZALLITO', '64f5afe732fa4a8255747b150298df58db4330322c2928a33f6bfc6fb02c0756', 'xxx@xxx.hu', '2016-06-15 08:13:14', '2016-06-13 16:24:20', '2016-06-05 01:20:50', 'SYSTEM', '2016-05-31 08:44:13', 'ROLE_TRANSPORTER');
+
 

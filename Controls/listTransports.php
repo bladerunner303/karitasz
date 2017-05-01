@@ -22,9 +22,9 @@ $finder->setId($id);
 $ret = array();
 $ret = $finder->find($beginDate, $endDate, $text);
 
-if (($id != null) && (count($ret) == 1)){
+if (count($ret) == 1){
 	$finderAddress = new TransportAddress();
-	$finderAddress->setTransportId($id);
+	$finderAddress->setTransportId($ret[0]->id);
 	$ret[0]->addresses = $finderAddress->find();
 	
 	if ($finderAddress->getStatus() != 'ROGZITETT_TRANSPORT'){

@@ -18,7 +18,7 @@ class SessionUtil {
 		SessionUtil::$logControl = new stdClass();
 		SessionUtil::$logControl->startTime = SystemUtil::getCurrentTimestamp();
 		SessionUtil::$logControl->controlName = $controlName;
-		SessionUtil::$logControl->userAgent = $_SERVER['HTTP_USER_AGENT'];
+		SessionUtil::$logControl->userAgent = EMPTY($_SERVER['HTTP_USER_AGENT'])? 'N/A': $_SERVER['HTTP_USER_AGENT'] ;
 		SessionUtil::$logControl->sessionId = isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null;
 		register_shutdown_function( 'Session::logControlRunEnd');
 	}
@@ -47,8 +47,16 @@ class SessionUtil {
 		return Session::isValid($sessionId);
 	}
 	
-	public static function validRole($validRoles){
-		$sessionId = isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null;
+	/**
+	 * @param array $validRoles
+	 * @param array $sessionId (default null. If it is null use sessionId cookie value) 
+	 * @return boolean
+	 */
+	public static function validRole($validRoles, $sessionId = null){
+		if ($sessionId == null){
+			$sessionId = isset($_COOKIE['sessionId'])? $_COOKIE['sessionId'] : null;
+		}
+		
 		if ($sessionId == null){
 			return false;
 		}

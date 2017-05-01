@@ -25,8 +25,14 @@ if ((isset($_POST["userName"])) && (isset($_POST["userPassword"]))) {
 			
 			$sessionId = Session::open($result->userId, $userName);
 			setcookie("sessionId", $sessionId, time() + (10 * 365 * 24 * 60 * 60), "/");
-			header('Location: customer.php');
-						
+			
+			if (SessionUtil::validRole(array("ROLE_BACK_OFFICE"), $sessionId)){
+				header('Location: customer.php');
+			}
+			else {
+				header('Location: dailyTransport.php');
+			}
+			
 		}
 		else {
 			//Write error;

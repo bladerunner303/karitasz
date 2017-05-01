@@ -162,7 +162,7 @@
 								<div class="icon-cancel cursor-link" onclick="setTransportAddressStatus('<%-rows[row].operation_id%>', 'SIKERTELEN_TRANSPORT');" title="Sikertelenre állít"></div>
 								<div class="icon-up cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'UP');" title="Előre"></div>
 								<div class="icon-down cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'DOWN');" title="Hátra"></div>
-								<div class="icon-text-editor cursor-link" onclick="showTransportAddressItems('<%-rows[row].id%>');" title="Részletes címek"></div>
+								<div class="icon-text-editor cursor-link" onclick="showTransportAddressItems('<%-rows[row].id%>');" title="Részletes szállítandó elemek"></div>
 							</td>
 						<% } %>
 					</tr>

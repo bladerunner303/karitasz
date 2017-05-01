@@ -38,10 +38,10 @@ class UnitTestBase extends UnitTestCase {
 		$db = Data::getInstance($this->unitDbSetting);
 		
 		$db->exec("insert into session 
-					(id,ip, browser_hash, user_name, user_id, login_time, last_activity)
+					(id,ip, browser_hash, user_name, user_id, user_roles, login_time, last_activity)
 					values
 					('$this->currentSessionId' ,'127.0.0.1', '382b0f5185773fa0f67a8ed8056c7759',
-						'levi', 'a', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
+						'levi', 'a', 'ROLE_BACK_OFFICE', '" . date('Y.m.d H:i:s') . "', '" . date('Y.m.d H:i:s') . "')");
 		
 		
 		

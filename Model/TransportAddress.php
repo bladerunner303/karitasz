@@ -111,6 +111,78 @@ class TransportAddress implements JsonSerializable {
 		return $this->id;
 	}
 	
+	public static function addDescription($itemId, $description, $user ){
+		
+		$description =  " \r\n Szállítók megjegyzése (" . SystemUtil::getCurrantDay() . ") \r\n" . 
+									$description;
+		
+		$sql = "select 
+					o.id,
+					o.customer_id 
+				from 
+					operation o,
+					transport_address ta
+				where o.id = ta.operation_id
+				and ta.id = :id 
+			";
+		$db = Data::getInstance();
+		$pre = $db->prepare($sql);
+		$params = array(
+				':id' => $itemId
+		);
+		$pre->execute($params);
+		$operations = $pre->fetchAll(PDO::FETCH_OBJ);
+		if (count($operations) != 1){
+			new Exception("Nem vagy több kérvény/felajánlás található szállítási címhez. count: " . count($operations) . " id: " . $itemId);
+			return;
+		}
+		
+		$operation = $operations[0];
+		$customerFinder = new Customer();
+		$customerFinder->setId($operation->customer_id);
+		$customers = $customerFinder->find(null, 1);
+		
+		
+		if (count($customers) != 1){
+			new Exception("Nem található ügyfél a szállítási címhez. id: " . $operation->customer_id);
+			return;
+		}
+		
+		$customer = new Customer();
+		$customer = SystemUtil::cast($customer, $customers[0]);
+		$customer->setDescription($customer->getDescription() . $description);
+		$customer->setModifier($user);
+		$customerFamilyMemberFinder = new CustomerFamilyMember();
+		$customerFamilyMemberFinder->setCustomerId($customer->getId());
+		$customer->setFamilyMembers($customerFamilyMemberFinder->find());
+		
+		$customer->save();
+		
+		$operationFinder = new Operation();
+		$operationFinder->setId($operation->id);
+		$oldOperations = $operationFinder->find(null, 1);
+		
+		if (count($oldOperations) != 1){
+			new Exception("Nem található kérvény/felajánlás a szállítási címhez. id: " . $operation->id);
+			return;
+		}
+		
+		$oldOperation = new Operation();
+		$oldOperation = SystemUtil::cast($oldOperation, $oldOperations[0]);
+		$oldOperation->setDescription($oldOperation->getDescription() . $description);
+		$oldOperation->setModifier($user);
+		$operationDetails = new OperationDetail();
+		$operationDetails->setOperationId($oldOperation->getId());
+		$oldOperation->setOperationDetails($operationDetails->find());
+		
+		$oldOperation->save();
+		
+	}
+	
+	/**
+	 * @param TransportAddressItem $item
+	 * @param String $user
+	 */
 	public static function saveItem($item, $user){
 		$sql = "update 
 					transport_address_item 
@@ -133,7 +205,7 @@ class TransportAddress implements JsonSerializable {
 		
 		$pre->execute();
 		
-		
+
 		if ($item->status == 'BEFEJEZETT_TRANSPORT'){
 			$operationDetailFinder = new OperationDetail();
 			$operationDetailFinder->setId($item->operation_detail_id);

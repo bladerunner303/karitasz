@@ -7,6 +7,10 @@ if (!SessionUtil::validSession()){
 	JsonParser::sendSessionExpired();
 	return;
 }
+if (!SessionUtil::validRole(array("ROLE_BACK_OFFICE"))){
+	JsonParser::sendRoleError();
+	return;
+}
 SessionUtil::logControlRun(basename(__FILE__));
 
 $operationId = (empty($_GET['operation_id']))? null : $_GET['operation_id'];

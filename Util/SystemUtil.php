@@ -24,6 +24,10 @@ class SystemUtil {
 		return date("Y-m-d H:i:s");
 	}
 	
+	public static function getCurrantDay() {
+		return date("Y-m-d");
+	}
+	
 	public static function getRequestIp(){
 		return
 		!empty($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] :

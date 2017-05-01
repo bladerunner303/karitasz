@@ -62,7 +62,7 @@ Util = (function(){
 			 if (response.status == 401){
 		        	window.location.replace('bejelentkezes.php');  
 		        }
-		        else if(response.status == 500){
+		        else {
 		        	Util.logConsole(response.responseText);
 		        }
 		},
@@ -70,7 +70,7 @@ Util = (function(){
 			if (response.status == 401){
 	        	window.location.replace('bejelentkezes.php');  
 	        }
-	        else if(response.status == 500){
+	        else {
 	        	// errorDiv.css("background-color", "red");
 	        	var errors = response.responseText.split(";");
 	        	var errorText = '';

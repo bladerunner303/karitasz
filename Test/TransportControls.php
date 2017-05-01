@@ -3,6 +3,7 @@
 define ( 'URL_LIST_TRANSPORT', 'listTransports.php');
 define ( 'URL_SAVE_TRANSPORT', 'saveTransport.php');
 define ( 'URL_LIST_OPERATION_TRANSPORT', 'listOperationTransports.php');
+define ( 'URL_SET_TRANSPORT_INFO', 'setTransportInfo.php');
 define ( 'OPERATION_TRANSPORT_COUNT', 2);
 define ( 'TRANSPORT_COUNT', 3);
 
@@ -211,6 +212,71 @@ class TransportControls  extends UnitTestBase {
 			$this->fail('Nem '. OPERATION_TRANSPORT_COUNT . ' találatot kaptunk vissza, hanem ' . count($response->content->transports));
 			return;
 		}
+	}
+	
+	function test_sendTransportInfo_good_simple_successful(){
+
+		$transportInfo = self::getSetTransportInfoRequest();
+		$transportInfo->id = 'fc1c0333-d64a-4f06-8e15-b507881d0773';
+		$transportInfo->isSetSuccessful = true;
+		
+		$response = $this->getResponse(URL_SET_TRANSPORT_INFO, $this->getPhpSessionCookie(), json_encode($transportInfo));
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		
+		$db = Data::getInstance($this->unitDbSetting);
+		$cnt = (int)$db->query("select count(*) cnt from transport_address
+				where status = 'BEFEJEZETT_TRANSPORT' and id = '" . $transportInfo->id .  "'")->fetch(PDO::FETCH_OBJ)->cnt;
+		$this->assertEqual($cnt, 1, "Nem megfelelő számú address itemet módosított, hanem: " .  $cnt);
+			
+	}
+	
+	function test_sendTransportInfo_good_simple_cancel(){
+		$transportInfo = self::getSetTransportInfoRequest();
+		$transportInfo->id = 'fc1c0333-d64a-4f06-8e15-b507881d0773';
+		$transportInfo->isSetCanceled = true;
+		
+		$response = $this->getResponse(URL_SET_TRANSPORT_INFO, $this->getPhpSessionCookie(), json_encode($transportInfo));
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		
+		$db = Data::getInstance($this->unitDbSetting);
+		$cnt = (int)$db->query("select count(*) cnt from transport_address
+				where status = 'SIKERTELEN_TRANSPORT' and id = '" . $transportInfo->id .  "'")->fetch(PDO::FETCH_OBJ)->cnt;
+		$this->assertEqual($cnt, 1, "Nem megfelelő számú address itemet módosított, hanem: " .  $cnt);
+	}
+	
+	function test_sendTransportInfo_good_simple_description(){
+		$transportInfo = self::getSetTransportInfoRequest();
+		$transportInfo->id = 'fc1c0333-d64a-4f06-8e15-b507881d0773';
+		$transportInfo->description = 'almafa';
+		
+		$response = $this->getResponse(URL_SET_TRANSPORT_INFO, $this->getPhpSessionCookie(), json_encode($transportInfo));
+		$this->assertEqual(200, $response->code, "Nem megfelelő a kód" . $response->code . " " . $response->content);
+		
+		$db = Data::getInstance($this->unitDbSetting);
+		$description = $db->query("select o.description 
+									from transport_address ta, operation o
+								where ta.operation_id = o.id
+								and ta.id = '" . $transportInfo->id .  "'")->fetch(PDO::FETCH_OBJ)->description;
+
+		$this->assertTrue(strrpos($description, $transportInfo->description) != 0);
+		
+		$description = $db->query("select c.description
+				from transport_address ta, operation o, customer c
+				where ta.operation_id = o.id
+				and o.customer_id = c.id
+				and ta.id = '" . $transportInfo->id .  "'")->fetch(PDO::FETCH_OBJ)->description;
+		
+		$this->assertTrue(strrpos($description, $transportInfo->description) != 0);
+		
+	}
+	
+	private static function getSetTransportInfoRequest(){
+		$request = new stdClass();
+		$request->id = '';
+		$request->description = '';
+		$request->isSetSuccessful = false;
+		$request->isSetCanceled = false;
+		return $request;
 	}
 	
 	private static function getTransportObject(){
