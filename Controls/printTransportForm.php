@@ -41,12 +41,12 @@ else {
 
 function getTransportItemsTable($items){
 
-	$template = '<tr style="width: 730px;  background-color: white;>
-				<td style="border-right: solid 1px;border-bottom: solid 1px;"><%%address%%></td>
-				<td style="border-right: solid 1px;border-bottom: solid 1px;"><%%customer%%></td>
-				<td style="border-right: solid 1px;border-bottom: solid 1px;"><%%phone%%></td>
-				<td style="border-right: solid 1px;border-bottom: solid 1px;"><%%description%%></td>
-				<td style="border-right: solid 1px;border-bottom: solid 1px;"><%%items%%></td>
+	$template = '<tr style="width: 1100px;  background-color: white;>
+				<td style="width: 200px; border-right: solid 1px;border-bottom: solid 1px;"><%%address%%></td>
+				<td style="width: 200px; border-right: solid 1px;border-bottom: solid 1px;"><%%customer%%></td>
+				<td style="width: 100px; border-right: solid 1px;border-bottom: solid 1px;"><%%phone%%></td>
+				<td style="width: 200px; border-right: solid 1px;border-bottom: solid 1px;"><%%description%%></td>
+				<td style="width: 300px; border-right: solid 1px;border-bottom: solid 1px;"><%%items%%></td>
 				</tr>';
 	$html = '';
 	foreach ($items as $index => $item) {
@@ -67,7 +67,7 @@ function getTransportItemsTable($items){
 }
 
 function renderHtml ($html){
-	$html2pdf = new HTML2PDF('P', 'A4', 'fr');
+	$html2pdf = new HTML2PDF('L', 'A4', 'fr'); //'P' - álló, 'L' - Fekvő
 	$html2pdf->pdf->SetDisplayMode('real');
 	$html2pdf->writeHTML($html);
 	$html2pdf->Output('transport.pdf');

@@ -15,7 +15,7 @@ class TransportAddress implements JsonSerializable {
 					concat(ta.zip, ' ', ta.city, ' ' , ta.street) address_format,
 					concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
 					o.description operation_description,
-					concat(c.phone, ',', coalesce(c.phone2, '')) customer_phone,
+					concat(c.phone, ', ', coalesce(c.phone2, '')) customer_phone,
 					status_codes.code_value status_local
 				from 
 					transport_address ta
@@ -40,7 +40,10 @@ class TransportAddress implements JsonSerializable {
 					ai.*,
 					od.goods_type,
 					od.name,
-					concat(goods_type_codes.code_value, ' (' , od.name , ') ') name_format,
+					case 
+						when coalesce(od.name) = '' then goods_type_codes.code_value
+					  	else concat(goods_type_codes.code_value, ' (' , od.name , ') ') 
+					end name_format,
 					goods_type_codes.code_value goods_type_local,
 					status_codes.code_value status_local
 				from transport_address_item ai
