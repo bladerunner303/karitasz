@@ -2,6 +2,7 @@
 var TRANSPORT_URL_REFRESH = '../Controls/listTransports.php';
 var TRANSPORT_URL_LIST_CODES = '../Controls/listCodes.php?codeTypes=transport_status';
 var TRANSPORT_URL_ONE_OPERATION = '../Controls/listOperations.php';
+var TRANSPORT_URL_SAVE_OPERATION = '../Controls/saveOperation.php';
 var TRANSPORT_URL_SAVE = '../Controls/saveTransport.php';
 var TRANSPORT_URL_PRINT = '../Controls/printTransportForm.php';
 
@@ -454,5 +455,48 @@ function showTransportAddressItems(transportAddressId){
 		$('#dialog-transport-address-item-table').html('<p>Nem található a címhez elem!</p>');
 	}
 	$('#dialog-transport-address-item').dialog('open');
+	
+}
+
+function addNotes(operationId){
+	
+	var inputStr = prompt("Megjegyzés füzése a szállításhoz");
+	
+	if (!Util.isNullOrEmpty(inputStr.trim())){
+		//find operationId
+		//call for waitingTransport.jss
+		var url = TRANSPORT_URL_ONE_OPERATION;
+		url = Util.addUrlParameter(url, 'id', operationId);
+		url = Util.addUrlParameter(url, 'limit', 1);
+		url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+		
+		$.ajax({
+		    url: url,
+		    type: 'GET',
+		    success: function(data){ 
+		    	data[0].description += "\r\n" + inputStr;
+		    	var newOperationData = JSON.stringify(data[0]);
+		    	
+		    	$.ajax({
+		    	    url: TRANSPORT_URL_SAVE_OPERATION,
+		    	    type: 'POST',
+		    	    data: newOperationData,
+		    	    success: function(data){ 
+		    	    	Util.showSaveResultDialog(true, 'Sikeres megjegyzés hozzáadás!');
+		    	    },
+		    	    error: function(response) {
+		    	    	Util.handleErrorToConsole(response);
+		    	    	Util.showSaveResultDialog(false, response);
+		    	    }
+		    	});	
+		    	
+		    	
+		    },
+			error: function(response) {
+				Util.handleErrorToConsole(response);
+				Util.showSaveResultDialog(false, response);
+		    }
+		});
+	}
 	
 }

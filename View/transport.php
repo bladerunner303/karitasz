@@ -155,7 +155,7 @@
 						<td><%-rows[row].operation_id%></td>
 						<td><%-rows[row].status_local%></td>
 						<% if (editable) { %>
-							<td>
+							<td style="min-width: 290px">
 								<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>
 								<div class="icon-trash-full-mid-little cursor-link" onclick="removeTransportAddress('<%-rows[row].operation_id%>');" title="Törlés"></div>
 								<div class="icon-select cursor-link" onclick="setTransportAddressStatus('<%-rows[row].operation_id%>', 'BEFEJEZETT_TRANSPORT');" title="Sikeresre állít"></div>
@@ -163,6 +163,7 @@
 								<div class="icon-up cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'UP');" title="Előre"></div>
 								<div class="icon-down cursor-link" onclick="moveAddress(<%-rows[row].order_indicator%>,'DOWN');" title="Hátra"></div>
 								<div class="icon-text-editor cursor-link" onclick="showTransportAddressItems('<%-rows[row].id%>');" title="Részletes szállítandó elemek"></div>
+								<div class="icon-user-available cursor-link" onclick="addNotes('<%-rows[row].operation_id%>');" title="Megjegyzés hozzáadása"></div>
 							</td>
 						<% } %>
 					</tr>
@@ -196,7 +197,7 @@
 				</table>
 			</script>
 		
-		<script type="text/javascript" src="js/transport-0.6.js"></script>
+		<script type="text/javascript" src="js/transport-0.7.rc5.js"></script>
 		
     </body>
 </html>

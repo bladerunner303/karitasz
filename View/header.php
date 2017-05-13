@@ -1,5 +1,5 @@
 <?php
-	define('VERSION', '0.7 RC4');
+	define('VERSION', '0.7 RC5');
 	define('SITE', 'karitasz');
 	require_once '../Util/Loader.php';
 
@@ -41,7 +41,7 @@
 	
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="css/style-0.2.css">
-	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.6.css">
+	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.7.rc5.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/> 
 	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"/>
 	<link rel="stylesheet" type="text/css" href="css/pure-table-0.6.0.css"/>
