@@ -27,6 +27,7 @@ insert into code values ('KERVENYEZES', 'operation_type', 'Kérvényezés', 'SYS
 insert into code values ('ROGZITETT', 'operation_status', 'Rögzített', 'SYSTEM', current_timestamp);
 insert into code values ('FOLYAMATBAN', 'operation_status', 'Folyamatban', 'SYSTEM', current_timestamp);
 insert into code values ('BEFEJEZETT', 'operation_status', 'Befejezett', 'SYSTEM', current_timestamp);
+insert into code values ('ELUTASITOTT', 'operation_status', 'Elutasított', 'SYSTEM', current_timestamp);
 
 insert into code values ('ROGZITETT_TRANSPORT', 'transport_status', 'Rögzített', 'SYSTEM', current_timestamp);
 insert into code values ('KIADOTT_TRANSPORT', 'transport_status', 'Kiadott', 'SYSTEM', current_timestamp);
