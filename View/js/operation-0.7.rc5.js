@@ -653,8 +653,8 @@ function checkOtherOperations(){
 		    			
 		    			if ((data[i].operation_type == 'KERVENYEZES') && 
 		    				(data[i].status == 'BEFEJEZETT') && 
-		    				(data[i].last_status_changed > lastOperationTime)) {
-		    				lastOperationTime = data[i].last_status_changed;
+		    				(data[i].transport_date > lastOperationTime)) {
+		    				lastOperationTime = data[i].transport_date;
 		    			}
 		    		}
 		    		

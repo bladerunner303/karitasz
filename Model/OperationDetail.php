@@ -108,7 +108,17 @@ class OperationDetail implements JsonSerializable {
 				$params = array(':id' => $this->operation_id);
 				$pre->execute($params);
 				if ((int)$pre->fetch(PDO::FETCH_OBJ)->cnt == 0) {
-					$pre = $db->prepare("update operation set status = 'BEFEJEZETT' where id=:id");
+					
+					
+					$pre = $db->prepare("update operation set 
+											status = 'BEFEJEZETT', 
+											transport_date = (
+												select t.transport_date from 
+													transport t,
+													transport_address ta
+												where t.id = ta.transport_id
+												and ta.operation_id = :id)
+											where id=:id");
 					$params = array(':id' => $this->operation_id);
 					$pre->execute($params);
 				};

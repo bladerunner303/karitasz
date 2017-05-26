@@ -191,6 +191,7 @@ create table operation
 	modified 				timestamp 	not null default current_timestamp,
 	last_status_changed		timestamp	not null default current_timestamp,
 	last_status_changed_user varchar(20) not null,
+	transport_date			date   null,
 	constraint pk_operation primary key (id),
 	constraint fk_customer_operation foreign key (customer_id) references customer(id),
 	constraint ck_operation_type check (operation_type in (select id from code where code_type = 'operation_type')),
