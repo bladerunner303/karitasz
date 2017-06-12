@@ -38,13 +38,14 @@
 						<td><%-rows[row].address_format%></td>
 						<td>
 							<div class="icon-edit cursor-link" onclick="openTransportOperationItems(<%-rows[row].id%>);" title="Részletek"></div>
-							<dic class="icon-ok cursor-link" onclick="selectTransportItem(<%-rows[row].id%>);" title="Szállítás  kiválasztása"></div>
+							<div class="icon-ok cursor-link" onclick="selectTransportItem(<%-rows[row].id%>);" title="Szállítás  kiválasztása"></div>
+							<input type="checkbox" name="select-transport-items" value="<%-rows[row].id%>"></input> 
 						</td>
 					</tr>
 			 <% } %>
 				</tbody>
 			</table>
-		
+			<button onclick="selectTransportItems();">Kijelöltek kiválaszt</button>
 		</script>
 		
 		<script type="text/template" id="template-transport-operations-items-table">
@@ -78,7 +79,7 @@
 		<div id="dialog-transports-items" title="Kapcsolodó elemek">
 			<div id="waiting-transports-transport-items"></div>
 		</div>
-		<script type="text/javascript" src="js/waitingTransports-0.6.js"></script>
+		<script type="text/javascript" src="js/waitingTransports-0.7.rc5.js"></script>
 		
     </body>
 </html>

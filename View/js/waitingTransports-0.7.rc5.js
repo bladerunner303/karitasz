@@ -81,3 +81,13 @@ function showOperationItemsTable(operationDetails){
 	$('#waiting-transports-transport-items').html(	operationItemsTableTemplate({rows: operationDetails}));
 	$('#dialog-transports-items').dialog('open');
 }
+
+function selectTransportItems(){
+	//TODO: call selecTransportItem(id) when checked rows
+	var checkedItems = $('input[name=select-transport-items]:checked');
+	if (checkedItems.length > 0) {
+		for (var i=0;i<checkedItems.length;i++){
+			selectTransportItem(checkedItems[i].value);
+		}
+	}
+}
