@@ -25,7 +25,7 @@
 						<td>Priorítás</td>
 						<td>Várakozás</td>
 						<td>Cím</td>
-						<td>Műveletek</td>	
+						<td style="min-width:100px;">Műveletek</td>	
 					</tr>
 				</thead>
 				<tbody>
