@@ -1,5 +1,5 @@
 <?php
-	define('VERSION', '0.7 RC5');
+	define('VERSION', '0.7 RC6');
 	define('SITE', 'karitasz');
 	require_once '../Util/Loader.php';
 
@@ -41,7 +41,7 @@
 	
 	<!-- css -->
 	<link rel="stylesheet" type="text/css" href="css/style-0.2.css">
-	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.7.rc5.css">
+	<link rel="stylesheet" type="text/css" href="css/gnome-icons-0.7.rc6.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/> 
 	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"/>
 	<link rel="stylesheet" type="text/css" href="css/pure-table-0.6.0.css"/>
@@ -53,7 +53,7 @@
 	<script type="text/javascript" src="js/lib/jquery.dataTables-1.10.5.min.js"></script> 
 	<script type="text/javascript" src="js/lib/jquery.numericField-1.0.js"></script> 
 	<script type="text/javascript" src="js/lib/underscore-1.8.3.min.js"></script>
-	<script type="text/javascript" src="js/header-0.6.js" defer="defer"></script>		
+	<script type="text/javascript" src="js/header-0.7.rc6.js" defer="defer"></script>		
 	
 	<script type="text/javascript">
 	

@@ -5,10 +5,16 @@ var TRANSPORT_URL_ONE_OPERATION = '../Controls/listOperations.php';
 var TRANSPORT_URL_SAVE_OPERATION = '../Controls/saveOperation.php';
 var TRANSPORT_URL_SAVE = '../Controls/saveTransport.php';
 var TRANSPORT_URL_PRINT = '../Controls/printTransportForm.php';
+var TRANSPORT_URL_CUSTOMER_REFRESH = '../Controls/listCustomers.php';
+var TRANSPORT_URL_LIST_CODE_GOOD_TYPES = '../Controls/listCodes.php?codeTypes=goods_type&x=' + new Date().getTime().toString();
+var TRANSPORT_URL_NEW_ELEMENT_TYPE = '../Controls/saveCode.php';
+var TRANSPORT_URL_SAVE_TRANSPORT_WIZZARD = '../Controls/saveTransportWizzard.php';
 
 //global variables
 var transportDataTable;
 var transportData;
+var transportWizzardCustomer;
+var transportWizzardOperation; 
 
 $( document ).ready(function() {
 	
@@ -31,6 +37,7 @@ function initDialogs(){
 	initTransportAddressDialog();
 	initTransportAddressAddDialog();
 	initTransportAddressItemsDialog();
+	initTransportAddressWizardDialog();
 }
 
 function handleRefreshTransportListClick(){
@@ -96,11 +103,9 @@ function handleTransportDetailCancelClick(){
 
 function handleTransportDetailSaveClick(){
 	$('#transport-detail-save').click(function(){
-		//alert('Ezt még implementálni kell');
 		
 		if (checkTransportData()){
 			saveTransport();
-			//$('#transport-detail-cancel').trigger('click');
 		}
 		
 	});
@@ -120,27 +125,31 @@ function initTransportDetailButtonEvents(){
 
 
 function initTransportAddressDialog(){
-	$('#dialog-transport-address').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-transport-address').dialog(Util.getDefaultDialog());
 }
 
 function initTransportAddressItemsDialog(){
-	$('#dialog-transport-address-item').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-transport-address-item').dialog(Util.getDefaultDialog());
 }
 
 function initTransportAddressAddDialog(){
-	$('#dialog-transport-address-add').dialog({
-		 autoOpen: false, 
-		 modal: true,
-		 width: 'auto'
-	});
+	$('#dialog-transport-address-add').dialog(Util.getDefaultDialog());
+}
+
+function initTransportAddressWizardDialog(){
+	$('#dialog-transport-address-wizzard').dialog(Util.getDefaultDialog());
+	
+	//Handle dialog events
+	handleTransportAddressWizzardCustomerIdOnChange();
+	handleTransportAddressWizzardCancelClick();
+	handleTransportAddressWizzardNextClick();
+	handleTransportAddressWizzardPrevClick();
+	handleTransportAddressWizzardOkClick();
+	handleTransportAddressWizzardCancel2Click();
+	handletransportAddressWizzardOperationZipChange();
+	handleOperationDetailNewElementTypeClick();
+	handleTransportAddressWizzardAddClick();
+	handleTransportAddressWizzardClearClick();
 }
 
 function initTransportSelectElements(selectedValues){
@@ -497,6 +506,305 @@ function addNotes(operationId){
 				Util.showSaveResultDialog(false, response);
 		    }
 		});
+	}
+	
+}
+
+function addAddressWizard() {
+	clearWizardDiv();
+	$('#dialog-transport-address-wizzard').dialog('open');
+}
+
+function clearWizardDiv(){
+	Util.clearElements('#transport-address-wizzard-customer');
+	Util.clearElements('#transport-address-wizzard-operation');	
+	$('#transport-address-wizzard-prev').trigger('click');
+	transportWizzardCustomer = {};
+	transportWizzardOperation = {};
+	transportWizzardOperation.elements = [];
+	initSelectGoodsType();
+}
+
+function handleTransportAddressWizzardCustomerIdOnChange(){
+	$('#transport-address-wizzard-customer-id').change(function(){
+		var id = $(this).val();
+		if (!Util.isNullOrEmpty(id)){
+			var url = TRANSPORT_URL_CUSTOMER_REFRESH;
+			url = Util.addUrlParameter(url, 'id', id);
+			url = Util.addUrlParameter(url, 'x', new Date().getTime().toString());
+			
+			$.ajax({
+			    url: url,
+			    type: 'GET',
+			    success: function(data){
+			    	if (data.length != 1){
+			    		Util.logConsole('Nem található az ügyfél');
+				    	Util.showSaveResultDialog(false, 'Nem található az ügyfél!');
+				    	$(this).val('');
+			    		return;
+			    	}
+			    	else {
+			    		transportWizzardCustomer = data[0];
+			    		
+			    		$('#transport-address-wizzard-customer-customer-surname').val(transportWizzardCustomer.surname);
+			    		$('#transport-address-wizzard-customer-customer-forename').val(transportWizzardCustomer.forename);
+			    		$('#transport-address-wizzard-customer-customer-phone').val(transportWizzardCustomer.phone);
+			    		$('#transport-address-wizzard-customer-customer-email').val(transportWizzardCustomer.email);
+			    		$('#transport-address-wizzard-operation-zip').val(transportWizzardCustomer.zip);
+			    		$('#transport-address-wizzard-operation-city').val(transportWizzardCustomer.city);
+			    		$('#transport-address-wizzard-operation-street').val(transportWizzardCustomer.street);
+			    		$('input[name=transport-address-wizzard-customer-customer-type]').val([transportWizzardCustomer.customer_type]);
+			    	}
+			    	
+			    	
+			    },
+				error: function(response) {
+					Util.handleErrorToConsole(response);
+					Util.showSaveResultDialog(false, 'Nem található az ügyfél!');
+			    	$(this).val('');
+		    		return;
+			    }
+			});
+			
+		}		
+	});
+}
+
+function handleTransportAddressWizzardCancelClick(){
+	$('#transport-address-wizzard-cancel').click(function(){
+		clearWizardDiv();
+		$('#dialog-transport-address-wizzard').dialog('close');
+	});
+}
+	
+function handleTransportAddressWizzardNextClick(){
+	$('#transport-address-wizzard-next').click(function(){
+		
+		if (Util.isNullOrEmpty($('#transport-address-wizzard-customer-id').val())){
+			transportWizzardCustomer.customer_type = $('input[name=transport-address-wizzard-customer-customer-type]:checked').val();
+		}
+		
+		transportWizzardCustomer.surname = $('#transport-address-wizzard-customer-customer-surname').val();
+		transportWizzardCustomer.forename = $('#transport-address-wizzard-customer-customer-forename').val();
+		transportWizzardCustomer.phone = $('#transport-address-wizzard-customer-customer-phone').val();
+		transportWizzardCustomer.email = $('#transport-address-wizzard-customer-customer-email').val();
+		
+		//Ellenőrzések
+		var requiredFields = [
+		                      {field: 'surname', 	local: 'Család név'}, 
+		                      {field: 'phone', 		local: 'Telefonszám'}
+		                     ];
+		var errors = Util.checkRequiredFields(requiredFields, transportWizzardCustomer);
+		
+		var phonePattern = new RegExp($('#valid-phone-number-regexp').val());
+		if (!phonePattern.test(transportWizzardCustomer.phone)){
+			errors.push('Érvénytelen telefonszám formátum');
+		}
+		
+		var errorHtml = '';
+		for (var i=0; i<errors.length; i++){
+			errorHtml += errors[i] + '<br>';
+		}
+		
+		if (Util.isNullOrEmpty(errorHtml)){
+			$('#transport-address-wizzard-customer-errors').hide();
+			$('#transport-address-wizzard-customer').hide();
+			$('#transport-address-wizzard-operation').show();
+		
+		}
+		else {
+			$('#transport-address-wizzard-customer-errors-div').html(errorHtml);
+			$('#transport-address-wizzard-customer-errors').show();
+			return false;
+		}
+		
+	});
+}
+
+function handleTransportAddressWizzardPrevClick(){
+		//Oldal váltás
+	$('#transport-address-wizzard-prev').click(function(){
+		$('#transport-address-wizzard-customer').show();
+		$('#transport-address-wizzard-operation').hide();
+	});
+		
+}
+
+function handleTransportAddressWizzardOkClick(){
+	
+	$('#transport-address-wizzard-save').click(function(){
+		//Mentés 
+		//Ellenőrzés
+		transportWizzardCustomer.zip = $("#transport-address-wizzard-operation-zip").val();
+		transportWizzardCustomer.city = $("#transport-address-wizzard-operation-city").val(); 
+		transportWizzardCustomer.street = $("#transport-address-wizzard-operation-street").val();
+		
+		var requiredFields = [
+		                      {field: 'zip', 		local: 'Irányítószám'},
+		                      {field: 'city', 		local: 'Város'},
+		                      {field: 'street',		local: 'Utca/házszám'}
+		                     ];
+		var errors = Util.checkRequiredFields(requiredFields, transportWizzardCustomer);
+		
+		var errorHtml = '';
+		for (var i=0; i<errors.length; i++){
+			errorHtml += errors[i] + '<br>';
+		}
+		
+		if (Util.isNullOrEmpty(errorHtml)){
+			$('#transport-address-wizzard-operation-errors').hide();
+			//Beküldés
+			var requestData = {};
+			requestData.operation = transportWizzardOperation;
+			requestData.customer = transportWizzardCustomer;
+			var data = JSON.stringify(requestData);
+			
+	    	$.ajax({
+	    	    url: TRANSPORT_URL_SAVE_TRANSPORT_WIZZARD,
+	    	    type: 'POST',
+	    	    data: data,
+	    	    success: function(data){ 
+	    	    	//dialog lezárás
+	    			$('#transport-address-wizzard-cancel').trigger('click');
+	    	    },
+	    	    error: function(response) {
+	    	    	Util.handleErrorToConsole(response.responseText);
+	    	    	Util.showSaveResultDialog(false, response.responseText);
+	    	    }
+	    	});	
+
+			
+		}
+		else {
+			$('#transport-address-wizzard-operation-errors-div').html(errorHtml);
+			$('#transport-address-wizzard-operation-errors').show();
+			return false;
+		}
+		
+	});
+		
+}
+
+function handleTransportAddressWizzardCancel2Click(){
+	$('#transport-address-wizzard-cancel2').click(function(){
+		$('#transport-address-wizzard-cancel').trigger('click');
+	});
+}
+
+function handletransportAddressWizzardOperationZipChange(){
+	$('#transport-address-wizzard-operation-zip').change(function(){
+		var zip = $(this).val();
+		if (!Util.isNullOrEmpty(zip)){
+			$('#transport-address-wizzard-operation-city').val(Util.nvl(zips[zip], ''));
+		}
+	});
+}
+
+function initSelectGoodsType(selectedValue){
+	$.ajax({
+	    url: TRANSPORT_URL_LIST_CODE_GOOD_TYPES,
+	    type: 'GET',
+	    success: function(data){
+	    	goodsTypes = data.goods_type;
+	    	var selectGoodsType = $('#transport-address-wizzard-add-element-type');
+	    	selectGoodsType.html('');
+	    	selectGoodsType.append($('<option></option>').val('').html(' '));
+	    	for(var i=0; i< goodsTypes.length; i++){
+	    		selectGoodsType.append($('<option></option>').val(goodsTypes[i].id).html(goodsTypes[i].code_value));
+	    	}
+	    	if (!Util.isNullOrEmpty(selectedValue)){
+		    	selectGoodsType.val(selectedValue);	
+	    	}
+	    	selectGoodsType.trigger('change');
+	    },
+		error: function(response) {
+			Util.handleErrorToConsole();      
+	    }
+	});
+	
+}
+
+function handleOperationDetailNewElementTypeClick(){
+	$('#transport-address-wizzard-new-element-type').click(function(){
+		
+		///TODO: prompt ablak kicserélése
+		var newElement = prompt("Ad meg kérlek az új elemet");
+		if (newElement != null) {
+		    
+			if ((newElement.length < 2) || (newElement.length > 18)){
+				alert('Nem megfelelő hosszúságú kód! Csak 2 és 18 karakter közötti engedélyezett!');
+				return;
+			}
+			
+			var data = JSON.stringify({code_type: 'goods_type', code_value: newElement});
+			
+			$.ajax({
+			    url: TRANSPORT_URL_NEW_ELEMENT_TYPE,
+			    type: 'POST',
+			    data: data,
+			    success: function(data){ 
+			    	initSelectGoodsType(data);
+			    },
+				error: function(response) {
+					alert(response.responseText);
+					Util.handleErrorToConsole();      
+			    }
+			});
+			
+		}
+		
+	});
+}
+
+function handleTransportAddressWizzardAddClick(){
+	$('#transport-address-wizzard-add').click(function(){
+		//Ellenőrzés
+		var element = {};
+		element.name = $.trim($('#transport-address-wizzard-add-element-name').val());
+		element.type = $('#transport-address-wizzard-add-element-type').val();
+		element.typeName = $('#transport-address-wizzard-add-element-type option:selected').text();
+		element.number = parseInt($('#transport-address-wizzard-add-element-type-number').val(),10);
+		
+		if (Util.isNullOrEmpty(element.type)) {
+			alert('A kiválasztott elemnek nincs típusa. Enélkül nem menthető');
+			return;
+		}
+		
+		if (Util.isNullOrEmpty(element.name)) {
+			alert('A kiválasztott elemnek nincs leírása. Enélkül nem menthető');
+			return;
+		}
+		
+		transportWizzardOperation.elements.push(element);
+		refreshTransportAddressWizzardElementsTable();
+	});
+}
+
+function handleTransportAddressWizzardClearClick(){
+	$('#transport-address-wizzard-clear').click(function(){
+		Util.clearElements('#transport-address-wizzard-add-element-table');
+	});
+}
+
+function removeTransportAddressWizzardElement(elementType, elementNumber, elementName){
+	for (var i=0;i<transportWizzardOperation.elements.length;i++){
+		if ((transportWizzardOperation.elements[i].type == elementType) &&
+			(transportWizzardOperation.elements[i].number == elementNumber) &&
+			(transportWizzardOperation.elements[i].name == elementName))
+		{
+			transportWizzardOperation.elements.splice(i, 1);
+		}
+	}
+	refreshTransportAddressWizzardElementsTable();
+}
+
+function refreshTransportAddressWizzardElementsTable(){
+	if (transportWizzardOperation.elements.length != 0){
+		var elementsTableTemplate = _.template($('#template-transport-address-wizzard-elements-table').html());
+		$('#transport-address-wizzard-elements').html(elementsTableTemplate({rows: transportWizzardOperation.elements}));
+	}
+	else {
+		$('#transport-address-wizzard-elements').html('');
 	}
 	
 }

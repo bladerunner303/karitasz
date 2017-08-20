@@ -367,6 +367,30 @@ padding: 0;
 	cursor:pointer;
 }
 
+.icon-next {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-go-next-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
+.icon-prev {
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-go-previous-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	cursor:pointer;
+}
+
 .icon-text-editor {
 	display:inline-block;
 	background-image: url("gnome-icons/Gnome-text-editor-32.png");
@@ -401,5 +425,28 @@ padding: 0;
 	margin: 0;
 	padding: 0;
 	
+}
+
+.icon-new-window{
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-window-new-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	
 } 
 
+.icon-clear{
+	display:inline-block;
+	background-image: url("gnome-icons/Gnome-clear-32.png");
+	background-repeat: no-repeat;
+	background-size: 32px 32px;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	
+} 
