@@ -592,7 +592,8 @@ function handleTransportAddressWizzardNextClick(){
 		//Ellenőrzések
 		var requiredFields = [
 		                      {field: 'surname', 	local: 'Család név'}, 
-		                      {field: 'phone', 		local: 'Telefonszám'}
+		                      {field: 'phone', 		local: 'Telefonszám'},
+		                      {field: 'customer_type', local: 'Ügyfél besorolás'}
 		                     ];
 		var errors = Util.checkRequiredFields(requiredFields, transportWizzardCustomer);
 		
@@ -634,10 +635,10 @@ function handleTransportAddressWizzardOkClick(){
 	
 	$('#transport-address-wizzard-save').click(function(){
 		//Mentés 
-		//Ellenőrzés
 		transportWizzardCustomer.zip = $("#transport-address-wizzard-operation-zip").val();
 		transportWizzardCustomer.city = $("#transport-address-wizzard-operation-city").val(); 
 		transportWizzardCustomer.street = $("#transport-address-wizzard-operation-street").val();
+		
 		
 		var requiredFields = [
 		                      {field: 'zip', 		local: 'Irányítószám'},
@@ -657,6 +658,7 @@ function handleTransportAddressWizzardOkClick(){
 			var requestData = {};
 			requestData.operation = transportWizzardOperation;
 			requestData.customer = transportWizzardCustomer;
+			requestData.transportId = $('#transport-detail-id').text();
 			var data = JSON.stringify(requestData);
 			
 	    	$.ajax({
@@ -761,11 +763,15 @@ function handleTransportAddressWizzardAddClick(){
 		//Ellenőrzés
 		var element = {};
 		element.name = $.trim($('#transport-address-wizzard-add-element-name').val());
-		element.type = $('#transport-address-wizzard-add-element-type').val();
+		element.goods_type = $('#transport-address-wizzard-add-element-type').val();
 		element.typeName = $('#transport-address-wizzard-add-element-type option:selected').text();
 		element.number = parseInt($('#transport-address-wizzard-add-element-type-number').val(),10);
+		element.id = null;
+		element.status = 'FOLYAMATBAN';
+		element.detail_id = null;
+		element.detail_files = [];
 		
-		if (Util.isNullOrEmpty(element.type)) {
+		if (Util.isNullOrEmpty(element.goods_type)) {
 			alert('A kiválasztott elemnek nincs típusa. Enélkül nem menthető');
 			return;
 		}

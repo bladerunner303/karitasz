@@ -201,7 +201,7 @@
 							<td><%-rows[row].number%></td>
 							<td><%-rows[row].name%></td>
 							<td>
-								<div class="icon-trash-full cursor-link" onclick="removeTransportAddressWizzardElement('<%-rows[row].type%>', '<%-rows[row].number%>', '<%-rows[row].name%>');" title="Törlés"></div>
+								<div class="icon-trash-full cursor-link" onclick="removeTransportAddressWizzardElement('<%-rows[row].goods_type%>', '<%-rows[row].number%>', '<%-rows[row].name%>');" title="Törlés"></div>
 							</td>
 						</tr>
 				 	<% } %>
@@ -256,7 +256,9 @@
 				<tr>
 					<td>Címek
 					<div class="icon-add-little" onclick="addAddress(<%-id%>);" title="Új cím hozzáadás"></div>
-					<div class="icon-new-window" onclick="addAddressWizard(<%-id%>);" title="Cím varázsló"></div>
+					<% 	if (!Util.isNullOrEmpty(id)){
+						 print ('<div class="icon-new-window" onclick="addAddressWizard();" title="Cím varázsló"></div>'); 
+						} 	%>
 					</td>
 				</tr>
 				<td colspan="2">

@@ -50,7 +50,16 @@ class Transport implements JsonSerializable {
 		);
 		
 		$pre->execute($params);
-		return $pre->fetchAll(PDO::FETCH_OBJ);
+		$ret = $pre->fetchAll(PDO::FETCH_OBJ);
+		
+		if (count($ret) == 1){
+			//TODO: Befejezni
+			$finderAddresses = new TransportAddress();
+			$finderAddresses->setTransportId($this->id);
+			$ret[0]->addresses = $finderAddresses->find(); 	
+		}
+		
+		return $ret;
 	}
 	
 	/**
