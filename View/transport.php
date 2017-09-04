@@ -343,7 +343,7 @@
 			</script>
 		
 		<script type="text/javascript" src="js/lib/zips-1.0.js"></script>
-		<script type="text/javascript" src="js/transport-0.7.rc6.js"></script>
+		<script type="text/javascript" src="js/transport-0.7.rc7.js"></script>
 		
     </body>
 </html>

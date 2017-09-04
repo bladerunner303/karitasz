@@ -376,7 +376,7 @@ function setTransportAddressItemStatus(id, status){
 				if (currentItem.id == id){
 					transportData.addresses[i].items[n].status = status;
 					transportData.addresses[i].items[n].status_local = ((status == 'BEFEJEZETT_TRANSPORT') ? 'Befejezett': 'Sikertelen');
-					$('#dialog-transport-address-item').dialog('close');
+					 showTransportAddressItems(transportData.addresses[i].id);
 				}
 			}
 		}
