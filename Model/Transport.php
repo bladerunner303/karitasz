@@ -125,6 +125,7 @@ class Transport implements JsonSerializable {
 			if (($originalTransport->status != $this->status) && ($originalTransport->status == 'ROGZITETT_TRANSPORT')){
 				$this->generateAddressesItems();
 			}
+			
 		}
 				
 		return $this->id;
@@ -133,7 +134,6 @@ class Transport implements JsonSerializable {
 	private function saveAddresses(){
 	
 		// TransportAddress::removeAll($this->id);
-		
 		TransportAddress::removeMissing($this->addresses);
 		
 		foreach ($this->addresses as $index => $currentAddress) {
@@ -153,8 +153,33 @@ class Transport implements JsonSerializable {
 			//Transport address items save
 			
 			if ((isset($currentAddress->items)) && (count($currentAddress->items) > 0)){
+				
+				$hasRogzitettStatus = false;
+				$hasSikertelenStatus = false;
 				foreach ($currentAddress->items as $item) {
 					TransportAddress::saveItem($item, $this->modifier);
+					
+					if ($item->status == "ROGZITETT_TRANSPORT"){
+						$hasRogzitettStatus = true;
+					}
+					if ($item->status == "SIKERTELEN_TRANSPORT"){
+						$hasSikertelenStatus = true;
+					}
+				}
+				
+				if (($hasRogzitettStatus) && ($address->getStatus() != "ROGZITETT_TRANSPORT")){
+					$address->setStatus("ROGZITETT_TRANSPORT");
+					$address->save();
+				}
+				 
+				if (($hasSikertelenStatus) && (!$hasRogzitettStatus)) {
+					$address->setStatus("SIKERTELEN_TRANSPORT");
+					$address->save();
+				}
+				
+				if ((!$hasSikertelenStatus) && (!$hasRogzitettStatus)) {
+					$address->setStatus("BEFEJEZETT_TRANSPORT");
+					$address->save();
 				}
 			}
 		}
