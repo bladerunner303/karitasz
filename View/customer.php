@@ -307,7 +307,7 @@
 		</script>
 		
 		<script type="text/javascript" src="js/lib/zips-1.0.js"></script>
-		<script type="text/javascript" src="js/customer-0.7.rc5.js"></script>
+		<script type="text/javascript" src="js/customer.js?v=0.7.rc7"></script>
 
 		<?php 
 	if (!empty($type)){
