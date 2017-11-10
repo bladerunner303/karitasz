@@ -52,7 +52,8 @@ function initCustomerFamilyMemberSpecialFields(){
 	$('.member-datepicker').datepicker({
 				yearRange: "-100:+0",
 				regional: "hu",
-				changeYear: true 
+				changeYear: true ,
+				changeMonth: true
 			});
 
 }
