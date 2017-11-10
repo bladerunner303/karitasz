@@ -48,6 +48,7 @@ insert into code values ('INTERNET', 'sender', 'Internet', 'SYSTEM', current_tim
 insert into code values ('ISMEROS', 'sender', 'Ismerős', 'SYSTEM', current_timestamp);
 insert into code values ('EMMI', 'sender', 'EMMI', 'SYSTEM', current_timestamp);
 insert into code values ('KARITASZ', 'sender', 'Katolikus karitasz', 'SYSTEM', current_timestamp);
+insert into code values ('CSALAD_SEGITO', 'sender', 'Család segítő', 'SYSTEM', current_timestamp);
 
 insert into code values ('MUBER', 'income_type', 'Munkabér', 'SYSTEM', current_timestamp);
 insert into code values ('GYES_ES_MUBER', 'income_type', 'GYES + Munkabér', 'SYSTEM', current_timestamp);
