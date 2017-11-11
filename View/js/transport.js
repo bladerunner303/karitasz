@@ -28,9 +28,9 @@ $( document ).ready(function() {
 });
 
 function initDatePickerFields(){
-	$('#transport-date').datepicker();
-	$('#find-transport-begin-date').datepicker($.datepicker.regional[ "hu" ]);
-	$('#find-transport-end-date').datepicker($.datepicker.regional[ "hu" ]);
+	$('#transport-date').datepicker(Util.getDefaultDatePicker("-100:+1"));
+	$('#find-transport-begin-date').datepicker(Util.getDefaultDatePicker("-20:+0"));
+	$('#find-transport-end-date').datepicker(Util.getDefaultDatePicker("-20:+0"));
 }
 
 function initDialogs(){
@@ -205,7 +205,7 @@ function openTransportDetail(id){
 		$('#transport-detail-general').html(transportDetailTemplate(transportData));
 		initTransportSelectElements();
 		reloadTransportAddressTable();
-		$('#transport-detail-transport-date').datepicker($.datepicker.regional[ "hu" ]);
+		$('#transport-detail-transport-date').datepicker(Util.getDefaultDatePicker("-20:+1"));
 		$('#tr-transport-detail-id').hide();
 		$('#tr-transport-detail-created').hide();
 		$('#tr-transport-detail-modified').hide();
@@ -771,15 +771,18 @@ function handleTransportAddressWizzardAddClick(){
 		element.detail_id = null;
 		element.detail_files = [];
 		
+		
 		if (Util.isNullOrEmpty(element.goods_type)) {
 			alert('A kiválasztott elemnek nincs típusa. Enélkül nem menthető');
 			return;
 		}
 		
+		/*
 		if (Util.isNullOrEmpty(element.name)) {
 			alert('A kiválasztott elemnek nincs leírása. Enélkül nem menthető');
 			return;
 		}
+		*/
 		
 		transportWizzardOperation.elements.push(element);
 		refreshTransportAddressWizzardElementsTable();

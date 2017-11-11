@@ -159,6 +159,17 @@ Util = (function(){
 				 width: 'auto'
 			};
 		},
+		getDefaultDatePicker : function (yearRange){
+			if (typeof yearRange == 'undefined'){
+				yearRange = "-100:+0"; 
+			}
+			return {
+				yearRange: yearRange,
+				regional: "hu",
+				changeYear: true ,
+				changeMonth: true
+			};
+		},
 		clearDataTable : function (dataTable){
 			if (dataTable != null){
 				dataTable.clear();
