@@ -233,7 +233,7 @@ function openTransportDetail(id){
 					selectedTransportStatus: transportData.status
 				});
 				reloadTransportAddressTable();
-				$('#transport-detail-transport-date').datepicker($.datepicker.regional[ "hu" ]);
+				$('#transport-detail-transport-date').datepicker(Util.getDefaultDatePicker());
 				$('#tr-transport-detail-id').show();
 				$('#tr-transport-detail-created').show();
 				$('#tr-transport-detail-modified').show();
@@ -574,6 +574,7 @@ function handleTransportAddressWizzardCancelClick(){
 	$('#transport-address-wizzard-cancel').click(function(){
 		clearWizardDiv();
 		$('#dialog-transport-address-wizzard').dialog('close');
+		
 	});
 }
 	
@@ -668,6 +669,25 @@ function handleTransportAddressWizzardOkClick(){
 	    	    success: function(data){ 
 	    	    	//dialog lezárás
 	    			$('#transport-address-wizzard-cancel').trigger('click');
+	    			
+	    			var newAddress = {};
+	    			newAddress.id  = data.address.id;
+	    			newAddress.operation_id = data.operation.id;
+	    			newAddress.transport_id = data.transportId;
+	    			newAddress.zip = data.address.zip;
+	    			newAddress.city = data.address.city;
+	    			newAddress.steet = data.address.street;
+	    			newAddress.address_format = data.address.zip + " " + data.address.city + " " + data.address.street;
+	    			newAddress.description = '';
+	    			newAddress.status = "KIADOTT_TRANSPORT";
+	    			newAddress.status_local = "Kiadott";
+	    			newAddress.order_indicator = transportData.addresses.length;
+	    			newAddress.customer_format = data.customer.surname + " " + data.customer.forename ;
+	    			newAddress.operation_description = '';
+	    			newAddress.customer_phone = data.customer.phone;
+	    			newAddress.items = data.address.items;
+	    			transportData.addresses.push(newAddress);
+	    			reloadTransportAddressTable();
 	    	    },
 	    	    error: function(response) {
 	    	    	Util.handleErrorToConsole(response.responseText);

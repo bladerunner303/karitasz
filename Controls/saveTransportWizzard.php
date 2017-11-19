@@ -21,6 +21,7 @@ if (count($transports) != 1) {
 	throw new InvalidArgumentException("Nem található az szállítás!");
 }
 
+//Ügyfél mentés
 if (empty($requestCustomer->id)){
 	//New customer
 	$customer = new Customer();
@@ -67,6 +68,7 @@ else {
 	
 }
 
+//Művelet létrehozás
 $operation = new Operation();
 $operation->setId( null );
 $operation->setCustomerId( $requestCustomer->id);
@@ -78,36 +80,51 @@ $operation->setStatus("FOLYAMATBAN");
 $operation->setModifier(Session::getUserInfo($_COOKIE['sessionId'])->userName);
 $operation->setOperationDetails($requestOperation->elements);
 
-$operationId = $operation->save();
+$operation->setId($operation->save());
 
+/*
+//Szállításba cím létrehozás
 $address = new stdClass();
-$address->operation_id = $operationId;
+$address->operation_id = $operation->getId();
 $address->transport_id = $requestTransportId;
-$address->status  = "FOLYAMATBAN";
+$address->status  = "KIADOTT_TRANSPORT";
 $address->zip = $requestCustomer->zip;
 $address->city = $requestCustomer->city;
 $address->street = $requestCustomer->street;
 $address->phone = $requestCustomer->phone;
 $address->description = null;
-/*
-private $id;
-private $operation_id;
-private $transport_id;
-private $zip;
-private $city;
-private $street;
-private $phone;
-private $description;
-private $status;
-private $order_indicator;
-*/
-$transport = $transports[0];
-Logger::warning("saveTransportWizzard.php " . json_encode($transport));
-
 $address->order_indicator = count($transport->addresses);
+
+
 array_push($transport->addresses, $address);
 $typedTransport = new Transport();
 SystemUtil::cast($typedTransport, $transport);
-JsonParser::sendJson($typedTransport->save());
+$typedTransport->save();
+*/
+
+
+$transport = $transports[0];
+$address = new TransportAddress();
+$address->setId(null );
+$address->setTransportId($requestTransportId);
+$address->setOperationId($operation->getId());
+$address->setZip($requestCustomer->zip);
+$address->setCity($requestCustomer->city);
+$address->setStreet($requestCustomer->street);
+$address->setDescription(null);
+$address->setStatus("KIADOTT_TRANSPORT");
+$address->setOrderIndicator(count($transport->addresses));
+$address->setId($address->save());
+	
+//Szállítási címhez elem létrehozás
+TransportAddress::generateAddressItems($address->getId(), $operation->getId(), Session::getUserInfo($_COOKIE['sessionId'])->userName);
+
+$ret = new stdClass();
+$ret->operation = $operation;
+$ret->address = $address; 
+$ret->address->items = TransportAddress::findAddressItems($address->getId());
+$ret->customer = $customer;
+
+JsonParser::sendJson($ret);
 
 ?>

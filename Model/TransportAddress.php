@@ -24,12 +24,14 @@ class TransportAddress implements JsonSerializable {
 				inner join code status_codes on status_codes.id = ta.status
 				where (:id is null or ta.id = :id)
 				and (:transport_id is null or ta.transport_id = :transport_id)
+				and (:order_indicator is null or ta.order_indicator = :order_indicator) 
 				order by ta.order_indicator";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(
 				':id' => $this->id,
-				':transport_id'=> $this->transport_id
+				':transport_id'=> $this->transport_id,
+				':order_indicator' => $this->order_indicator
 		);
 		$pre->execute($params);
 		return $pre->fetchAll(PDO::FETCH_OBJ);
