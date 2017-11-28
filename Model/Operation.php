@@ -134,7 +134,7 @@ class Operation implements JsonSerializable {
 				where c.status != 'TILTOTT'
                	and o.status = 'FOLYAMATBAN'
                	and c.status = 'AKTIV'
-				and o.id not in (select ta.operation_id from transport_address ta where ta.status not in ('SIKERTELEN_TRANSPORT', 'BEFEJEZETT_TRANSPORT'))
+			-- 	and o.id not in (select ta.operation_id from transport_address ta where ta.status not in ('SIKERTELEN_TRANSPORT', 'BEFEJEZETT_TRANSPORT'))
 				and (:text is null or
 					concat(	o.id,  
 							concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')'),

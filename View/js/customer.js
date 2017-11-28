@@ -284,6 +284,12 @@ function handleRefreshCustomerListClick(){
 		});
 		
 	});
+	
+	$('#customer').keydown(function (e) {
+		  if (e.keyCode == 13) {
+			  $('#refresh-customer-list').trigger('click');
+		  }
+	});
 }
 
 function handleFindCustomerTypeRadioChange(){
@@ -487,6 +493,15 @@ function saveCustomer(){
 	    success: function(data){ 
 	    	Util.showSaveResultDialog(true, 'Sikeres ügyfél mentés!');
 	    	openCustomerDetail(data);
+	    	$('#find-customer-text').val(data);
+	    	if (data[0] == 'F'){
+	    		$('#find-customer-type-1').prop('checked',true);
+	    	}
+	    	else {
+	    		$('#find-customer-type-2').prop('checked',true);
+	    	}
+	    	
+	    	
 	    },
 	    error: function(response) {
 	    	Util.handleErrorToDiv(response, $('#customer-detail-save-errors-div'));

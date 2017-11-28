@@ -6,6 +6,7 @@
 		require_once 'header.php';
 	?>
 		<div id="waiting-transports" class="mainArea" >
+			<p>  Itt azok a kérvények/felajánlások jelennek meg, amelyek folyamatban státuszban vannak</p>
 			<br>
 			<fieldset class="fieldSetSize">
 		    <legend>Keresési feltételek:</legend>

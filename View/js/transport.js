@@ -65,6 +65,12 @@ function handleRefreshTransportListClick(){
 		});
 		
 	});
+	
+	$('#transport').keydown(function (e) {
+		  if (e.keyCode == 13) {
+			  $('#refresh-transport-list').trigger('click');
+		  }
+	});
 }
 
 function getTransportSelectItems(){

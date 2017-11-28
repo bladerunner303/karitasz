@@ -299,7 +299,8 @@ class TransportAddress implements JsonSerializable {
 					:user,
 					:t
 				from operation_detail od
-				where od.operation_id = :operation_id";
+				where od.operation_id = :operation_id
+				and od.status not in ('BEFEJEZETT', 'ELUTASITOTT')";
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':address_id', $addressId, PDO::PARAM_STR);
 		$pre->bindValue(':operation_id', $operationId, PDO::PARAM_STR);

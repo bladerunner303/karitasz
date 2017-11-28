@@ -68,6 +68,13 @@ function handleRefreshOperationListClick(){
 		
 		
 	});
+	
+
+	$('#operation').keydown(function (e) {
+		  if (e.keyCode == 13) {
+			  $('#refresh-operation-list').trigger('click');
+		  }
+	});
 }
 
 function handleAddOperationClick(){

@@ -435,7 +435,7 @@
 			
 		</div>
 			
-		<script type="text/javascript" src="js/operation-0.7.rc5.js"></script>
+		<script type="text/javascript" src="js/operation.js?v=0.7rc7"></script>
 	<?php 
 	if (!empty($type)){
 		echo '</body></html>';
