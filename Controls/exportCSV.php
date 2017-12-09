@@ -22,7 +22,7 @@ header("Content-type: text/csv");
 header("Content-Disposition: attachment; filename=" . $fileName . ".csv");
 header("Pragma: no-cache");
 header("Expires: 0");
-
+echo "\xEF\xBB\xBF";  //BOM header
 echo $content;
 
 ?>
