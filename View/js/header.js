@@ -230,6 +230,59 @@ Util = (function(){
 						break;
 				}
 			});
+		},
+		getStringHash : function(hashBase){
+				  var hash = 0, i, chr;
+				  if (hashBase.length === 0) return hash;
+				  for (i = 0; i < hashBase.length; i++) {
+				    chr   = hashBase.charCodeAt(i);
+				    hash  = ((hash << 5) - hash) + chr;
+				    hash |= 0; // Convert to 32bit integer
+				  }
+				  return hash;
+		},
+		getElementHash : function(divSelectorString){
+			var hashBase = '';
+			$(divSelectorString).find(':input').each(function(){
+				switch(this.type){
+					case 'password':
+					case 'text':
+					case 'textarea':
+					case 'file':
+					case 'select-one':
+					case 'select-multiple':
+					case 'date':
+					case 'number':
+					case 'tel':
+					case 'email':
+						hashBase += ';' + $(this).val();
+						break;
+					case 'checkbox':
+					case 'radio':
+						hashBase += ';' + this.checked;
+						break;
+				}
+			});
+			$(divSelectorString).find('span').each(function(){
+				hashBase += ';' + $(this).text();
+			});
+			return Util.getStringHash(hashBase);
+		},
+		getObjectArrayHash : function (objectArray){
+			var hashBase = '';
+			for (var i=0; i<objectArray.length; i++){
+				hashBase += ";" + Util.getObjectHash(objectArray[i]);
+			}
+			return Util.getStringHash(hashBase);
+		},
+		getObjectHash : function(object){
+			
+			var hashBase = '';;
+			for (var property in object) {
+				 hashBase += ';' +  object[property];
+				 ///TODO: csak egyszerű objektumot támogat összetettet nem.
+			}
+			return Util.getStringHash(hashBase);
 		}
 	};
 }());

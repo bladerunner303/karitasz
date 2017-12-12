@@ -14,6 +14,7 @@ var OPERATION_URL_LIST_TRANSPORTS_REFRESH = '../Controls/listOperationTransports
 //global variables
 var operationDataTable;
 var operationData = {};
+var operationDataDefaultHash;
 var potentialOperationDialogCaller = '';
 var potentialOperationCallerOrderIndicator = '';
 
@@ -97,9 +98,17 @@ function handleOperationCustomerFindClick(){
 
 function handleOperationDetailCancelClick(){
 	$('#operation-detail-cancel').click(function(){
-		$('#operation-detail').hide();
-		$('#operation').show();
-		$('#refresh-operation-list').trigger('click');
+		var goCancel = true;
+	//	if (operationDataDefaultHash != (Util.getElementHash('#operation-detail') + Util.getObjectArrayHash(operationData.operationDetails))){
+		if (operationDataDefaultHash != Util.getElementHash('#operation-detail')){
+			goCancel = confirm('A kilépéssel a mentetlen módosítások elvesznek! Biztos folytatjuk?');
+		}
+		if (goCancel){
+			$('#operation-detail').hide();
+			$('#operation').show();
+			$('#refresh-operation-list').trigger('click');
+			
+		}
 		
 	});
 }
@@ -497,7 +506,8 @@ function openOpertaionDetail(id){
 		$('#tr-operation-detail-last-status-changed').hide();
 		$('#href-operation-detail-attachment').hide();
 		refreshOperationTransports(id);		
-
+		//operationDataDefaultHash = Util.getElementHash('#operation-detail') + Util.getObjectArrayHash(operationData.operationDetails);
+		operationDataDefaultHash = Util.getElementHash('#operation-detail');
 	}
 	else {
 		//Módosítás
@@ -536,6 +546,8 @@ function openOpertaionDetail(id){
 				$('#operation-detail-attachement-div').show();
 				refreshOperationDetailAttachment(id);
 				refreshOperationTransports(id);
+		//		operationDataDefaultHash = Util.getElementHash('#operation-detail') + Util.getObjectArrayHash(operationData.operationDetails);
+				operationDataDefaultHash = Util.getElementHash('#operation-detail');
 		    },
 			error: function(response) {
 				Util.handleErrorToConsole(response);

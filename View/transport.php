@@ -295,10 +295,10 @@
 
 				<% for(var row in rows) { %>
 					<tr>
-						<td><%-rows[row].address_format%></td>
-						<td><%-rows[row].customer_format%></td>
-						<td><%-rows[row].operation_id%></td>
-						<td><%-rows[row].status_local%></td>
+						<td><span><%-rows[row].address_format%></span></td>
+						<td><span><%-rows[row].customer_format%></span></td>
+						<td><span><%-rows[row].operation_id%></span></td>
+						<td><span><%-rows[row].status_local%></span></td>
 						<% if (editable) { %>
 							<td style="min-width: 290px">
 								<div class="icon-edit cursor-link" onclick="openTransportOperationItems('<%-rows[row].operation_id%>');" title="Részletek"></div>

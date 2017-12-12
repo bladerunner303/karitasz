@@ -13,6 +13,7 @@ var TRANSPORT_URL_SAVE_TRANSPORT_WIZZARD = '../Controls/saveTransportWizzard.php
 //global variables
 var transportDataTable;
 var transportData;
+var transportDataDefaultHash;
 var transportWizzardCustomer;
 var transportWizzardOperation; 
 
@@ -100,9 +101,15 @@ function handleExportTransportClick(){
 
 function handleTransportDetailCancelClick(){
 	$('#transport-detail-cancel').click(function(){
-		$('#transport-detail-general').hide();
-		$('#transport').show();
-		$('#refresh-transport-list').trigger('click');
+		var goCancel = true;
+		if (transportDataDefaultHash != Util.getElementHash('#transport-detail-general')){
+			goCancel = confirm('A kilépéssel a mentetlen módosítások elvesznek! Biztos folytatjuk?');
+		}
+		if (goCancel){
+			$('#transport-detail-general').hide();
+			$('#transport').show();
+			$('#refresh-transport-list').trigger('click');
+		}
 		
 	});
 }
@@ -216,6 +223,7 @@ function openTransportDetail(id){
 		$('#tr-transport-detail-created').hide();
 		$('#tr-transport-detail-modified').hide();
 		initTransportDetailButtonEvents();
+		transportDataDefaultHash = Util.getElementHash('#transport-detail-general');
 	}
 	else {
 		//Módosítás
@@ -244,6 +252,7 @@ function openTransportDetail(id){
 				$('#tr-transport-detail-created').show();
 				$('#tr-transport-detail-modified').show();
 				initTransportDetailButtonEvents();
+				transportDataDefaultHash = Util.getElementHash('#transport-detail-general');
 		    },
 			error: function(response) {
 				Util.handleErrorToConsole(response);
@@ -254,7 +263,7 @@ function openTransportDetail(id){
 		
 	}
 	$('#transport-detail-general').show();	
-
+	
 }
 
 function openAddress(id){

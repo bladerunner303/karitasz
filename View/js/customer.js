@@ -11,6 +11,7 @@ var CUSTOMER_URL_LIST_OPERATIONS = '../Controls/listOperations.php';
 var customerDataTable;
 var similarCustomerDataTable;
 var customerData;
+var customerDataDefaultHash;
 
 $( document ).ready(function() {
 
@@ -158,6 +159,8 @@ function openCustomerDetail(id) {
 		$('#tr-customer-detail-modified').hide();
 		$('#href-customer-detail-operation').hide();
 		$('#href-customer-detail-log').hide();
+		
+		customerDataDefaultHash = Util.getElementHash('#customer-detail');
 	}
 	else {
 		//Módosítás
@@ -192,6 +195,7 @@ function openCustomerDetail(id) {
 				$('#href-customer-detail-log').show();
 				displayCustomerLastOperation(id);
 				initCustomerDetailFieldVisibleAndLabel();
+				customerDataDefaultHash = Util.getElementHash('#customer-detail');
 			},
 			error: function(response) {
 				Util.handleErrorToConsole(response);
@@ -242,10 +246,16 @@ function handleSimilarCustomerSaveClick(){
 
 function handleCustomerCancelClick(){
 	$('#customer-cancel').click(function(){
-		$('#customer-detail').hide();
-		$('#customer').show();
-		$('#refresh-customer-list').trigger('click');
-		
+		var goCancel = true;
+		if (customerDataDefaultHash != Util.getElementHash('#customer-detail')){
+			goCancel = confirm('A kilépéssel a mentetlen módosítások elvesznek! Biztos folytatjuk?');
+		}
+		if (goCancel){
+			$('#customer-detail').hide();
+			$('#customer').show();
+			$('#refresh-customer-list').trigger('click');
+		}
+				
 	});
 }
 

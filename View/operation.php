@@ -273,10 +273,10 @@
 					
 					<% for(var row in rows) { %>
 					<tr>
-						<td><%-rows[row].order_indicator%></td>
-						<td><%-rows[row].name%></td>
-						<td><%-rows[row].goods_type_local%></td>
-						<td><%-rows[row].status_local%></td>
+						<td><span><%-rows[row].order_indicator%></span></td>
+						<td><span><%-rows[row].name%></span></td>
+						<td><span><%-rows[row].goods_type_local%></span></td>
+						<td><span><%-rows[row].status_local%></span></td>
 						<td>
 							<%-rows[row].related_operation_detail%>
 							<div class="icon-cancel-mid-little" onclick="removeOperationDetailRelatedElement(<%-rows[row].order_indicator%>);" title="Kapcsolt elem törlése"
