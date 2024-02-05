@@ -46,7 +46,7 @@ CREATE TABLE system_user (
 	modifier 				varchar(20)  not null, 
 	modified 				timestamp not null default current_timestamp,
 	constraint pk_user primary key (id),
-	constraint ck_user_status check (status in (select id from code where code_type = 'status')),
+-- 	constraint ck_user_status check (status in (select id from code where code_type = 'status')),
 	constraint uk_user_name unique (name)
 )
 engine innodb;
@@ -57,8 +57,8 @@ create table bad_login (
 	created					timestamp not null default current_timestamp,
 	status					varchar(20) not null,
 	constraint pk_bad_login primary key (id),
-	constraint fk_user_bad_login foreign key (user_id) references system_user(id),
-	constraint ck_bad_login_status check (status in (select id from code where code_type = 'status'))
+	constraint fk_user_bad_login foreign key (user_id) references system_user(id) -- ,
+--	constraint ck_bad_login_status check (status in (select id from code where code_type = 'status'))
 )
 engine innodb;
 
@@ -134,10 +134,10 @@ create table customer
 	created 					timestamp 	not null default current_timestamp,
 	modifier 					varchar(20) not null,
 	modified 					timestamp 	not null default current_timestamp,
-	constraint pk_customer primary key (id),
-	constraint ck_customer_type check (customer_type in (select id from code where code_type = 'customer_type')),
-	constraint ck_customer_qualification check (qualification in (select id from code where code_type = 'customer_qualification')),
-	constraint ck_customer_marital_status check (marital_status in (select id from code where code_type = 'marital_status'))
+	constraint pk_customer primary key (id) -- ,
+--	constraint ck_customer_type check (customer_type in (select id from code where code_type = 'customer_type')),
+--	constraint ck_customer_qualification check (qualification in (select id from code where code_type = 'customer_qualification')),
+--	constraint ck_customer_marital_status check (marital_status in (select id from code where code_type = 'marital_status'))
 )
 engine innodb;
 
@@ -166,8 +166,8 @@ create table customer_family_member
 	description				varchar(255)null,
 	constraint pk_customer_family primary key(id),
 	constraint fk_customer_customer_family foreign key (customer_id) references customer(id),
-	constraint fk_customer_family_member_type foreign key (family_member_type) references code(id),
-	constraint ck_customer_family_member_type check (family_member_type in (select id from code where code_type='family_member'))
+	constraint fk_customer_family_member_type foreign key (family_member_type) references code(id) -- ,
+-- 	constraint ck_customer_family_member_type check (family_member_type in (select id from code where code_type='family_member'))
 )
 engine innodb;
 
@@ -193,13 +193,13 @@ create table operation
 	last_status_changed_user varchar(20) not null,
 	transport_date			date   null,
 	constraint pk_operation primary key (id),
-	constraint fk_customer_operation foreign key (customer_id) references customer(id),
-	constraint ck_operation_type check (operation_type in (select id from code where code_type = 'operation_type')),
-	constraint ck_operation_status check (status in (select id from code where code_type = 'operation_status')),
-	constraint ck_operation_neediness check (neediness_level in (select id from code where code_type='neediness_level')),
-	constraint ck_operation_sender check (sender in (select id from code where code_type='sender')),
-	constraint ck_operation_income_type check (income_type in (select id from code where code_type='income_type')),
- 	constraint ck_operation_has_transponrt check (has_transport in ('Y', 'N'))
+	constraint fk_customer_operation foreign key (customer_id) references customer(id) -- ,
+--	constraint ck_operation_type check (operation_type in (select id from code where code_type = 'operation_type')),
+-- 	constraint ck_operation_status check (status in (select id from code where code_type = 'operation_status')),
+-- 	constraint ck_operation_neediness check (neediness_level in (select id from code where code_type='neediness_level')),
+-- 	constraint ck_operation_sender check (sender in (select id from code where code_type='sender')),
+-- 	constraint ck_operation_income_type check (income_type in (select id from code where code_type='income_type')),
+-- 	constraint ck_operation_has_transponrt check (has_transport in ('Y', 'N'))
 )
 engine innodb;
 
@@ -214,8 +214,8 @@ create table operation_detail
 	order_indicator			integer		not null,
 	detail_id				varchar(36) null,
 	constraint pk_operation_detail primary key (id),
-	constraint fk_operation_operation_detail foreign key (operation_id) references operation(id),
-	constraint ck_operation_detail_status check (status in (select id from code where code_type = 'operation_status'))
+	constraint fk_operation_operation_detail foreign key (operation_id) references operation(id)-- ,
+--	constraint ck_operation_detail_status check (status in (select id from code where code_type = 'operation_status'))
 )
 engine innodb;
 
@@ -230,8 +230,8 @@ create table transport
 	created 				timestamp 	not null default current_timestamp,
 	modifier 				varchar(20) not null,
 	modified 				timestamp 	not null default current_timestamp,
-	constraint pk_transport primary key (id),
-	constraint ck_transport_status check (status in (select id from code where code_type = 'transport_status'))
+	constraint pk_transport primary key (id)-- ,
+--	constraint ck_transport_status check (status in (select id from code where code_type = 'transport_status'))
 )
 engine innodb;
 
@@ -248,8 +248,8 @@ create table transport_address
 	order_indicator			integer		not null,
 	constraint pk_transport_address primary key (id),
 	constraint fk_transport_address_operation foreign key (operation_id) references operation(id),
-	constraint fk_transport_address_transport foreign key (transport_id) references transport(id),
-	constraint ck_transport_address_status check (status in (select id from code where code_type = 'transport_status'))
+	constraint fk_transport_address_transport foreign key (transport_id) references transport(id) -- ,
+-- 	constraint ck_transport_address_status check (status in (select id from code where code_type = 'transport_status'))
 )
 engine innodb;
 
@@ -265,8 +265,8 @@ create table transport_address_item
 	modified 				timestamp 	not null default current_timestamp,
 	constraint pk_transport_address_item primary key (id),
 	constraint fk_transport_address_item foreign key (transport_address_id) references transport_address(id),
-	constraint fk_address_item_op_detail foreign key (operation_detail_id) references operation_detail(id),
-	constraint ck_transport_address_item_status check (status in (select id from code where code_type = 'transport_status'))
+	constraint fk_address_item_op_detail foreign key (operation_detail_id) references operation_detail(id) -- ,
+-- 	constraint ck_transport_address_item_status check (status in (select id from code where code_type = 'transport_status'))
 )
 engine innodb;
 
