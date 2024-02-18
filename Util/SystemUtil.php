@@ -19,25 +19,29 @@ class SystemUtil {
 		;
 		return $uuid;
 	}
-	
+
 	public static function getCurrentTimestamp(){
 		return date("Y-m-d H:i:s");
 	}
-	
+
 	public static function getCurrantDay() {
 		return date("Y-m-d");
 	}
-	
+
 	public static function getRequestIp(){
-		return
-		!empty($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] :
-		!empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] :$_SERVER['REMOTE_ADDR'];
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} elseif (array_key_exists('HTTP_CLIENT_IP', $_SERVER)) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		}
+		return $ip;
 	}
-	
+
 	public static function getRequestBrowserHash(){
 		return hash('md5', EMPTY($_SERVER['HTTP_USER_AGENT'])? 'N/A' : $_SERVER['HTTP_USER_AGENT']);
 	}
-	
+
 	public static function cast($destination, $sourceObject)
 	{
 		if (is_string($destination)) {
@@ -45,26 +49,26 @@ class SystemUtil {
 		}
 		$sourceReflection = new ReflectionObject($sourceObject);
 		$destinationReflection = new ReflectionObject($destination);
-	
+
 		$sourceProperties = $sourceReflection->getProperties();
 		$classMethods = get_class_methods($destination);
-	
+
 		foreach ($sourceProperties as $sourceProperty) {
 			$sourceProperty->setAccessible(true);
 			$name = $sourceProperty->getName();
 			$value = $sourceProperty->getValue($sourceObject);
-				
+
 			$setterFunction = "set";
 			$names = explode("_", $name);
 			foreach ($names as $nameItem) {
 				$setterFunction .= ucfirst($nameItem);
 			}
-				
+
 			if (in_array($setterFunction, $classMethods) ){
 				$destination->$setterFunction($value); //Ez egy paraméteres settert feltételez.
 				//		Logger::info('talált settert ' . $setterFunction);
 			}
-			
+
 			else if ($destinationReflection->hasProperty($name)) {
 				$propDest = $destinationReflection->getProperty($name);
 				$propDest->setAccessible(true);
@@ -74,12 +78,12 @@ class SystemUtil {
 				$destination->$name = $value;
 			//		Logger::info('nem talált settert: ' . $setterFunction);
 			}
-			
+
 			}
 			return $destination;
 	}
-	
-	
-	
+
+
+
 }
 ?>
