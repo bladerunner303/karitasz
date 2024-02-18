@@ -3,48 +3,48 @@
 require_once '../Util/Loader.php';
 
 class Customer implements JsonSerializable {
-	
-	public function jsonSerialize() {
-		return get_object_vars($this);	
+
+	public function jsonSerialize():array {
+		return get_object_vars($this);
 	}
 
 	/**
 	 * @return array<Customer>
 	 */
 	public function findSimilar(){
-		
-		$sql = " select x.* 
+
+		$sql = " select x.*
 				 from
-					( 
+					(
 					select c0.id,
 						'Adó vagy taj szám egyezés' similar_reason ,
 						5 order_num
-					from 
+					from
 						customer c0
-					where  (c0.tax_number = :tax_number and c0.tax_number is not null) 
+					where  (c0.tax_number = :tax_number and c0.tax_number is not null)
 				    or (c0.tb_number = :tb_number and c0.tb_number is not null)
-				
+
 				    union
-					select 
+					select
 						c.id,
 						'Telefonszám egyezés' similar_reason ,
-						10 order_num	
-					from 
+						10 order_num
+					from
 						customer c
 					where  c.phone = :phone
 					or c.phone2 = :phone
 					or c.phone = :phone2
 					or c.phone2 = :phone2
-					
-					union 
-					select 
+
+					union
+					select
 						c2.id,
 						'Név egyezés' similar_reason ,
 						20 order_num
 					from customer c2
 					where (c2.surname like concat('%', :surname, '%') and c2.forename like concat('%', coalesce(:forename, ''), '%'))
 					or c2.surname like concat('%', :surname, '%')
-						
+
 					union
 					select
 						c3.id,
@@ -52,9 +52,9 @@ class Customer implements JsonSerializable {
 						30 order_num
 					from customer c3
 					where  c3.zip = :zip and c3.street like concat('%', :street,'%')
-				) x 
+				) x
 				order by x.order_num";
-		
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$params = array(
@@ -67,25 +67,25 @@ class Customer implements JsonSerializable {
 				':tax_number' => $this->tax_number,
 				':tb_number' => $this->tb_number
 		);
-		
+
 		$pre->execute($params);
 		$similarIdList =  $pre->fetchAll(PDO::FETCH_OBJ);
-		
+
 		if (count($similarIdList) == 0){
 			return $similarIdList;
 		}
-		
-		//Előállítjuk az in és order sql részt (dinamikusan) 
+
+		//Előállítjuk az in és order sql részt (dinamikusan)
 		$inSql = "";
 		$orderSql = "case ";
 		foreach ($similarIdList as $i => $customer) {
-			//Ezt itt belehet tenni, mert adatbázisból jött generált id. Nem tartalmazhat támadó részletet. 
+			//Ezt itt belehet tenni, mert adatbázisból jött generált id. Nem tartalmazhat támadó részletet.
 			$inSql .= "'" . $customer->id . "'" . ((count($similarIdList)-1 > $i)? ",":"");
-			$orderSql .= "when c.id = '" . $customer->id . "' then " . $i . " ";		
+			$orderSql .= "when c.id = '" . $customer->id . "' then " . $i . " ";
 		}
 		$orderSql .= " else " .  count($similarIdList) . " end ";
-		
-		$sql = " select 
+
+		$sql = " select
 						c.id,
 						trim(concat(c.surname, ' ', coalesce(c.forename, ''))) full_name,
 						concat(c.zip, ' ', c.city, ' ' , c.street) full_address,
@@ -93,37 +93,37 @@ class Customer implements JsonSerializable {
 						c.qualification qualification,
 						c.tax_number,
 						c.tb_number,
-						code.code_value qualification_local 
-					from 
+						code.code_value qualification_local
+					from
 						customer c,
-						code 
-					where c.qualification = code.id 
+						code
+					where c.qualification = code.id
 					and c.id != coalesce(:id, '')
 					and c.id in ( $inSql )
 					order by $orderSql
 					limit 20
 					";
-		
+
 		$pre = $db->prepare($sql);
 		$params = array(':id' => $this->id);
-		
+
 		$pre->execute($params);
-		return $pre->fetchAll(PDO::FETCH_OBJ);		 
-		
+		return $pre->fetchAll(PDO::FETCH_OBJ);
+
 	}
-	
-	
+
+
 	/**
 	 * @return array<Customer>
 	 */
 	public function find($text, $limit){
-		
+
 		if (($limit == null) || ($limit < 1)) {
 			$limit = 100000; //Primitiv de működő megoldás
 		}
-		
-		$sql = "select 
-					c.*, 
+
+		$sql = "select
+					c.*,
 					trim(concat(c.surname, ' ', coalesce(c.forename, ''))) full_name,
 					concat(c.zip, ' ', c.city, ' ' , c.street) full_address,
 					code_status.code_value status_local,
@@ -132,7 +132,7 @@ class Customer implements JsonSerializable {
 					code_marital_status.code_value marital_status_local,
 					concat(c.created, ' (', c.creator, ')') created_info,
 					concat(c.modified, ' (', c.modifier, ')') modified_info
-				from 
+				from
 					customer c
 				inner join code code_status on c.status = code_status.id
 				inner join code code_qualification on c.qualification = code_qualification.id
@@ -141,14 +141,14 @@ class Customer implements JsonSerializable {
 				where 1=1
 				and (:id is null or c.id = :id)
 				and (:customer_type is null or c.customer_type = :customer_type)
-				and concat( c.id, 
+				and concat( c.id,
 							c.surname,
-							' ', 
+							' ',
 							coalesce(c.forename, ''),
 							c.zip,
-						    c.city, 
-						    c.street, 
-						    c.phone, 
+						    c.city,
+						    c.street,
+						    c.phone,
 						    coalesce(c.phone2, ''),
 						    coalesce(c.email, ''),
 						    coalesce(c.description, ''),
@@ -167,32 +167,32 @@ class Customer implements JsonSerializable {
 					like concat('%', coalesce(:text, ''), '%')
 				order by c.surname, c.forename
 				limit :limit";
-		
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
-		
+
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->bindValue(':customer_type', $this->customer_type, PDO::PARAM_STR);
 		$pre->bindValue(':text', $text, PDO::PARAM_STR);
 		$pre->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-		
-		
+
+
 		$pre->execute();
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
+
 	/**
 	 * @return array<CustomerHistory>
 	 */
 	public function listHistory(){
-		$sql = "select 
+		$sql = "select
 					ch.* ,
 					concat(ch.created, ' (', ch.creator, ')') created_info,
 					c.code_value data_type_local
-				from 
-					customer_history ch, 
-					code c 
-				where c.id = ch.data_type 
+				from
+					customer_history ch,
+					code c
+				where c.id = ch.data_type
 				and ch.customer_id = :id
 				order by ch.created desc";
 		$db = Data::getInstance();
@@ -200,11 +200,11 @@ class Customer implements JsonSerializable {
 		$params = array(
 				':id' => $this->id
 		);
-		
+
 		$pre->execute($params);
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -212,20 +212,20 @@ class Customer implements JsonSerializable {
 
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
-		
+
 		if (empty($this->id)){
-		
+
 			$seqNext = $db->query("select sequence_nextval() nextval")->fetch(PDO::FETCH_OBJ)->nextval;
 			$this->id = ($this->customer_type == 'KERVENYEZO' ? 'K': 'F') . str_pad($seqNext,6,"0",STR_PAD_LEFT);
-			
-			$pre = $db->prepare("insert into customer 
-								( id, surname, forename, customer_type, zip, city, street, email, phone, phone2, qualification, description, 
-								  additional_contact, additional_contact_phone, status, marital_status, tax_number, tb_number, birth_place, birth_date, 
-								mother_name, creator, modifier, created, modified) 
+
+			$pre = $db->prepare("insert into customer
+								( id, surname, forename, customer_type, zip, city, street, email, phone, phone2, qualification, description,
+								  additional_contact, additional_contact_phone, status, marital_status, tax_number, tb_number, birth_place, birth_date,
+								mother_name, creator, modifier, created, modified)
 						 values (
-								  :id, :surname, :forename, :customer_type, :zip, :city, :street, :email, :phone, :phone2, :qualification, :description, 
-								  :additional_contact, :additional_contact_phone, :status, :marital_status, :tax_number, :tb_number, :birth_place, :birth_date, 
-								  :mother_name,	:creator, :modifier, :created, :modified 
+								  :id, :surname, :forename, :customer_type, :zip, :city, :street, :email, :phone, :phone2, :qualification, :description,
+								  :additional_contact, :additional_contact_phone, :status, :marital_status, :tax_number, :tb_number, :birth_place, :birth_date,
+								  :mother_name,	:creator, :modifier, :created, :modified
 								)");
 			$params = array(
 					':id' => $this->id,
@@ -256,15 +256,15 @@ class Customer implements JsonSerializable {
 			);
 
 			$pre->execute($params);
-			
+
 			$this->saveFamilyMembers(array());
 		}
 		else {
-			
-			$findCustomer = new Customer();		
+
+			$findCustomer = new Customer();
 			$findCustomer->setId( $this->id );
 			$originalList = $findCustomer->find(null, 1);
-			//Külön ellenőrízzük, hogy a korábbi jó volt, ha nem akkor eldobjuk: 
+			//Külön ellenőrízzük, hogy a korábbi jó volt, ha nem akkor eldobjuk:
 			if (!$this::isValidPhoneNumber($originalList[0]->phone)){
 				$originalList[0]->phone = '';
 			}
@@ -274,16 +274,16 @@ class Customer implements JsonSerializable {
 			if (!$this::isValidPhoneNumber($originalList[0]->additional_contact_phone)){
 				$originalList[0]->additional_contact_phone = '';
 			}
-			
+
 			$original = new Customer();
 			SystemUtil::cast($original, $originalList[0]);
-			
+
 			$findFamilyMember = new CustomerFamilyMember();
 			$findFamilyMember->setCustomerId($this->id);
 			$originalMemberList = $findFamilyMember->find();
-			
+
 			if ($this->isChanged($original, $originalMemberList)){
-				
+
 				$db->beginTransaction();
 				try {
 					$pre = $db->prepare("update customer
@@ -312,7 +312,7 @@ class Customer implements JsonSerializable {
 							where
 							id = :id
 							");
-					
+
 					$params = array(
 							':surname' => $this->surname,
 							':forename' => $this->forename,
@@ -337,26 +337,26 @@ class Customer implements JsonSerializable {
 							':modified'=>$t,
 							':id'=>$this->id
 					);
-					
+
 					$pre->execute($params);
-					
-					$this->logChange($original);						
+
+					$this->logChange($original);
 					$this->saveFamilyMembers($originalMemberList);
 
-					
-										
+
+
 					$db->commit();
 				} catch (Exception $e) {
 					$db->rollback();
 					throw $e;
 				}
-				
+
 			}
 		}
 		return $this->id;
 
 	}
-	
+
 	private function logChange($original){
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
@@ -364,10 +364,10 @@ class Customer implements JsonSerializable {
 				(id, customer_id, data_type, old_value, new_value, creator, created)
 				values
 				(:id, :customer_id, :data_type, :old_value, :new_value, :creator, :created) ");
-			
+
 		if (($original->getSurname()!= $this->surname)
 				|| ($original->getForename() != $this->forename)){
-				
+
 			$params = array(
 					':id' => SystemUtil::getGuid(),
 					':customer_id' => $this->id,
@@ -378,9 +378,9 @@ class Customer implements JsonSerializable {
 					':created'=>$t
 			);
 			$pre->execute($params);
-				
+
 		}
-			
+
 		if (($original->getZip() != $this->zip)
 				||	($original->getCity() != $this->city)
 				||	($original->getStreet() != $this->street)) {
@@ -443,7 +443,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if	($original->getDescription() != $this->description){
 			$params = array(
 					':id' => SystemUtil::getGuid(),
@@ -456,7 +456,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if (($original->getAdditionalContact() != $this->additional_contact)
 				|| ($original->getAdditionalContactPhone() != $this->additional_contact_phone)){
 			$params = array(
@@ -470,7 +470,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if ($original->getStatus() != $this->status){
 			$params = array(
 					':id' => SystemUtil::getGuid(),
@@ -483,7 +483,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if ($original->getMaritalStatus() != $this->marital_status){
 			$params = array(
 					':id' => SystemUtil::getGuid(),
@@ -496,7 +496,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if ($original->getTaxNumber() != $this->tax_number){
 			$params = array(
 					':id' => SystemUtil::getGuid(),
@@ -509,7 +509,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if ($original->getTbNumber() != $this->tb_number){
 			$params = array(
 					':id' => SystemUtil::getGuid(),
@@ -522,7 +522,7 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-			
+
 		if (($original->getBirthPlace() != $this->birth_place)
 				||($original->getBirthDate() != $this->birth_date)
 				|| ($original->getMotherName() != $this->mother_name)
@@ -539,15 +539,15 @@ class Customer implements JsonSerializable {
 			);
 			$pre->execute($params);
 		}
-		
+
 	}
-	
+
 	private function isChanged($original, $originalFamilyMembers){
-	
+
 		if (empty($this->id)){
 			return false;
 		}
-		
+
 		if (($original->getSurname()!= $this->surname)
 		||  ($original->getForename() != $this->forename)
 		||	($original->getZip() != $this->zip)
@@ -570,16 +570,16 @@ class Customer implements JsonSerializable {
 		){
 			return true;
 		}
-		
+
 		if (count($originalFamilyMembers) != count($this->familyMembers)){
 			return true;
 		}
-		
+
 		foreach ($this->familyMembers as $index => $familyMember) {
 			if (empty($familyMember->id)){
 				return true;
 			}
-			
+
 			foreach ($originalFamilyMembers as $index => $originalMember) {
 				if ($originalMember->id == $familyMember->id){
 					if (($originalMember->name != $familyMember->name)
@@ -589,20 +589,20 @@ class Customer implements JsonSerializable {
 						||  ($originalMember->description != $familyMember->description)
 						){
 							return true;
-						}			
+						}
 				}
 			}
-		}	
+		}
 
 		return false;
-		
+
 	}
-	
+
 	private function saveFamilyMembers($originalMemberList){
-	
-		//Töröljük a be nem küldött familyMembers-eket. 
+
+		//Töröljük a be nem küldött familyMembers-eket.
 		foreach ($originalMemberList as $key => $originalMember) {
-			
+
 			$found = false;
 			foreach ($this->familyMembers as $familyMember) {
 				if ($familyMember->id == $originalMember->id){
@@ -618,12 +618,12 @@ class Customer implements JsonSerializable {
 				$member->remove($this->modifier);
 			}
 		}
-		
+
 		//updateljük ami módosult
 		foreach ($originalMemberList as $key => $originalMember) {
 			foreach ($this->familyMembers as $familyMember) {
 				if ($familyMember->id == $originalMember->id){
-					if (($originalMember->name != $familyMember->name) 
+					if (($originalMember->name != $familyMember->name)
 					|| ($originalMember->description != $familyMember->description)
 					|| ($originalMember->birth_date != $familyMember->birth_date)
 					|| ($originalMember->family_member_type != $familyMember->family_member_type)
@@ -637,12 +637,12 @@ class Customer implements JsonSerializable {
 				}
 			}
 		}
-		
-		
+
+
 		//Beszurjuk az új sorokat
-			
+
 		foreach ($this->familyMembers as $index => $familyMember) {
-				
+
 			if (empty($familyMember->id)){
 				$member = new CustomerFamilyMember();
 				$member->setCustomerId($this->id);
@@ -653,9 +653,9 @@ class Customer implements JsonSerializable {
 				$member->setDescription($familyMember->description);
 				$member->save($this->modifier);
 			}
-			
+
 		}
-		
+
 	}
 
 	private $id;
@@ -684,7 +684,7 @@ class Customer implements JsonSerializable {
 	private $marital_status;
 	private $mother_name;
 	private $familyMembers;
-	
+
 	/**
 	 *
 	 * @return string
@@ -693,36 +693,36 @@ class Customer implements JsonSerializable {
 
 		return $this->id;
 	}
-	
+
 	/**
 	 *
-	 * @param string $id 
+	 * @param string $id
 	 */
 	public function setId($id){
-		
+
 		$this->id = $id;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getCustomerType(){
-	
+
 		return $this->customer_type;
 	}
-	
+
 	/**
 	 *
 	 * @param string $surname
 	 */
 	public function setCustomerType($customerType){
-	
+
 		$this->customer_type = $customerType;
 		return $this;
 	}
-	
+
 
 	/**
 	 *
@@ -735,29 +735,29 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $surname        	
+	 * @param string $surname
 	 */
 	public function setSurname($surname){
 
 		$this->surname = substr($surname, 0, 35);
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getForename(){
-	
+
 		return $this->forename;
 	}
-	
+
 	/**
 	 *
 	 * @param string $name
 	 */
 	public function setForename($forename){
-	
+
 		if (!empty($forename)){
 			$this->forename = substr($forename, 0, 35);
 		}
@@ -778,7 +778,7 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $zip        	
+	 * @param string $zip
 	 */
 	public function setZip($zip){
 
@@ -802,7 +802,7 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $city        	
+	 * @param string $city
 	 */
 	public function setCity($city){
 
@@ -821,7 +821,7 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $street        	
+	 * @param string $street
 	 */
 	public function setStreet($street){
 
@@ -837,32 +837,32 @@ class Customer implements JsonSerializable {
 
 		return $this->status;
 	}
-	
+
 	/**
 	 *
 	 * @param string $status
 	 */
 	public function setStatus($status){
-	
+
 		$this->status = substr($status, 0, 20);
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getTaxNumber(){
-	
+
 		return $this->tax_number;
 	}
-	
+
 	/**
 	 *
 	 * @param string $taxNumber
 	 */
 	public function setTaxNumber($taxNumber){
-	
+
 		if (!empty($taxNumber)){
 			$this->tax_number = substr($taxNumber, 0, 20);
 		}
@@ -871,16 +871,16 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
-	
+
 	 * @return string
 	 */
 	public function getTbNumber(){
-	
+
 		return $this->tb_number;
 	}
-	
+
 	/**
 	 *
 	 * @param string $tbNumber
@@ -894,22 +894,22 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getBirthPlace(){
-	
+
 		return $this->birth_place;
 	}
-	
+
 	/**
 	 *
 	 * @param string $birthPlace
 	 */
 	public function setBirthPlace($birthPlace){
-	
+
 		if (!empty($birthPlace)){
 			$this->birth_place = substr($birthPlace, 0, 20);
 		}
@@ -918,16 +918,16 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return date
 	 */
 	public function getBirthDate(){
-	
+
 		return $this->birth_date;
 	}
-	
+
 	/**
 	 *
 	 * @param date $birthPlace
@@ -937,7 +937,7 @@ class Customer implements JsonSerializable {
 		$this->birth_date = $birthDate;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
@@ -949,7 +949,7 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $creator        	
+	 * @param string $creator
 	 */
 	public function setCreator($creator){
 
@@ -968,7 +968,7 @@ class Customer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $modifier        	
+	 * @param string $modifier
 	 */
 	public function setModifier($modifier){
 
@@ -993,19 +993,19 @@ class Customer implements JsonSerializable {
 
 		return $this->modified;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getPhone(){
-	
+
 		return $this->phone;
 	}
-	
+
 	/**
 	 *
-	 * @param string $phone 
+	 * @param string $phone
 	 */
 	public function setPhone($phone){
 
@@ -1017,42 +1017,42 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getQualification(){
-	
+
 		return $this->qualification;
 	}
-	
+
 	/**
 	 *
 	 * @param string $qualification
 	 */
 	public function setQualification($qualification){
-	
+
 		//TODO: Check code tábla
 		$this->qualification = $qualification;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getDescription(){
-	
+
 		return $this->description;
 	}
-	
+
 	/**
 	 *
 	 * @param string $description
 	 */
 	public function setDescription($description){
-	
+
 		if (!empty($description)){
 			$this->description = substr($description, 0, 500);
 		}
@@ -1061,22 +1061,22 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getAdditionalContact(){
-	
+
 		return $this->additional_contact;
 	}
-	
+
 	/**
 	 *
 	 * @param string $familyCare
 	 */
 	public function setAdditionalContact($additionalContact){
-	
+
 		if (!empty($additionalContact)){
 			$this->additional_contact = substr($additionalContact, 0, 35);
 		}
@@ -1085,22 +1085,22 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getAdditionalContactPhone(){
-	
+
 		return $this->additional_contact_phone;
 	}
-	
+
 	/**
 	 *
 	 * @param string $familyCarePhone
 	 */
 	public function setAdditionalContactPhone($additionalContactPhone){
-	
+
 		if ($this::isValidPhoneNumber($additionalContactPhone)){
 			$this->additional_contact_phone = $additionalContactPhone;
 		}
@@ -1109,8 +1109,8 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
@@ -1118,13 +1118,13 @@ class Customer implements JsonSerializable {
 	public function getPhone2(){
 		return $this->phone2;
 	}
-	
+
 	/**
 	 *
 	 * @param string $phone2,
 	 */
 	public function setPhone2($phone2){
-	
+
 		if ($this::isValidPhoneNumber($phone2)){
 			$this->phone2 = $phone2;
 		}
@@ -1133,111 +1133,111 @@ class Customer implements JsonSerializable {
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getEmail(){
-	
+
 		return $this->email;
 	}
-	
+
 	/**
 	 *
 	 * @param string $email
 	 */
 	public function setEmail($email){
-	
+
 		if (!empty($email)){
 			$this->email = substr($email, 0, 105);
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getMaritalStatus(){
-	
+
 		return $this->marital_status;
 	}
-	
+
 	/**
 	 *
 	 * @param string $maritalStatus
 	 */
 	public function setMaritalStatus($maritalStatus){
-	
+
 		if (!empty($maritalStatus)){
 			$this->marital_status = $maritalStatus;
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getMotherName(){
-	
+
 		return $this->mother_name;
 	}
-	
+
 	/**
 	 *
 	 * @param string $motherName
 	 */
 	public function setMotherName($motherName){
-	
+
 		if (!empty($motherName)){
 			$this->mother_name = $motherName;
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return array
 	 */
 	public function getFamilyMembers(){
-	
+
 		return $this->familyMembers;
 	}
-	
+
 	/**
 	 *
 	 * @param array $familyMembers
 	 */
 	public function setFamilyMembers($familyMembers){
-	
+
 		$this->familyMembers = $familyMembers;
 		return $this;
 	}
-	
-	
-	
+
+
+
 	private static function isValidPhoneNumber($phoneNumber){
 		$regexp = Config::getContextParam("VALID_PHONE_NUMBER_REGEXP");
 		if (empty($regexp)){
 			Logger::warning("Nincs kitöltve a VALID_PHONE_NUMBER_REGEXP context paraméter a web.xml fájlban. Így bármilyen telefonszámomt elfogad a rendszer!");
 			$regexp = "/^[0-9]{1,20}$/";
 		}
-		
-		
+
+
 		if (empty($phoneNumber)){
-			return true; //ha üres az valid 
+			return true; //ha üres az valid
 		}
 		else {
 			return (preg_match($regexp, str_replace("-", "", str_replace("/", "", $phoneNumber ))));
 		}
-		
+
 	}
-	
+
 }
 
 ?>

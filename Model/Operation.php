@@ -3,28 +3,28 @@
 require_once '../Util/Loader.php';
 
 class Operation implements JsonSerializable {
-	
-	public function jsonSerialize() {
-		return get_object_vars($this);	
+
+	public function jsonSerialize():array {
+		return get_object_vars($this);
 	}
-	
+
 	/**
 	 * @return array<Operation>
 	 */
 	public function find($text, $limit){
-		
+
 		if (($limit == null) || ($limit < 1)) {
 			$limit = 100000; //Primitiv de működő megoldás
 		}
-		
-		$sql = "select 
+
+		$sql = "select
 					o.*,
 					concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
 					c.phone,
 					concat(c.phone, ';', c.phone2) phones,
 					concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format,
-					c.zip, 
-					c.city, 
+					c.zip,
+					c.city,
 					c.street,
 					 qualification_codes.code_value qualification_local,
 					operation_type_codes.code_value operation_type_local,
@@ -37,7 +37,7 @@ class Operation implements JsonSerializable {
 					concat(o.created, ' (', o.creator, ')') created_info,
 					concat(o.modified, ' (', o.modifier, ')') modified_info,
 					concat(o.last_status_changed, ' (', o.last_status_changed_user, ')') last_status_changed_info
-				from 
+				from
 					operation o
 					inner join customer c on c.id = o.customer_id
 					inner join code operation_type_codes on operation_type_codes.id = o.operation_type
@@ -51,18 +51,18 @@ class Operation implements JsonSerializable {
 				where (:id is null or o.id = :id)
 				and (:customer_id is null or o.customer_id = :customer_id)
 				and (
-					   :text is null 
-					or o.customer_id like concat(:text, '%') 
+					   :text is null
+					or o.customer_id like concat(:text, '%')
 					or concat(c.surname, ' ' , coalesce(c.forename, '')) like concat('%', :text , '%')
 					or o.id = :text
-					) 
+					)
 				and (:wait_call = 'N' or o.is_wait_callback = :wait_call)
 				and (:status is null or o.status = :status)
 				and (:operation_type is null or o.operation_type = :operation_type)
 				order by o.id
 				limit :limit
 				";
-				
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$waitCallParam = ($this->isWaitCallback())? 'Y':'N';
@@ -73,23 +73,23 @@ class Operation implements JsonSerializable {
 		$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 		$pre->bindValue(':operation_type', $this->operation_type, PDO::PARAM_STR);
 		$pre->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-		
+
 		$pre->execute();
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
+
 	public function findByDetails($goodsType){
-		$sql = "select 
+		$sql = "select
             	o.id,
                 concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
-                concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format, 
+                concat(c.zip, ' ', c.city, ' ' , c.street) full_address_format,
                 c.qualification,
                 code_qualification_local.code_value qualification_local,
                 o.created,
                 date_format(o.created, '%Y-%m-%d') created_date,
                 od.id operation_detail_id,
                 od.name
-			   from 
+			   from
 			   	operation o,
 			   	operation_detail od,
                 customer c,
@@ -104,59 +104,59 @@ class Operation implements JsonSerializable {
                and od.goods_type = :goods_type
                order by c.qualification, o.created
 			   limit 10";
-		
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':operation_type', $this->operation_type, PDO::PARAM_STR);
 		$pre->bindValue(':goods_type', $goodsType, PDO::PARAM_STR);
-		
+
 		$pre->execute();
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
-	
+
+
 	public function findWaiting($text, $reservedIds = array()){
-		
+
 		if (!empty($text)){
 			$text = '%' . $text . '%';
 		}
-		
+
 		$sql = "select
 				o.id,
 				concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
-                concat(c.zip, ' ', c.city, ' ' , c.street) address_format, 
+                concat(c.zip, ' ', c.city, ' ' , c.street) address_format,
                 code_qualification_local.code_value priority_local,
 				o.last_status_changed
-				from 
+				from
 					operation o
-				inner join customer c on c.id = o.customer_id 
+				inner join customer c on c.id = o.customer_id
 				inner join code code_qualification_local on c.qualification = code_qualification_local.id
 				where c.status != 'TILTOTT'
                	and o.status = 'FOLYAMATBAN'
                	and c.status = 'AKTIV'
 			-- 	and o.id not in (select ta.operation_id from transport_address ta where ta.status not in ('SIKERTELEN_TRANSPORT', 'BEFEJEZETT_TRANSPORT'))
 				and (:text is null or
-					concat(	o.id,  
+					concat(	o.id,
 							concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')'),
 							concat(c.zip, ' ', c.city, ' ' , c.street),
 							code_qualification_local.code_value
 						) like :text)
 				";
-		
+
 		if (count($reservedIds)> 0) {
 			$sql .= "and o.id not in (" . implode(',', $reservedIds) . ") ";
 		}
-		
+
 		$sql .= "order by c.qualification, o.created
 			   	limit 100
                	";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':text', $text, PDO::PARAM_STR);
-		
+
 		$pre->execute();
 		return $pre->fetchAll(PDO::FETCH_OBJ);
-		
+
 	}
 	/**
 	 * @return string
@@ -165,7 +165,7 @@ class Operation implements JsonSerializable {
 
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
-		
+
 		$customerFinder = new Customer();
 		$customerFinder->setId($this->customer_id);
 		$customers = $customerFinder->find(null, 1);
@@ -173,40 +173,40 @@ class Operation implements JsonSerializable {
 			throw new Exception("Nem található az ügyfél");
 		}
 		$customer = $customers[0];
-		
+
 		if (($customer->customer_type == 'KERVENYEZO') && ($this->getOperationType() != 'KERVENYEZES')){
 			throw new Exception("Kérvényező ügyfél csak kérvényt adhat be!");
 		}
 		if (($customer->customer_type == 'FELAJANLO') && ($this->getOperationType() == 'KERVENYEZES')){
 			throw new Exception("Felajánló ügyfél csak felajánlást adhat be!");
 		}
-		
-		$pre = $db->prepare ("	select 
-									count(*) cnt 
-								from 
-									operation 
-								where status != 'BEFEJEZETT' 
+
+		$pre = $db->prepare ("	select
+									count(*) cnt
+								from
+									operation
+								where status != 'BEFEJEZETT'
 								and customer_id = :customer_id
 								 and id != coalesce(:id, '') " );
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->bindValue(':customer_id', $this->customer_id, PDO::PARAM_STR);
 		$pre->execute();
 		if ($pre->fetch(PDO::FETCH_OBJ)->cnt != '0'){
-			throw new Exception("Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módostsd inkább azt!");	
+			throw new Exception("Az ügyfélnek már van másik folyamatban lévő kérvénye! Kérlek módostsd inkább azt!");
 		}
-		
+
 		if (empty($this->id)){
-			
+
 			if ($customer->qualification == 'TILTOTT'){
 				throw new Exception("Tiltott státuszú ügyfél részére kérvény vagy felajánlás nem rögzíthető!");
 			}
-			
-			$pre = $db->prepare("insert into operation 
+
+			$pre = $db->prepare("insert into operation
 								( operation_type, has_transport, is_wait_callback, customer_id, status, description, neediness_level,
-								  sender, income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user) 
+								  sender, income_type, income, others_income, creator, created, modifier, modified, last_status_changed, last_status_changed_user)
 						 values (
 								  :operation_type, :has_transport, :is_wait_callback, :customer_id, :status, :description, :neediness_level,
-								  :sender, :income_type, :income, :others_income, :creator, :created, :modifier, :modified, :last_status_changed, :last_status_changed_user 
+								  :sender, :income_type, :income, :others_income, :creator, :created, :modifier, :modified, :last_status_changed, :last_status_changed_user
 								)");
 			$params = array(
 					':operation_type' => $this->operation_type,
@@ -229,7 +229,7 @@ class Operation implements JsonSerializable {
 			);
 
 			$pre->execute($params);
-			
+
 			$this->id = $db->query("select max(id) maxid from operation")->fetch(PDO::FETCH_OBJ)->maxid;
 			$this->saveOperationDetails([]);
 
@@ -241,14 +241,14 @@ class Operation implements JsonSerializable {
 			$originalList = $findOperation->find(null,1);
 			$original = new Operation();
 			SystemUtil::cast($original, $originalList[0]);
-			
+
 			$finderOperationDetails = new OperationDetail();
 			$finderOperationDetails->setOperationId($this->getId());
 			$originalOperationDetails = $finderOperationDetails->find();
-			
-			
+
+
 			if ($this->isChanged($original, $originalOperationDetails)){
-				
+
 					if ($original->status != $this->status){
 						$this->last_status_changed_user = $this->modifier;
 						$this->last_status_changed = $t;
@@ -257,7 +257,7 @@ class Operation implements JsonSerializable {
 						$this->last_status_changed_user = $original->last_status_changed_user;
 						$this->last_status_changed = $original->last_status_changed;
 					}
-				
+
 					$pre = $db->prepare("update operation
 							set
 							has_transport = :has_transport,
@@ -277,7 +277,7 @@ class Operation implements JsonSerializable {
 							where
 							id = :id
 							");
-					
+
 					$params = array(
 							':has_transport' => ($this->hasTransport()? 'Y': 'N'),
 							':is_wait_callback' => ($this->isWaitCallback()?'Y': 'N'),
@@ -295,22 +295,22 @@ class Operation implements JsonSerializable {
 							':last_status_changed_user' => $this->last_status_changed_user,
 							':id' => $this->id
 					);
-						
+
 					$pre->execute($params);
 					$this->saveOperationDetails($originalOperationDetails);
-				
+
 			}
 		}
 		return $this->id;
 
 	}
-	
+
 	private function isChanged($original, $originalOperationDetails){
 
 		if (empty($this->id)){
 			return false;
 		}
-			
+
 		if (($original->hasTransport()!= $this->hasTransport())
 		||  ($original->isWaitCallback() != $this->isWaitCallback())
 		||	($original->getCustomerId() != $this->getCustomerId())
@@ -323,27 +323,27 @@ class Operation implements JsonSerializable {
 		||	($original->getIncome() != $this->getIncome())
 		||	($original->getOthersIncome() != $this->getOthersIncome())
 		){
-			return true;			
+			return true;
 		}
-			
+
 		if (count($originalOperationDetails) != count($this->operationDetails)){
 			return true;
 		}
-		
+
 		foreach ($this->operationDetails as $index => $operationDetail) {
-			if (($operationDetail->name != $originalOperationDetails[$index]->name) 
+			if (($operationDetail->name != $originalOperationDetails[$index]->name)
 			||  ($operationDetail->goods_type != $originalOperationDetails[$index]->goods_type)
 			||  ($operationDetail->status != $originalOperationDetails[$index]->status)
 			||  ($operationDetail->detail_id != $originalOperationDetails[$index]->detail_id)
 			){
-				return true;	
+				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	private function saveOperationDetails($originalDetails){
-		
+
 		foreach ($this->operationDetails as $i => $operationDetail) {
 				$detail = new OperationDetail();
 				$detail->setId($operationDetail->id);
@@ -356,7 +356,7 @@ class Operation implements JsonSerializable {
 				$detail->setDetailFiles($operationDetail->detail_files);
 				$detail->save();
 		}
-		
+
 		foreach ($originalDetails as $n => $originalDetail) {
 			$needRemove = true;
 			foreach ($this->operationDetails as $i => $operationDetail) {
@@ -365,23 +365,23 @@ class Operation implements JsonSerializable {
 					break;
 				}
 			}
-			
+
 			if ($needRemove){
 				$forRemove = new OperationDetail();
 				$forRemove->setId($originalDetail->id);
 				$forRemove->remove();
 			}
-			
+
 		}
 	}
-	
+
 	/**
 	 * @param File $file
 	 */
 	public function addOperationAttachment($file){
-		
+
 		//TODO: database transaction
-		
+
 		$db = Data::getInstance();
 		$fileMetaDataId = $file->save();
 		$pre = $db->prepare ( "insert into operation_file (operation_id, file_meta_data_id) values (:operation_id, :file_meta_data_id)");
@@ -389,21 +389,21 @@ class Operation implements JsonSerializable {
 		$pre->bindValue(':file_meta_data_id', $file->getId(), PDO::PARAM_STR);
 		$pre->execute();
 		return $fileMetaDataId;
-		
+
 	}
-	
+
 	public function listOperationFiles(){
-		$sql = "select 
+		$sql = "select
 						fmd.*,
 						round(fmd.size/1024/1024, 3) size_in_mb,
 						concat(fmd.created, ' (', fmd.creator, ')') created_info
-				from 
+				from
 					file_meta_data fmd,
 					operation_file of
 				where fmd.id = of.file_meta_data_id
 				and of.operation_id = :id
 				order by fmd.created";
-		
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
@@ -430,26 +430,26 @@ class Operation implements JsonSerializable {
 	private $last_status_changed;
 	private $last_status_changed_user;
 	private $operationDetails;
-	
+
 	/**
 	 *
 	 * @return array
 	 */
 	public function getOperationDetails(){
-	
+
 		return $this->operationDetails;
 	}
-	
+
 	/**
 	 *
 	 * @param array $operationDetails
 	 */
 	public function setOperationDetails($operationDetails){
-	
+
 		$this->operationDetails = $operationDetails;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
@@ -458,63 +458,63 @@ class Operation implements JsonSerializable {
 
 		return $this->id;
 	}
-	
+
 	/**
 	 *
-	 * @param string $id 
+	 * @param string $id
 	 */
 	public function setId($id){
-		
+
 		$this->id = $id;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getOperationType(){
-	
+
 		return $this->operation_type;
 	}
-	
+
 	/**
 	 *
 	 * @param string $operationType
 	 */
 	public function setOperationType($operationType){
-	
+
 		$this->operation_type = $operationType;
 		return $this;
 	}
-	
+
 	/**
 	 *
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public function hasTransport(){
-	
+
 		return ($this->has_transport == 'Y');
 	}
-	
+
 	/**
 	 *
 	 * @param boolean or string $hasTransport
 	 */
-	public function setHasTransport($hasTransport){	
+	public function setHasTransport($hasTransport){
 		$this->has_transport = (($hasTransport == 'Y') || ($hasTransport === true));
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return boolean
 	 */
 	public function isWaitCallback(){
-	
+
 		return ($this->is_wait_callback == 'Y');
 	}
-	
+
 	/**
 	 *
 	 * @param boolean or string $hasTransport
@@ -523,41 +523,41 @@ class Operation implements JsonSerializable {
 		$this->is_wait_callback = (($isWaitCallback == 'Y') || ($isWaitCallback === true));
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getCustomerId(){
-	
+
 		return $this->customer_id;
 	}
-	
+
 	/**
 	 *
 	 * @param string $customerId
 	 */
 	public function setCustomerId($customerId){
-	
+
 		$this->customer_id = $customerId;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getDescription(){
-	
+
 		return $this->description;
 	}
-	
+
 	/**
 	 *
 	 * @param string $description
 	 */
 	public function setDescription($description){
-	
+
 		$this->description = empty($description)? null : substr($description, 0, 500);
 		return $this;
 	}
@@ -567,69 +567,69 @@ class Operation implements JsonSerializable {
 	 * @return string
 	 */
 	public function getNeedinessLevel(){
-	
+
 		return $this->neediness_level;
 	}
-	
+
 	/**
 	 *
 	 * @param string $needinessLevel
 	 */
 	public function setNeedinessLevel($needinessLevel){
-	
+
 		$this->neediness_level = $needinessLevel;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getSender(){
-	
+
 		return $this->sender;
 	}
-	
+
 	/**
 	 *
 	 * @param string $sender
 	 */
 	public function setSender($sender){
-	
+
 		$this->sender = $sender;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getIncomeType(){
-	
+
 		return $this->income_type;
 	}
-	
+
 	/**
 	 *
 	 * @param string $incomeType
 	 */
 	public function setIncomeType($incomeType){
-	
+
 		$this->income_type = $incomeType;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getIncome(){
-	
+
 		return $this->income;
-	
+
 	}
-	
+
 	/**
 	 *
 	 * @param string $income
@@ -639,16 +639,16 @@ class Operation implements JsonSerializable {
 		$this->income = $income;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getOthersIncome(){
-	
+
 		return $this->others_income;
 	}
-	
+
 	/**
 	 *
 	 * @param string $others_income
@@ -658,7 +658,7 @@ class Operation implements JsonSerializable {
 		$this->others_income = $others_income;
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
@@ -667,13 +667,13 @@ class Operation implements JsonSerializable {
 
 		return $this->status;
 	}
-	
+
 	/**
 	 *
 	 * @param string $status
 	 */
 	public function setStatus($status){
-	
+
 		$this->status = empty($status)? null: substr($status, 0, 20);
 		return $this;
 	}
@@ -689,7 +689,7 @@ class Operation implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $creator        	
+	 * @param string $creator
 	 */
 	public function setCreator($creator){
 
@@ -708,7 +708,7 @@ class Operation implements JsonSerializable {
 
 	/**
 	 *
-	 * @param string $modifier        	
+	 * @param string $modifier
 	 */
 	public function setModifier($modifier){
 
@@ -739,30 +739,30 @@ class Operation implements JsonSerializable {
 	 * @param string $closingUser
 	 */
 	public function setLastStatusChangedUser($lastStatusChangedUser){
-	
+
 		$this->last_status_changed_user = substr($lastStatusChangedUser,0, 35);
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getLastStatusChangedUser(){
-	
+
 		return $this->last_status_changed_user;
 	}
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getLastStatusChanged(){
-	
+
 		return $this->last_status_changed;
 	}
-	
-	
+
+
 }
 
 ?>

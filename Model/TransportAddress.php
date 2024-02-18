@@ -3,28 +3,28 @@
 require_once '../Util/Loader.php';
 
 class TransportAddress implements JsonSerializable {
-	
-	
-	public function jsonSerialize() {
+
+
+	public function jsonSerialize():array {
 		return get_object_vars($this);
 	}
-	
+
 	public function find(){
-		$sql = "select 
+		$sql = "select
 					ta.* ,
 					concat(ta.zip, ' ', ta.city, ' ' , ta.street) address_format,
 					concat(c.surname, ' ' , coalesce(c.forename, ''), ' (', c.id, ')') customer_format,
 					o.description operation_description,
 					concat(c.phone, ', ', coalesce(c.phone2, '')) customer_phone,
 					status_codes.code_value status_local
-				from 
+				from
 					transport_address ta
 				inner join operation o on o.id = ta.operation_id
 				inner join customer c on c.id = o.customer_id
 				inner join code status_codes on status_codes.id = ta.status
 				where (:id is null or ta.id = :id)
 				and (:transport_id is null or ta.transport_id = :transport_id)
-				and (:order_indicator is null or ta.order_indicator = :order_indicator) 
+				and (:order_indicator is null or ta.order_indicator = :order_indicator)
 				order by ta.order_indicator";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
@@ -36,15 +36,15 @@ class TransportAddress implements JsonSerializable {
 		$pre->execute($params);
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
+
 	public static function findAddressItems($transportAddressId){
-		$sql = "select 
+		$sql = "select
 					ai.*,
 					od.goods_type,
 					od.name,
-					case 
+					case
 						when coalesce(od.name) = '' then goods_type_codes.code_value
-					  	else concat(goods_type_codes.code_value, ' (' , od.name , ') ') 
+					  	else concat(goods_type_codes.code_value, ' (' , od.name , ') ')
 					end name_format,
 					goods_type_codes.code_value goods_type_local,
 					status_codes.code_value status_local
@@ -62,18 +62,18 @@ class TransportAddress implements JsonSerializable {
 		$pre->execute($params);
 		return $pre->fetchAll(PDO::FETCH_OBJ);
 	}
-	
+
 	public function save(){
-	
+
 		$t = SystemUtil::getCurrentTimestamp();
 		$db = Data::getInstance();
-			
+
 		if (empty($this->id)){
-	
+
 			$this->id = SystemUtil::getGuid();
 			$sql = "insert into transport_address (id,operation_id,transport_id,zip,city,street,description, status, order_indicator)
 						values (:id,:operation_id,:transport_id,:zip,:city,:street,:description, :status, :order_indicator)";
-				
+
 			$pre = $db->prepare($sql);
 			$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 			$pre->bindValue(':operation_id', $this->operation_id, PDO::PARAM_STR);
@@ -84,7 +84,7 @@ class TransportAddress implements JsonSerializable {
 			$pre->bindValue(':description', $this->description, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 			$pre->bindValue(':order_indicator', $this->order_indicator, PDO::PARAM_INT);
-				
+
 			$pre->execute();
 		}
 		else {
@@ -109,26 +109,26 @@ class TransportAddress implements JsonSerializable {
 			$pre->bindValue(':description', $this->description, PDO::PARAM_STR);
 			$pre->bindValue(':status', $this->status, PDO::PARAM_STR);
 			$pre->bindValue(':order_indicator', $this->order_indicator, PDO::PARAM_INT);
-			
+
 			$pre->execute();
 		}
-	
+
 		return $this->id;
 	}
-	
+
 	public static function addDescription($itemId, $description, $user ){
-		
-		$description =  " \r\n Szállítók megjegyzése (" . SystemUtil::getCurrantDay() . ") \r\n" . 
+
+		$description =  " \r\n Szállítók megjegyzése (" . SystemUtil::getCurrantDay() . ") \r\n" .
 									$description;
-		
-		$sql = "select 
+
+		$sql = "select
 					o.id,
-					o.customer_id 
-				from 
+					o.customer_id
+				from
 					operation o,
 					transport_address ta
 				where o.id = ta.operation_id
-				and ta.id = :id 
+				and ta.id = :id
 			";
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
@@ -141,18 +141,18 @@ class TransportAddress implements JsonSerializable {
 			new Exception("Nem vagy több kérvény/felajánlás található szállítási címhez. count: " . count($operations) . " id: " . $itemId);
 			return;
 		}
-		
+
 		$operation = $operations[0];
 		$customerFinder = new Customer();
 		$customerFinder->setId($operation->customer_id);
 		$customers = $customerFinder->find(null, 1);
-		
-		
+
+
 		if (count($customers) != 1){
 			new Exception("Nem található ügyfél a szállítási címhez. id: " . $operation->customer_id);
 			return;
 		}
-		
+
 		$customer = new Customer();
 		$customer = SystemUtil::cast($customer, $customers[0]);
 		$customer->setDescription($customer->getDescription() . $description);
@@ -160,18 +160,18 @@ class TransportAddress implements JsonSerializable {
 		$customerFamilyMemberFinder = new CustomerFamilyMember();
 		$customerFamilyMemberFinder->setCustomerId($customer->getId());
 		$customer->setFamilyMembers($customerFamilyMemberFinder->find());
-		
+
 		$customer->save();
-		
+
 		$operationFinder = new Operation();
 		$operationFinder->setId($operation->id);
 		$oldOperations = $operationFinder->find(null, 1);
-		
+
 		if (count($oldOperations) != 1){
 			new Exception("Nem található kérvény/felajánlás a szállítási címhez. id: " . $operation->id);
 			return;
 		}
-		
+
 		$oldOperation = new Operation();
 		$oldOperation = SystemUtil::cast($oldOperation, $oldOperations[0]);
 		$oldOperation->setDescription($oldOperation->getDescription() . $description);
@@ -179,37 +179,37 @@ class TransportAddress implements JsonSerializable {
 		$operationDetails = new OperationDetail();
 		$operationDetails->setOperationId($oldOperation->getId());
 		$oldOperation->setOperationDetails($operationDetails->find());
-		
+
 		$oldOperation->save();
-		
+
 	}
-	
+
 	/**
 	 * @param TransportAddressItem $item
 	 * @param String $user
 	 */
 	public static function saveItem($item, $user){
-		$sql = "update 
-					transport_address_item 
+		$sql = "update
+					transport_address_item
 				set
 					status = :status,
 					modifier = :modifier,
 					modified = :modified
-				where 
+				where
 					id = :id";
-		
+
 		$t = SystemUtil::getCurrentTimestamp();
-		
+
 		$db = Data::getInstance();
 		$pre = $db->prepare($sql);
-		
+
 		$pre->bindValue(':status', $item->status, PDO::PARAM_STR);
 		$pre->bindValue(':modifier', $user, PDO::PARAM_STR);
 		$pre->bindValue(':modified', $t, PDO::PARAM_STR);
 		$pre->bindValue(':id', $item->id, PDO::PARAM_STR);
-		
+
 		$pre->execute();
-		
+
 
 		if ($item->status == 'BEFEJEZETT_TRANSPORT'){
 			$operationDetailFinder = new OperationDetail();
@@ -219,71 +219,71 @@ class TransportAddress implements JsonSerializable {
 				Logger::warning("Nem található az itemhez tartozó operation detail. operation_detail_id: " . $item->operation_detail_id);
 				return;
 			}
-			
+
 			$operationDetail = new OperationDetail();
 			$operationDetail = SystemUtil::cast($operationDetail, $operationDetails[0]);
 			$operationDetail->setDetailFiles($operationDetail->getDetailFiles());
 			$operationDetail->setStatus('BEFEJEZETT' );
 			$operationDetail->save();
 		}
-		
+
 	}
-	
+
 	public function remove(){
 		$db = Data::getInstance();
-		
+
 		$sql = "delete from transport_address_item where transport_address_id = :id";
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->execute();
-		
+
 		$sql = "delete from transport_address where id = :id";
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':id', $this->id, PDO::PARAM_STR);
 		$pre->execute();
-		
+
 		return true;
 	}
-	
+
 	public static function removeAll($transportId){
 		$db = Data::getInstance();
 		$sql = "delete from transport_address where transport_id = :transport_id";
 		$pre = $db->prepare($sql);
 		$pre->bindValue(':transport_id', $transportId, PDO::PARAM_STR);
-		
+
 		$pre->execute();
 	}
-	
+
 	public static function removeMissing($addressArray){
-		
+
 		if (count($addressArray) == 0){
 			return;
 		}
-		
+
 		if (empty($address[0]->transport_id)){
 			return;
 		}
 		$finder = new Transport();
 		$finder->setId($addressArray[0]->transport_id);
 		$currentAddresses = $finder->find('1990-01-01', '2100-01-01', null);
-		
+
 		foreach ($currentAddresses as $index => $current) {
-			
+
 			foreach ($addressArray as $key => $address) {
-			
+
 				if ($current->id == $address->id){
 					break;
 				}
-				
+
 				if (count($addressArray) == $key+1){
 					$remover = new TransportAddress();
 					$remover->setId($current->id);
 					$remover->remove();
 				}
-			}	
+			}
 		}
 	}
-	
+
 	public static function generateAddressItems($addressId, $operationId, $user){
 		$db = Data::getInstance();
 		$t = SystemUtil::getCurrentTimestamp();
@@ -308,8 +308,8 @@ class TransportAddress implements JsonSerializable {
 		$pre->bindValue(':t', $t, PDO::PARAM_STR);
 		$pre->execute();
 	}
-	
-	
+
+
 	private $id;
 	private $operation_id;
 	private $transport_id;
@@ -320,201 +320,201 @@ class TransportAddress implements JsonSerializable {
 	private $description;
 	private $status;
 	private $order_indicator;
-	
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getId(){
-	
+
 		return $this->id;
 	}
-	
+
 	/**
 	 *
 	 * @param string $id
 	 */
 	public function setId($id){
-	
+
 		if (!empty($id)){
 			$this->id = $id;
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return integer
 	 */
 	public function getOperationId(){
-	
+
 		return $this->operation_id;
 	}
-	
+
 	/**
 	 *
 	 * @param integer $operationId
 	 */
 	public function setOperationId($operationId){
-	
+
 		if (!empty($operationId)){
 			$this->operation_id = (int)$operationId;
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return int
 	 */
 	public function getTransportId(){
-	
+
 		return (int)$this->transport_id;
 	}
-	
+
 	/**
 	 *
 	 * @param int $transportId
 	 */
 	public function setTransportId($transportId){
-	
+
 		if (!empty($transportId)){
 			$this->transport_id = $transportId;
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getZip(){
-	
+
 		return $this->zip;
 	}
-	
+
 	/**
 	 *
 	 * @param string $zip
 	 */
 	public function setZip($zip){
-	
+
 		if (!empty($zip)){
 			$this->zip = substr($zip, 0, 4);
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getCity(){
-	
+
 		return $this->city;
 	}
-	
+
 	/**
 	 *
 	 * @param string $city
 	 */
 	public function setCity($city){
-	
+
 		if (!empty($city)){
 			$this->city = substr($city, 0, 35);
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getStreet(){
-	
+
 		return $this->street;
 	}
-	
+
 	/**
 	 *
 	 * @param string $street
 	 */
 	public function setStreet($street){
-	
+
 		if (!empty($street)){
 			$this->street = substr($street, 0, 35);
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getDescription(){
-	
+
 		return $this->description;
 	}
-	
+
 	/**
 	 *
 	 * @param string $description
 	 */
 	public function setDescription($description){
-	
+
 		if (!empty($description)){
 			$this->description = substr($description, 0, 500);
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @return string
 	 */
 	public function getStatus(){
-	
+
 		return $this->status;
 	}
-	
+
 	/**
 	 *
 	 * @param string $status
 	 */
 	public function setStatus($status){
-	
+
 		if (!empty($status)){
 			$this->status = $status;
 		}
 		return $this;
 	}
-	
+
 	/**
 	 *
 	 * @return int
 	 */
 	public function getOrderIndicator(){
-	
+
 		return $this->order_indicator;
 	}
-	
+
 	/**
 	 *
 	 * @param int $orderIndicator
 	 */
 	public function setOrderIndicator($orderIndicator){
-	
+
 		$this->order_indicator = $orderIndicator;
 		return $this;
 	}
-	
+
 }
 
 ?>
