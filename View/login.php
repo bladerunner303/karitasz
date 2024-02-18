@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-
-<?php 
+<?php
 require_once '../Util/Loader.php';
 
 $error = '';
@@ -9,30 +7,30 @@ $userPassword = '';
 
 if ((isset($_POST["userName"])) && (isset($_POST["userPassword"]))) {
 	if ((preg_match('/^[a-zA-Z]{1,20}$/',$_POST["userName"])) && (preg_match('/^[\s\S]{1,20}$/',$_POST["userPassword"]))) {
-	
+
 		$userName = $_POST["userName"];
 		$userPassword = $_POST["userPassword"];
 	}
 	else {
 		$error = 'Hibás felhasználó név vagy jelszó!';
 	}
-	
+
 	if (strlen($userName .  $userPassword) != 0) {
-				
+
 		$result = User::login($userName, $userPassword);
-		
+
 		if ($result->isGood){
-			
+
 			$sessionId = Session::open($result->userId, $userName);
 			setcookie("sessionId", $sessionId, time() + (10 * 365 * 24 * 60 * 60), "/");
-			
+
 			if (SessionUtil::validRole(array("ROLE_BACK_OFFICE"), $sessionId)){
 				header('Location: customer.php');
 			}
 			else {
 				header('Location: dailyTransport.php');
 			}
-			
+
 		}
 		else {
 			//Write error;
@@ -43,10 +41,10 @@ if ((isset($_POST["userName"])) && (isset($_POST["userPassword"]))) {
 
 ?>
 
-
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <title>Karitász - Bejelentkezés</title>
 <link rel="stylesheet" type="text/css" href="css/loginPage-0.1.css">
 </head>
@@ -57,7 +55,7 @@ if ((isset($_POST["userName"])) && (isset($_POST["userPassword"]))) {
 		</div>
 		<h1 >Bejelentkezés</h1>
 		<div class="designColor fontColor" id="mainBox" >
-			
+
 			<div id="keyImage">
 				<img src="images/key.png"/>
 			</div>
@@ -79,6 +77,3 @@ if ((isset($_POST["userName"])) && (isset($_POST["userPassword"]))) {
 </body>
 
 </html>
-
-
-
