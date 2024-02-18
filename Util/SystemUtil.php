@@ -5,19 +5,14 @@
  */
 class SystemUtil {
 	public static function getGuid(){
-		mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
-		$charid = strtoupper(md5(uniqid(rand(), true)));
-		$hyphen = chr(45);// "-"
-		//$uuid = chr(123)// "{"
-		$uuid = ''
-				.substr($charid, 0, 8).$hyphen
-				.substr($charid, 8, 4).$hyphen
-				.substr($charid,12, 4).$hyphen
-				.substr($charid,16, 4).$hyphen
-				.substr($charid,20,12)
-				//.chr(125)// "}"
-		;
-		return $uuid;
+		$data = random_bytes(16);
+
+    // Az 1-4. bájtok verziót határozzák meg
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+    // A karakterek közötti kötőjeleket adja hozzá
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 
 	public static function getCurrentTimestamp(){
